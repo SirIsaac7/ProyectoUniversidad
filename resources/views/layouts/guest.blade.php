@@ -38,7 +38,7 @@
                                     <img src="{{ asset('assets/images/logo-light.png') }}" alt="Logo" height="20">
                                 </a>
                             </div>
-                            <p class="mt-3 fs-15 fw-medium">Sistema de autenticacion</p>
+                            {{--<p class="mt-3 fs-15 fw-medium">Sistema de autenticacion</p>--}}
                         </div>
                     </div>
                 </div>
@@ -145,10 +145,12 @@
     <script src="{{ asset('assets/js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
     <script src="{{ asset('assets/js/plugins.js') }}"></script>
 
-    <!-- particles js -->
+    {{-- Scripts de particulas del demo de Velzon.
+         Se comentan por ahora porque esta vista no contiene el contenedor
+         que esos archivos intentan inicializar y generan error en consola.
     <script src="{{ asset('assets/libs/particles.js/particles.js') }}"></script>
-    <!-- particles app js -->
     <script src="{{ asset('assets/js/pages/particles.app.js') }}"></script>
+    --}}
     <!-- password-addon init -->
     <script src="{{ asset('assets/js/pages/password-addon.init.js') }}"></script>
     @stack('scripts')
