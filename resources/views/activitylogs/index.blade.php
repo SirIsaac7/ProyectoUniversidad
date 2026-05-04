@@ -27,6 +27,7 @@
         min-height: 170px;
         white-space: pre-wrap;
         word-break: break-word;
+        border: 1px solid var(--vz-border-color);
     }
 </style>
 @endpush
@@ -79,14 +80,27 @@
                                             'created' => 'Registro creado',
                                             'updated' => 'Registro actualizado',
                                             'deleted' => 'Registro eliminado',
+                                            'login' => 'Inicio de sesion',
+                                            'logout' => 'Cierre de sesion',
                                             default => $activity->description,
                                         };
+
                                         $eventoClasses = match ($activity->event) {
                                             'created' => 'bg-success-subtle text-success',
                                             'updated' => 'bg-warning-subtle text-warning',
                                             'deleted' => 'bg-danger-subtle text-danger',
-                                            default => 'bg-info-subtle text-info',
+                                            'login' => 'bg-info-subtle text-info',
+                                            'logout' => 'bg-dark-subtle text-body',
+                                            default => 'bg-primary-subtle text-primary',
                                         };
+
+                                        $subject = class_basename($activity->subject_type ?? '');
+
+                                        if ($activity->subject_id) {
+                                            $subject .= ' #' . $activity->subject_id;
+                                        }
+
+                                        $properties = $activity->properties?->toArray() ?? [];
                                     @endphp
                                     <tr>
                                         <td>{{ $activity->id }}</td>
@@ -98,29 +112,26 @@
                                         </td>
                                         <td>{{ $descripcion }}</td>
                                         <td>{{ $activity->causer?->name ?? 'Sistema' }}</td>
-                                        <td>
-                                            {{ class_basename($activity->subject_type ?? '') }}
-                                            @if($activity->subject_id)
-                                                #{{ $activity->subject_id }}
-                                            @endif
-                                        </td>
+                                        <td>{{ $subject ?: 'N/A' }}</td>
                                         <td>{{ optional($activity->created_at)->format('d/m/Y H:i:s') }}</td>
                                         <td>
                                             <button
                                                 type="button"
                                                 class="btn btn-sm btn-soft-info js-ver-cambios"
-                                                title="Ver cambios"
+                                                title="Ver detalle"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#activityLogDetailModal"
                                                 data-id="{{ $activity->id }}"
                                                 data-log="{{ $activity->log_name }}"
                                                 data-evento="{{ $activity->event ?? 'N/A' }}"
+                                                data-evento-classes="{{ $eventoClasses }}"
                                                 data-descripcion="{{ $descripcion }}"
                                                 data-usuario="{{ $activity->causer?->name ?? 'Sistema' }}"
-                                                data-subject="{{ class_basename($activity->subject_type ?? '') }}@if($activity->subject_id) #{{ $activity->subject_id }}@endif"
+                                                data-subject="{{ $subject ?: 'N/A' }}"
                                                 data-fecha="{{ optional($activity->created_at)->format('d/m/Y H:i:s') }}"
-                                                data-old='@json($activity->properties["old"] ?? [])'
-                                                data-attributes='@json($activity->properties["attributes"] ?? [])'
+                                                data-old='@json($properties["old"] ?? [])'
+                                                data-attributes='@json($properties["attributes"] ?? [])'
+                                                data-properties='@json($properties)'
                                             >
                                                 <i class="ri-eye-fill align-bottom"></i>
                                             </button>
@@ -160,7 +171,7 @@
                     <div class="col-md-6">
                         <div class="activity-detail-meta">
                             <label class="form-label fw-semibold">Evento</label>
-                            <p class="text-body mb-0 fs-15" id="activity-detail-evento">-</p>
+                            <div id="activity-detail-evento">-</div>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -189,24 +200,25 @@
                     </div>
                 </div>
 
-                <div class="row g-3">
-                    <div class="col-md-6">
+                <div class="row g-3" id="activity-detail-panels">
+                    <div class="col-md-6" id="activity-detail-panel-1-col">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-header bg-soft-warning">
-                                <h6 class="card-title mb-0">Valores anteriores</h6>
+                                <h6 class="card-title mb-0" id="activity-detail-panel-1-title">Valores anteriores</h6>
                             </div>
                             <div class="card-body">
-                                <pre class="mb-0 small text-muted activity-detail-pre" id="activity-detail-old">Sin cambios anteriores</pre>
+                                <pre class="mb-0 small text-muted activity-detail-pre" id="activity-detail-panel-1-body">Sin datos</pre>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+
+                    <div class="col-md-6" id="activity-detail-panel-2-col">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-header bg-soft-success">
-                                <h6 class="card-title mb-0">Valores nuevos</h6>
+                                <h6 class="card-title mb-0" id="activity-detail-panel-2-title">Valores nuevos</h6>
                             </div>
                             <div class="card-body">
-                                <pre class="mb-0 small text-muted activity-detail-pre" id="activity-detail-attributes">Sin valores nuevos</pre>
+                                <pre class="mb-0 small text-muted activity-detail-pre" id="activity-detail-panel-2-body">Sin datos</pre>
                             </div>
                         </div>
                     </div>

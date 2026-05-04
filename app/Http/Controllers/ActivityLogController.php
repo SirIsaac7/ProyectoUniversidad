@@ -8,7 +8,9 @@ class ActivityLogController extends Controller
 {
     public function __construct(
         protected ActivityLogService $activityLogService
-    ) {}
+    ) {
+        $this->middleware('permission:ver activity logs');
+    }
 
     public function index()
     {

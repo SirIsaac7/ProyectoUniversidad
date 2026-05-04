@@ -35,6 +35,15 @@
                     </a>
                 </li>
 
+                @can('ver usuarios')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('usuarios.*') ? 'active' : '' }}" href="{{ route('usuarios.index') }}">
+                            <i class="ri-user-settings-line"></i>
+                            <span>Usuarios</span>
+                        </a>
+                    </li>
+                @endcan
+
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarAuth" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
                         <i class="ri-account-circle-line"></i>
@@ -52,26 +61,32 @@
                     </div>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ request()->routeIs('permisos.*') ? 'active' : '' }}" href="{{ route('permisos.index') }}">
-                        <i class="ri-shield-keyhole-line"></i>
-                        <span>Permisos</span>
-                    </a>
-                </li>
+                @can('ver permisos')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('permisos.*') ? 'active' : '' }}" href="{{ route('permisos.index') }}">
+                            <i class="ri-shield-keyhole-line"></i>
+                            <span>Permisos</span>
+                        </a>
+                    </li>
+                @endcan
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" href="{{ route('roles.index') }}">
-                        <i class="ri-admin-line"></i>
-                        <span>Roles</span>
-                    </a>
-                </li>
+                @can('ver roles')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" href="{{ route('roles.index') }}">
+                            <i class="ri-admin-line"></i>
+                            <span>Roles</span>
+                        </a>
+                    </li>
+                @endcan
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ request()->routeIs('activitylogs.*') ? 'active' : '' }}" href="{{ route('activitylogs.index') }}">
-                        <i class="ri-history-line"></i>
-                        <span>Activity Logs</span>
-                    </a>
-                </li>
+                @can('ver activity logs')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('activitylogs.*') ? 'active' : '' }}" href="{{ route('activitylogs.index') }}">
+                            <i class="ri-history-line"></i>
+                            <span>Activity Logs</span>
+                        </a>
+                    </li>
+                @endcan
             </ul>
         </div>
     </div>

@@ -54,7 +54,7 @@
 
         <div class="mb-3">
             <label class="form-label" for="password-input">
-                Contrasena <span class="text-danger">*</span>
+                Contraseña <span class="text-danger">*</span>
             </label>
             <div class="position-relative auth-pass-inputgroup">
                 <input

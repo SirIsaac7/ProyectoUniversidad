@@ -6,11 +6,14 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
 
@@ -40,6 +43,34 @@ class FortifyServiceProvider extends ServiceProvider
 
         Fortify::registerView(function () {
             return view('register');
+        });
+
+        Fortify::requestPasswordResetLinkView(function () {
+            return view('forgot-password');
+        });
+
+        Fortify::resetPasswordView(function ($request) {
+            return view('reset-password', ['request' => $request]);
+        });
+
+        Fortify::verifyEmailView(function () {
+            return view('verify-email');
+        });
+
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = User::where('email', $request->email)->first();
+
+            if ($user && ! $user->estado) {
+                throw ValidationException::withMessages([
+                    'email' => 'Tu cuenta se encuentra inactiva.',
+                ]);
+            }
+
+            if ($user && Hash::check($request->password, $user->password)) {
+                return $user;
+            }
+
+            return null;
         });
 
         RateLimiter::for('login', function (Request $request) {

@@ -34,7 +34,9 @@
                         </div>
                         <h5 class="mb-2">No hay roles registrados</h5>
                         <p class="text-muted mb-4">Crea el primer rol y asignale permisos del sistema.</p>
+                        @can('crear roles')
                         <a href="{{ route('roles.create') }}" class="btn btn-primary">Crear rol</a>
+                        @endcan
                     </div>
                 @else
                     <div class="table-responsive">
@@ -70,16 +72,20 @@
                                         <td>{{ optional($role->created_at)->format('d/m/Y H:i') }}</td>
                                         <td>
                                             <div class="hstack gap-2">
+                                                @can('editar roles')
                                                 <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-sm btn-soft-warning" title="Editar">
                                                     <i class="ri-pencil-fill align-bottom"></i>
                                                 </a>
+                                                @endcan
 
                                                 <form action="{{ route('roles.destroy', $role->id) }}" method="POST" onsubmit="return confirm('Eliminar este rol?');">
                                                     @csrf
                                                     @method('DELETE')
+                                                    @can('eliminar roles')
                                                     <button type="submit" class="btn btn-sm btn-soft-danger" title="Eliminar">
                                                         <i class="ri-delete-bin-fill align-bottom"></i>
                                                     </button>
+                                                    @endcan
                                                 </form>
                                             </div>
                                         </td>

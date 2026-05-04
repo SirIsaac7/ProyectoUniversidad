@@ -198,6 +198,10 @@
                             <i class="mdi mdi-home-circle text-muted fs-16 align-middle me-1"></i>
                             <span class="align-middle">Inicio</span>
                         </a>
+                        <a class="dropdown-item" href="{{ route('perfil.index') }}">
+                            <i class="ri-user-line text-muted fs-16 align-middle me-1"></i>
+                            <span class="align-middle">Mi perfil</span>
+                        </a>
                         <div class="dropdown-divider"></div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

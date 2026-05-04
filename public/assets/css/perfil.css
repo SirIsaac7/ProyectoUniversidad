@@ -1,0 +1,112 @@
+.perfil-cover {
+    height: 170px;
+    background: linear-gradient(135deg, rgba(64, 81, 137, 0.95), rgba(10, 179, 156, 0.85));
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.perfil-cover::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.16), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.12), transparent 24%);
+}
+
+.perfil-header-content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: end;
+}
+
+.perfil-avatar-wrap {
+    margin-top: 1.25rem;
+}
+
+.perfil-avatar-ring {
+    width: 88px;
+    height: 88px;
+    min-width: 88px;
+    min-height: 88px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(7, 35, 74, 0.92);
+    color: #8b5cf6;
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.15);
+    aspect-ratio: 1 / 1;
+}
+
+.perfil-avatar-image {
+    width: 128px;
+    height: 128px;
+    object-fit: cover;
+    object-position: center;
+    border: 4px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.18);
+}
+
+.perfil-meta-card {
+    border-radius: 0.85rem;
+    padding: 1rem;
+    height: 100%;
+    color: #fff;
+    border: 0;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.perfil-meta-card .perfil-meta-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.72);
+    margin-bottom: 0.35rem;
+}
+
+.perfil-meta-card--role {
+    background: linear-gradient(135deg, #405189, #5874c8);
+}
+
+.perfil-meta-card--access {
+    background: linear-gradient(135deg, #0ab39c, #14b8a6);
+}
+
+.perfil-meta-card--account {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+
+.perfil-meta-card--email {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+}
+
+.perfil-meta-card--dates {
+    background: linear-gradient(135deg, #334155, #475569);
+}
+
+.perfil-tab-nav .nav-link {
+    border: 0;
+    color: var(--vz-secondary-color);
+    font-weight: 600;
+    padding: 0.85rem 1rem;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+}
+
+.perfil-tab-nav .nav-link.active {
+    color: var(--vz-primary);
+    background: transparent;
+    border-bottom-color: var(--vz-primary);
+}
+
+.perfil-side-visual-card {
+    overflow: hidden;
+}
+
+.perfil-side-visual {
+    max-height: 220px;
+}

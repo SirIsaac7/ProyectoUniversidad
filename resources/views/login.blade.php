@@ -33,17 +33,17 @@
 
         <div class="mb-3">
             <div class="float-end">
-                <a href="#" class="text-muted">Olvidaste tu contrasena?</a>
+                <a href="{{ route('password.request') }}" class="text-muted">Olvidaste tu contraseña?</a>
             </div>
 
-            <label class="form-label" for="password-input">Contrasena</label>
+            <label class="form-label" for="password-input">Contraseña</label>
             <div class="position-relative auth-pass-inputgroup mb-3">
                 <input
                     type="password"
                     class="form-control pe-5 password-input @error('password') is-invalid @enderror"
                     id="password-input"
                     name="password"
-                    placeholder="Ingresa tu contrasena"
+                    placeholder="Ingresa tu contraseña"
                     required
                 >
                 <button
@@ -60,6 +60,12 @@
                 @enderror
             </div>
         </div>
+
+        @if ($errors->has('email'))
+            <div class="alert alert-danger py-2">
+                {{ $errors->first('email') }}
+            </div>
+        @endif
 
         <div class="form-check">
             <input class="form-check-input" type="checkbox" name="remember" id="auth-remember-check">
@@ -78,9 +84,9 @@
                 <button type="button" class="btn btn-primary btn-icon waves-effect waves-light" disabled>
                     <i class="ri-facebook-fill fs-16"></i>
                 </button>
-                <button type="button" class="btn btn-danger btn-icon waves-effect waves-light" disabled>
+                <a href="{{ route('google.redirect') }}" class="btn btn-danger btn-icon waves-effect waves-light">
                     <i class="ri-google-fill fs-16"></i>
-                </button>
+                </a>
                 <button type="button" class="btn btn-dark btn-icon waves-effect waves-light" disabled>
                     <i class="ri-github-fill fs-16"></i>
                 </button>
