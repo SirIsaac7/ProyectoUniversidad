@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Laravel\Fortify\Events\TwoFactorAuthenticationChallenged;
 use Laravel\Socialite\Facades\Socialite;
 
 class GoogleAuthController extends Controller
@@ -26,6 +27,8 @@ class GoogleAuthController extends Controller
                     'email' => 'Google no devolvio un correo electronico valido.',
                 ]);
         }
+
+        $mustSetupLocalPassword = false;
 
         $user = User::where('google_id', $googleUser->id)
             ->orWhere('email', $googleUser->email)
@@ -55,9 +58,30 @@ class GoogleAuthController extends Controller
                 'estado' => true,
                 'email_verified_at' => now(),
             ]);
+
+            $mustSetupLocalPassword = true;
+        }
+
+        session(['authenticated_via_google' => true]);
+
+        if ($user->hasEnabledTwoFactorAuthentication()) {
+            session([
+                'login.id' => $user->getKey(),
+                'login.remember' => true,
+            ]);
+
+            TwoFactorAuthenticationChallenged::dispatch($user);
+
+            return redirect()->route('two-factor.login');
         }
 
         Auth::login($user, true);
+
+        if ($mustSetupLocalPassword) {
+            return redirect()
+                ->route('perfil.password-local.edit')
+                ->with('status', 'local-password-required');
+        }
 
         return redirect()->route('dashboard');
     }

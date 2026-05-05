@@ -36,4 +36,35 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     }
+
+    document.querySelectorAll('.form-delete-permiso').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const button = form.querySelector('button[type="submit"]');
+            const nombre = button?.dataset.permisoNombre || 'este permiso';
+
+            if (typeof Swal === 'undefined') {
+                form.submit();
+                return;
+            }
+
+            Swal.fire({
+                title: 'Estas seguro?',
+                text: `Se procedera a eliminar ${nombre}.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Si, eliminar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#f06548',
+                cancelButtonColor: '#6c757d',
+                reverseButtons: true,
+                focusCancel: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
 });

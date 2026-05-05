@@ -110,3 +110,14 @@
 .perfil-side-visual {
     max-height: 220px;
 }
+
+.perfil-twofactor-qr svg {
+    width: 180px;
+    height: 180px;
+    display: block;
+}
+
+.perfil-recovery-code {
+    font-size: 0.85rem;
+    color: var(--vz-body-color);
+}

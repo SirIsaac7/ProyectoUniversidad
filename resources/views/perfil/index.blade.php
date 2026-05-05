@@ -12,14 +12,21 @@
     $rolActual = $usuario->roles->first()?->name ?? 'Sin rol';
     $tipoAcceso = $usuario->google_id ? 'Google' : 'Manual';
     $estadoCorreo = $usuario->hasVerifiedEmail() ? 'Verificado' : 'Pendiente';
+    $twoFactorPending = filled($usuario->two_factor_secret) && blank($usuario->two_factor_confirmed_at);
+    $twoFactorEnabled = $usuario->hasEnabledTwoFactorAuthentication();
+    $perfilStatusMessages = [
+        'profile-information-updated' => 'La informacion del perfil fue actualizada correctamente.',
+        'password-updated' => 'La contraseña fue actualizada correctamente.',
+        'two-factor-authentication-enabled' => 'La autenticacion en dos pasos fue habilitada. Escanea el codigo QR y confirma con el codigo de tu aplicacion.',
+        'two-factor-authentication-confirmed' => 'La autenticacion en dos pasos fue confirmada correctamente.',
+        'two-factor-authentication-disabled' => 'La autenticacion en dos pasos fue desactivada correctamente.',
+        'recovery-codes-generated' => 'Los codigos de recuperacion se regeneraron correctamente.',
+        'local-password-updated' => 'La contraseña local fue definida correctamente. Ya puedes confirmar acciones sensibles y activar 2FA.',
+    ];
 @endphp
 
-@if (session('status') === 'profile-information-updated')
-    <div class="d-none" id="perfil-success-message" data-message="La informacion del perfil fue actualizada correctamente."></div>
-@endif
-
-@if (session('status') === 'password-updated')
-    <div class="d-none" id="perfil-success-message" data-message="La contraseña fue actualizada correctamente."></div>
+@if (session('status') && isset($perfilStatusMessages[session('status')]))
+    <div class="d-none" id="perfil-success-message" data-message="{{ $perfilStatusMessages[session('status')] }}"></div>
 @endif
 
 <div class="row">
@@ -56,6 +63,7 @@
             </div>
         </div>
     </div>
+
     <div class="card-body">
         <div class="row g-3">
             <div class="col-md-3">
@@ -64,30 +72,35 @@
                     <div class="fw-semibold fs-15">{{ $rolActual }}</div>
                 </div>
             </div>
+
             <div class="col-md-3">
                 <div class="perfil-meta-card perfil-meta-card--access">
                     <div class="perfil-meta-label">Tipo de acceso</div>
                     <div class="fw-semibold fs-15">{{ $tipoAcceso }}</div>
                 </div>
             </div>
+
             <div class="col-md-3">
                 <div class="perfil-meta-card perfil-meta-card--account">
                     <div class="perfil-meta-label">Estado de cuenta</div>
                     <div class="fw-semibold fs-15">{{ $usuario->estado ? 'Activo' : 'Inactivo' }}</div>
                 </div>
             </div>
+
             <div class="col-md-3">
                 <div class="perfil-meta-card perfil-meta-card--email">
                     <div class="perfil-meta-label">Estado del correo</div>
                     <div class="fw-semibold fs-15">{{ $estadoCorreo }}</div>
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="perfil-meta-card perfil-meta-card--dates">
                     <div class="perfil-meta-label">Fecha de registro</div>
                     <div class="fw-semibold fs-15">{{ optional($usuario->created_at)->format('d/m/Y H:i') }}</div>
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="perfil-meta-card perfil-meta-card--dates">
                     <div class="perfil-meta-label">Ultima actualizacion</div>
@@ -113,6 +126,7 @@
             </li>
         </ul>
     </div>
+
     <div class="card-body">
         <div class="tab-content text-muted">
             <div class="tab-pane active" id="perfil-presentacion" role="tabpanel">
@@ -133,18 +147,21 @@
                                             <h6 class="mb-0">{{ $usuario->name }}</h6>
                                         </div>
                                     </div>
+
                                     <div class="col-md-6">
                                         <div class="border rounded p-3 h-100">
                                             <p class="text-muted mb-1">Correo electronico</p>
                                             <h6 class="mb-0">{{ $usuario->email }}</h6>
                                         </div>
                                     </div>
+
                                     <div class="col-md-6">
                                         <div class="border rounded p-3 h-100">
                                             <p class="text-muted mb-1">Metodo de autenticacion</p>
                                             <h6 class="mb-0">{{ $tipoAcceso }}</h6>
                                         </div>
                                     </div>
+
                                     <div class="col-md-6">
                                         <div class="border rounded p-3 h-100">
                                             <p class="text-muted mb-1">Rol asignado</p>
@@ -173,8 +190,22 @@
                                     @endif
                                 </div>
 
+                                <div class="d-flex align-items-center justify-content-between border rounded p-3">
+                                    <div>
+                                        <h6 class="mb-1">Autenticacion en dos pasos</h6>
+                                        <p class="text-muted mb-0">Nivel adicional de seguridad para tu acceso.</p>
+                                    </div>
+                                    @if ($twoFactorEnabled)
+                                        <span class="badge bg-success-subtle text-success">Activa</span>
+                                    @elseif ($twoFactorPending)
+                                        <span class="badge bg-warning-subtle text-warning">Pendiente</span>
+                                    @else
+                                        <span class="badge bg-secondary-subtle text-secondary">Desactivada</span>
+                                    @endif
+                                </div>
+
                                 @if (! $usuario->hasVerifiedEmail())
-                                    <form method="POST" action="{{ route('verification.send') }}">
+                                    <form method="POST" action="{{ route('verification.send') }}" class="mt-3">
                                         @csrf
                                         <button type="submit" class="btn btn-warning w-100">
                                             Reenviar correo de verificacion
@@ -194,6 +225,7 @@
                             <div class="card-header">
                                 <h5 class="card-title mb-0">Informacion del perfil</h5>
                             </div>
+
                             <div class="card-body">
                                 <form method="POST" action="{{ route('user-profile-information.update') }}">
                                     @csrf
@@ -247,71 +279,217 @@
                             </div>
                         </div>
 
-                        <div class="card border">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Cambiar contraseña</h5>
+                        @if ($usuario->google_id)
+                            <div class="card border">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Contraseña local</h5>
+                                </div>
+
+                                <div class="card-body">
+                                    <p class="text-muted mb-4">
+                                        Como tu cuenta usa Google, aqui puedes crear o actualizar la contrasena local de este sistema.
+                                        Esta contraseña no reemplaza tu contraseña de Google.
+                                    </p>
+
+                                    <a href="{{ route('perfil.password-local.edit') }}" class="btn btn-primary">
+                                        <i class="ri-key-2-line align-bottom me-1"></i>
+                                        Crear o actualizar contraseña local
+                                    </a>
+                                </div>
                             </div>
+                        @else
+                            <div class="card border">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Cambiar contraseña</h5>
+                                </div>
+
+                                <div class="card-body">
+                                    <form method="POST" action="{{ route('user-password.update') }}">
+                                        @csrf
+                                        @method('PUT')
+
+                                        <div class="row g-3">
+                                            <div class="col-lg-12">
+                                                <label for="current_password" class="form-label">
+                                                    Contraseña actual <span class="text-danger">*</span>
+                                                </label>
+                                                <input
+                                                    type="password"
+                                                    class="form-control @error('current_password', 'updatePassword') is-invalid @enderror"
+                                                    id="current_password"
+                                                    name="current_password"
+                                                    required
+                                                >
+                                                @error('current_password', 'updatePassword')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <label for="password" class="form-label">
+                                                    Nueva contraseña <span class="text-danger">*</span>
+                                                </label>
+                                                <input
+                                                    type="password"
+                                                    class="form-control @error('password', 'updatePassword') is-invalid @enderror"
+                                                    id="password"
+                                                    name="password"
+                                                    required
+                                                >
+                                                @error('password', 'updatePassword')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <label for="password_confirmation" class="form-label">
+                                                    Confirmar contraseña <span class="text-danger">*</span>
+                                                </label>
+                                                <input
+                                                    type="password"
+                                                    class="form-control"
+                                                    id="password_confirmation"
+                                                    name="password_confirmation"
+                                                    required
+                                                >
+                                            </div>
+
+                                            <div class="col-12">
+                                                <div class="text-end">
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="ri-lock-password-line align-bottom me-1"></i>
+                                                        Actualizar contraseña
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="card border">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <h5 class="card-title mb-0">Autenticacion en dos pasos</h5>
+
+                                @if ($twoFactorEnabled)
+                                    <span class="badge bg-success-subtle text-success">Activa</span>
+                                @elseif ($twoFactorPending)
+                                    <span class="badge bg-warning-subtle text-warning">Pendiente de confirmacion</span>
+                                @else
+                                    <span class="badge bg-secondary-subtle text-secondary">Desactivada</span>
+                                @endif
+                            </div>
+
                             <div class="card-body">
-                                <form method="POST" action="{{ route('user-password.update') }}">
-                                    @csrf
-                                    @method('PUT')
+                                @if (! $twoFactorEnabled && ! $twoFactorPending)
+                                    <p class="text-muted mb-4">
+                                        Refuerza la seguridad de tu cuenta agregando un segundo paso al iniciar sesion. Podras usar una app como
+                                        Google Authenticator, Microsoft Authenticator o Authy.
+                                    </p>
 
-                                    <div class="row g-3">
-                                        <div class="col-lg-12">
-                                            <label for="current_password" class="form-label">
-                                                Contraseña actual <span class="text-danger">*</span>
-                                            </label>
-                                            <input
-                                                type="password"
-                                                class="form-control @error('current_password', 'updatePassword') is-invalid @enderror"
-                                                id="current_password"
-                                                name="current_password"
-                                                required
-                                            >
-                                            @error('current_password', 'updatePassword')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
+                                    <form method="POST" action="{{ route('two-factor.enable') }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="ri-shield-keyhole-line align-bottom me-1"></i>
+                                            Activar autenticacion en dos pasos
+                                        </button>
+                                    </form>
+                                @else
+                                    @if ($twoFactorPending)
+                                        <div class="alert alert-warning mb-4">
+                                            Escanea el codigo QR y confirma con el codigo de tu aplicacion para dejar el 2FA completamente activo.
+                                        </div>
+                                    @else
+                                        <div class="alert alert-success mb-4">
+                                            La autenticacion en dos pasos ya esta activa en tu cuenta.
+                                        </div>
+                                    @endif
+
+                                    <div class="row g-4">
+                                        <div class="col-lg-6">
+                                            <div class="border rounded p-3 h-100">
+                                                <h6 class="mb-3">Escanea el codigo QR</h6>
+
+                                                <div class="bg-light rounded p-3 d-inline-flex perfil-twofactor-qr">
+                                                    {!! $usuario->twoFactorQrCodeSvg() !!}
+                                                </div>
+
+                                                <p class="text-muted mt-3 mb-1">Clave secreta</p>
+                                                <code class="d-block small text-break">{{ decrypt($usuario->two_factor_secret) }}</code>
+                                            </div>
                                         </div>
 
                                         <div class="col-lg-6">
-                                            <label for="password" class="form-label">
-                                                Nueva contraseña <span class="text-danger">*</span>
-                                            </label>
-                                            <input
-                                                type="password"
-                                                class="form-control @error('password', 'updatePassword') is-invalid @enderror"
-                                                id="password"
-                                                name="password"
-                                                required
-                                            >
-                                            @error('password', 'updatePassword')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
+                                            <div class="border rounded p-3 h-100">
+                                                <h6 class="mb-3">Codigos de recuperacion</h6>
+                                                <p class="text-muted mb-3">
+                                                    Guarda estos codigos en un lugar seguro. Te serviran si pierdes acceso a tu aplicacion autenticadora.
+                                                </p>
 
-                                        <div class="col-lg-6">
-                                            <label for="password_confirmation" class="form-label">
-                                                Confirmar contraseña <span class="text-danger">*</span>
-                                            </label>
-                                            <input
-                                                type="password"
-                                                class="form-control"
-                                                id="password_confirmation"
-                                                name="password_confirmation"
-                                                required
-                                            >
-                                        </div>
+                                                <div class="row g-2">
+                                                    @foreach ($usuario->recoveryCodes() as $code)
+                                                        <div class="col-12">
+                                                            <code class="d-block bg-light rounded px-3 py-2 perfil-recovery-code">{{ $code }}</code>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
 
-                                        <div class="col-12">
-                                            <div class="text-end">
-                                                <button type="submit" class="btn btn-primary">
-                                                    <i class="ri-lock-password-line align-bottom me-1"></i>
-                                                    Actualizar contraseña
-                                                </button>
+                                                <form method="POST" action="{{ route('two-factor.regenerate-recovery-codes') }}" class="mt-3">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-soft-primary">
+                                                        <i class="ri-refresh-line align-bottom me-1"></i>
+                                                        Regenerar codigos
+                                                    </button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
-                                </form>
+
+                                    @if ($twoFactorPending)
+                                        <form method="POST" action="{{ route('two-factor.confirm') }}" class="mt-4">
+                                            @csrf
+
+                                            <div class="row g-3 align-items-end">
+                                                <div class="col-lg-8">
+                                                    <label for="two_factor_code" class="form-label">
+                                                        Codigo de confirmacion <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        class="form-control @error('code') is-invalid @enderror"
+                                                        id="two_factor_code"
+                                                        name="code"
+                                                        inputmode="numeric"
+                                                        autocomplete="one-time-code"
+                                                        placeholder="Ingresa el codigo de 6 digitos"
+                                                        required
+                                                    >
+                                                    @error('code')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+
+                                                <div class="col-lg-4">
+                                                    <button type="submit" class="btn btn-success w-100">
+                                                        <i class="ri-check-line align-bottom me-1"></i>
+                                                        Confirmar 2FA
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    @endif
+
+                                    <form method="POST" action="{{ route('two-factor.disable') }}" class="mt-4">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="ri-shield-close-line align-bottom me-1"></i>
+                                            Desactivar autenticacion en dos pasos
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
                     </div>

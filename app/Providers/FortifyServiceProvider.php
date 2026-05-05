@@ -57,6 +57,14 @@ class FortifyServiceProvider extends ServiceProvider
             return view('verify-email');
         });
 
+        Fortify::confirmPasswordView(function () {
+            return view('confirm-password');
+        });
+
+        Fortify::twoFactorChallengeView(function () {
+            return view('two-factor-challenge');
+        });
+
         Fortify::authenticateUsing(function (Request $request) {
             $user = User::where('email', $request->email)->first();
 

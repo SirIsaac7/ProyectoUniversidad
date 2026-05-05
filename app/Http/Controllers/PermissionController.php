@@ -14,7 +14,7 @@ class PermissionController extends Controller
     ) {
         $this->middleware('permission:ver permisos')->only('index');
         $this->middleware('permission:crear permisos')->only(['create', 'store']);
-        $this->middleware('permission:editar permiso')->only(['edit', 'update']);
+        $this->middleware('permission:editar permisos')->only(['edit', 'update']);
         $this->middleware('permission:eliminar permisos')->only('destroy');
     }
 

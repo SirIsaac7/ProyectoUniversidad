@@ -78,11 +78,20 @@
                                                 </a>
                                                 @endcan
 
-                                                <form action="{{ route('roles.destroy', $role->id) }}" method="POST" onsubmit="return confirm('Eliminar este rol?');">
+                                                <form
+                                                    action="{{ route('roles.destroy', $role->id) }}"
+                                                    method="POST"
+                                                    class="form-delete-rol"
+                                                >
                                                     @csrf
                                                     @method('DELETE')
                                                     @can('eliminar roles')
-                                                    <button type="submit" class="btn btn-sm btn-soft-danger" title="Eliminar">
+                                                    <button
+                                                        type="submit"
+                                                        class="btn btn-sm btn-soft-danger"
+                                                        title="Eliminar"
+                                                        data-rol-nombre="{{ $role->name }}"
+                                                    >
                                                         <i class="ri-delete-bin-fill align-bottom"></i>
                                                     </button>
                                                     @endcan

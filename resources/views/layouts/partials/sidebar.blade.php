@@ -44,23 +44,6 @@
                     </li>
                 @endcan
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarAuth" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
-                        <i class="ri-account-circle-line"></i>
-                        <span>Autenticación</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarAuth">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('login') }}" class="nav-link">Iniciar sesion</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('register') }}" class="nav-link">Registro</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
                 @can('ver permisos')
                     <li class="nav-item">
                         <a class="nav-link menu-link {{ request()->routeIs('permisos.*') ? 'active' : '' }}" href="{{ route('permisos.index') }}">
@@ -87,6 +70,16 @@
                         </a>
                     </li>
                 @endcan
+
+                @can('ver rubros')
+                <li class="nav-item">
+                    <a class="nav-link menu-link {{ request()->routeIs('rubros.*') ? 'active' : '' }}" href="{{ route('rubros.index') }}">
+                        <i class="ri-apps-2-line"></i>
+                        <span>Rubros</span>
+                    </a>
+                </li>
+                @endcan
+
             </ul>
         </div>
     </div>

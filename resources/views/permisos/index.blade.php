@@ -81,11 +81,20 @@
                                                 </a>
                                                 @endcan
 
-                                                <form action="{{ route('permisos.destroy', ['permiso' => $permission->id]) }}" method="POST" onsubmit="return confirm('Eliminar este permiso?');">
+                                                <form
+                                                    action="{{ route('permisos.destroy', ['permiso' => $permission->id]) }}"
+                                                    method="POST"
+                                                    class="form-delete-permiso"
+                                                >
                                                     @csrf
                                                     @method('DELETE')
                                                     @can('eliminar permisos')
-                                                    <button type="submit" class="btn btn-sm btn-soft-danger" title="Eliminar">
+                                                    <button
+                                                        type="submit"
+                                                        class="btn btn-sm btn-soft-danger"
+                                                        title="Eliminar"
+                                                        data-permiso-nombre="{{ $permission->name }}"
+                                                    >
                                                         <i class="ri-delete-bin-fill align-bottom"></i>
                                                     </button>
                                                     @endcan
