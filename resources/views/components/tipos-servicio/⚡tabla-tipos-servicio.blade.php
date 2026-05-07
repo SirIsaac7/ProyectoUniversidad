@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Rubro;
+use App\Models\TipoServicio;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -15,7 +15,7 @@ new class extends Component
     protected string $paginationTheme = 'bootstrap';
 
     protected $listeners = [
-        'confirmarCambioEstadoRubro' => 'toggleEstado',
+        'confirmarCambioEstadoTipoServicio' => 'toggleEstado',
     ];
 
     public function updatedSearch(): void
@@ -33,27 +33,27 @@ new class extends Component
         $this->resetPage();
     }
 
-    public function toggleEstado(int $rubroId): void
+    public function toggleEstado(int $tipoServicioId): void
     {
-        abort_unless(auth()->user()->can('eliminar rubros'), 403);
+        abort_unless(auth()->user()->can('eliminar tipos servicio'), 403);
 
-        $rubro = Rubro::findOrFail($rubroId);
+        $tipoServicio = TipoServicio::findOrFail($tipoServicioId);
 
-        $rubro->update([
-            'estado' => ! $rubro->estado,
+        $tipoServicio->update([
+            'estado' => ! $tipoServicio->estado,
         ]);
 
         $this->dispatch(
-            'rubro-estado-cambiado',
-            message: $rubro->estado
-                ? 'Rubro activado correctamente.'
-                : 'Rubro inactivado correctamente.'
+            'tipo-servicio-estado-cambiado',
+            message: $tipoServicio->estado
+                ? 'Tipo de servicio activado correctamente.'
+                : 'Tipo de servicio inactivado correctamente.'
         );
     }
 
     public function with(): array
     {
-        $rubros = Rubro::query()
+        $tiposServicio = TipoServicio::with('rubros')
             ->when($this->search !== '', function ($query) {
                 $query->where(function ($subQuery) {
                     $subQuery->where('id', 'like', '%' . $this->search . '%')
@@ -68,7 +68,7 @@ new class extends Component
             ->paginate($this->perPage);
 
         return [
-            'rubros' => $rubros,
+            'tiposServicio' => $tiposServicio,
         ];
     }
 };
@@ -76,11 +76,11 @@ new class extends Component
 
 <div>
     @if (session('success'))
-        <div class="d-none" id="rubros-success-message" data-message="{{ session('success') }}"></div>
+        <div class="d-none" id="tipos-servicio-success-message" data-message="{{ session('success') }}"></div>
     @endif
 
     @if (session('error'))
-        <div class="d-none" id="rubros-error-message" data-message="{{ session('error') }}"></div>
+        <div class="d-none" id="tipos-servicio-error-message" data-message="{{ session('error') }}"></div>
     @endif
 
     <div class="row g-3 mb-3">
@@ -119,6 +119,7 @@ new class extends Component
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
+                    <th>Rubros</th>
                     <th>Descripcion</th>
                     <th>Imagen</th>
                     <th>Estado</th>
@@ -127,20 +128,29 @@ new class extends Component
                 </tr>
             </thead>
             <tbody>
-                @forelse ($rubros as $rubro)
+                @forelse ($tiposServicio as $tipoServicio)
                     <tr>
-                        <td>{{ $rubro->id }}</td>
-                        <td class="fw-semibold">{{ $rubro->nombre }}</td>
+                        <td>{{ $tipoServicio->id }}</td>
+                        <td class="fw-semibold">{{ $tipoServicio->nombre }}</td>
                         <td>
-                            <div style="max-width: 420px; white-space: normal; line-height: 1.45;">
-                                {{ $rubro->descripcion ?: 'Sin descripcion' }}
+                            <div class="d-flex flex-wrap gap-1">
+                                @forelse ($tipoServicio->rubros as $rubro)
+                                    <span class="badge bg-info-subtle text-info">{{ $rubro->nombre }}</span>
+                                @empty
+                                    <span class="text-muted">Sin rubros</span>
+                                @endforelse
                             </div>
                         </td>
                         <td>
-                            @if ($rubro->imagen)
+                            <div style="max-width: 360px; white-space: normal; line-height: 1.45;">
+                                {{ $tipoServicio->descripcion ?: 'Sin descripcion' }}
+                            </div>
+                        </td>
+                        <td>
+                            @if ($tipoServicio->imagen)
                                 <img
-                                    src="{{ asset($rubro->imagen) }}"
-                                    alt="{{ $rubro->nombre }}"
+                                    src="{{ asset($tipoServicio->imagen) }}"
+                                    alt="{{ $tipoServicio->nombre }}"
                                     class="rounded border"
                                     style="width: 56px; height: 56px; object-fit: cover;"
                                 >
@@ -149,18 +159,18 @@ new class extends Component
                             @endif
                         </td>
                         <td>
-                            @if ($rubro->estado)
+                            @if ($tipoServicio->estado)
                                 <span class="badge bg-success-subtle text-success">Activo</span>
                             @else
                                 <span class="badge bg-danger-subtle text-danger">Inactivo</span>
                             @endif
                         </td>
-                        <td>{{ optional($rubro->created_at)->format('d/m/Y H:i') }}</td>
+                        <td>{{ optional($tipoServicio->created_at)->format('d/m/Y H:i') }}</td>
                         <td>
                             <div class="hstack gap-2">
-                                @can('editar rubros')
+                                @can('editar tipos servicio')
                                 <a
-                                    href="{{ route('rubros.edit', $rubro->id) }}"
+                                    href="{{ route('tipos-servicio.edit', $tipoServicio->id) }}"
                                     class="btn btn-sm btn-soft-warning"
                                     title="Editar"
                                 >
@@ -168,14 +178,14 @@ new class extends Component
                                 </a>
                                 @endcan
 
-                                @can('eliminar rubros')
+                                @can('eliminar tipos servicio')
                                 <button
                                     type="button"
-                                    class="btn btn-sm js-toggle-rubro-livewire {{ $rubro->estado ? 'btn-soft-danger' : 'btn-soft-success' }}"
-                                    title="{{ $rubro->estado ? 'Inactivar' : 'Activar' }}"
-                                    data-rubro-id="{{ $rubro->id }}"
-                                    data-rubro-nombre="{{ $rubro->nombre }}"
-                                    data-accion="{{ $rubro->estado ? 'inactivar' : 'activar' }}"
+                                    class="btn btn-sm js-toggle-tipo-servicio-livewire {{ $tipoServicio->estado ? 'btn-soft-danger' : 'btn-soft-success' }}"
+                                    title="{{ $tipoServicio->estado ? 'Inactivar' : 'Activar' }}"
+                                    data-tipo-servicio-id="{{ $tipoServicio->id }}"
+                                    data-tipo-servicio-nombre="{{ $tipoServicio->nombre }}"
+                                    data-accion="{{ $tipoServicio->estado ? 'inactivar' : 'activar' }}"
                                 >
                                     <i class="ri-refresh-line align-bottom"></i>
                                 </button>
@@ -185,8 +195,8 @@ new class extends Component
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-4">
-                            No se encontraron rubros.
+                        <td colspan="8" class="text-center text-muted py-4">
+                            No se encontraron tipos de servicio.
                         </td>
                     </tr>
                 @endforelse
@@ -195,6 +205,6 @@ new class extends Component
     </div>
 
     <div class="mt-3">
-        {{ $rubros->links() }}
+        {{ $tiposServicio->links() }}
     </div>
 </div>

@@ -80,6 +80,15 @@
                 </li>
                 @endcan
 
+                @can('ver tipos servicio')
+                <li class="nav-item">
+                    <a class="nav-link menu-link {{ request()->routeIs('tipos-servicio.*') ? 'active' : '' }}" href="{{ route('tipos-servicio.index') }}">
+                        <i class="ri-service-line"></i>
+                        <span>Tipos de servicio</span>
+                    </a>
+                </li>
+                @endcan
+
             </ul>
         </div>
     </div>

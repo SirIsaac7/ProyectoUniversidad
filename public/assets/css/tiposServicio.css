@@ -1,0 +1,47 @@
+.filepond--root {
+    margin-bottom: 0;
+}
+
+.filepond--panel-root {
+    background-color: transparent;
+}
+
+.filepond--drop-label {
+    color: var(--vz-body-color);
+    min-height: 180px;
+}
+
+.filepond--label-action {
+    text-decoration: underline;
+}
+
+.filepond--drip {
+    opacity: 0.08;
+}
+
+.tipo-servicio-image-current {
+    background: rgba(var(--vz-light-rgb), 0.08);
+}
+
+.tipo-servicio-image-current-preview {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.tipo-servicio-rubros-box {
+    padding: 1rem;
+    border: 1px solid var(--vz-border-color);
+    border-radius: 0.75rem;
+    background: rgba(var(--vz-light-rgb), 0.06);
+}
+
+.tipo-servicio-rubros-box .choices {
+    margin-bottom: 0;
+}
+
+.tipo-servicio-rubros-box .choices__inner {
+    min-height: 44px;
+    border-radius: 0.5rem;
+}
