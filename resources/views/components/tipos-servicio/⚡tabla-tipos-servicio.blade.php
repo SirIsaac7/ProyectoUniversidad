@@ -10,6 +10,8 @@ new class extends Component
 
     public string $search = '';
     public string $estado = '';
+    public string $sortField = 'id';
+    public string $sortDirection = 'desc';
     public int $perPage = 10;
 
     protected string $paginationTheme = 'bootstrap';
@@ -31,6 +33,27 @@ new class extends Component
     public function updatedPerPage(): void
     {
         $this->resetPage();
+    }
+
+    public function sortBy(string $field): void
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+
+        $this->resetPage();
+    }
+
+    public function sortIcon(string $field): string
+    {
+        if ($this->sortField !== $field) {
+            return '↕';
+        }
+
+        return $this->sortDirection === 'asc' ? '↑' : '↓';
     }
 
     public function toggleEstado(int $tipoServicioId): void
@@ -64,7 +87,7 @@ new class extends Component
             ->when($this->estado !== '', function ($query) {
                 $query->where('estado', $this->estado);
             })
-            ->orderByDesc('id')
+            ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->perPage);
 
         return [
@@ -117,13 +140,33 @@ new class extends Component
         <table class="table table-bordered dt-responsive nowrap table-striped align-middle mb-0">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
+                    <th>
+                        <button type="button" class="btn btn-link p-0 text-reset fw-semibold" wire:click="sortBy('id')">
+                            ID <span class="ms-1 small text-muted">{{ $this->sortIcon('id') }}</span>
+                        </button>
+                    </th>
+                    <th>
+                        <button type="button" class="btn btn-link p-0 text-reset fw-semibold" wire:click="sortBy('nombre')">
+                            Nombre <span class="ms-1 small text-muted">{{ $this->sortIcon('nombre') }}</span>
+                        </button>
+                    </th>
                     <th>Rubros</th>
-                    <th>Descripcion</th>
+                    <th>
+                        <button type="button" class="btn btn-link p-0 text-reset fw-semibold" wire:click="sortBy('descripcion')">
+                            Descripcion <span class="ms-1 small text-muted">{{ $this->sortIcon('descripcion') }}</span>
+                        </button>
+                    </th>
                     <th>Imagen</th>
-                    <th>Estado</th>
-                    <th>Fecha de creacion</th>
+                    <th>
+                        <button type="button" class="btn btn-link p-0 text-reset fw-semibold" wire:click="sortBy('estado')">
+                            Estado <span class="ms-1 small text-muted">{{ $this->sortIcon('estado') }}</span>
+                        </button>
+                    </th>
+                    <th>
+                        <button type="button" class="btn btn-link p-0 text-reset fw-semibold" wire:click="sortBy('created_at')">
+                            Fecha de creacion <span class="ms-1 small text-muted">{{ $this->sortIcon('created_at') }}</span>
+                        </button>
+                    </th>
                     <th>Acciones</th>
                 </tr>
             </thead>

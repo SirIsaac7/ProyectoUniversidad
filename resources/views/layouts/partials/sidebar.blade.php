@@ -71,23 +71,59 @@
                     </li>
                 @endcan
 
-                @can('ver rubros')
+                @if (
+                    auth()->user()->can('ver rubros') ||
+                    auth()->user()->can('ver tipos servicio') ||
+                    auth()->user()->can('ver especialidades')
+                )
                 <li class="nav-item">
-                    <a class="nav-link menu-link {{ request()->routeIs('rubros.*') ? 'active' : '' }}" href="{{ route('rubros.index') }}">
+                    <a
+                        class="nav-link menu-link {{ request()->routeIs('rubros.*') || request()->routeIs('tipos-servicio.*') || request()->routeIs('especialidades.*') ? 'active' : '' }}"
+                        href="#sidebarCatalogoServicios"
+                        data-bs-toggle="collapse"
+                        role="button"
+                        aria-expanded="{{ request()->routeIs('rubros.*') || request()->routeIs('tipos-servicio.*') || request()->routeIs('especialidades.*') ? 'true' : 'false' }}"
+                        aria-controls="sidebarCatalogoServicios"
+                    >
                         <i class="ri-apps-2-line"></i>
-                        <span>Rubros</span>
+                        <span>Catálogo de servicios</span>
                     </a>
-                </li>
-                @endcan
 
-                @can('ver tipos servicio')
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ request()->routeIs('tipos-servicio.*') ? 'active' : '' }}" href="{{ route('tipos-servicio.index') }}">
-                        <i class="ri-service-line"></i>
-                        <span>Tipos de servicio</span>
-                    </a>
+                    <div
+                        class="collapse menu-dropdown {{ request()->routeIs('rubros.*') || request()->routeIs('tipos-servicio.*') || request()->routeIs('especialidades.*') ? 'show' : '' }}"
+                        id="sidebarCatalogoServicios"
+                    >
+                        <ul class="nav nav-sm flex-column">
+                            @can('ver rubros')
+                                <li class="nav-item">
+                                    <a href="{{ route('rubros.index') }}" class="nav-link {{ request()->routeIs('rubros.*') ? 'active' : '' }}">
+                                        <i class="ri-apps-2-line me-1"></i>
+                                        Rubros
+                                    </a>
+                                </li>
+                            @endcan
+
+                            @can('ver tipos servicio')
+                                <li class="nav-item">
+                                    <a href="{{ route('tipos-servicio.index') }}" class="nav-link {{ request()->routeIs('tipos-servicio.*') ? 'active' : '' }}">
+                                        <i class="ri-service-line me-1"></i>
+                                        Tipos de servicio
+                                    </a>
+                                </li>
+                            @endcan
+
+                            @can('ver especialidades')
+                                <li class="nav-item">
+                                    <a href="{{ route('especialidades.index') }}" class="nav-link {{ request()->routeIs('especialidades.*') ? 'active' : '' }}">
+                                        <i class="ri-price-tag-3-line me-1"></i>
+                                        Especialidades
+                                    </a>
+                                </li>
+                            @endcan
+                        </ul>
+                    </div>
                 </li>
-                @endcan
+                @endif
 
             </ul>
         </div>

@@ -8,6 +8,7 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\RubroController;
 use App\Http\Controllers\TipoServicioController;
+use App\Http\Controllers\EspecialidadController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,4 +28,5 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::get('/activitylogs', [ActivityLogController::class, 'index'])->name('activitylogs.index');
     Route::resource('rubros', RubroController::class)->except('show');
     Route::resource('tipos-servicio', TipoServicioController::class)->except('show');
+    Route::resource('especialidades', EspecialidadController::class)->except('show');
 });

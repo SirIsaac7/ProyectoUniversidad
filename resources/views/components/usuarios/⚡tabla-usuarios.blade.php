@@ -84,7 +84,7 @@ new class extends Component
                     $query->whereNull('google_id');
                 }
             })
-            ->orderByDesc('id')
+            ->orderBy('id')
             ->paginate($this->perPage);
 
         return [

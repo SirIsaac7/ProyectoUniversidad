@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class TipoServicio extends Model
+class Especialidad extends Model
 {
     use LogsActivity;
 
-    protected $table = 'tipos_servicio';
+    protected $table = 'especialidades';
 
     protected $fillable = [
+        'rubro_tipo_servicio_id',
         'nombre',
         'descripcion',
         'imagen',
@@ -26,24 +27,16 @@ class TipoServicio extends Model
         ];
     }
 
-    public function rubros()
+    public function rubroTipoServicio()
     {
-        return $this->belongsToMany(Rubro::class, 'rubro_tipo_servicio')
-            ->using(RubroTipoServicio::class)
-            ->withPivot('estado')
-            ->withTimestamps();
-    }
-
-    public function rubroTipoServicios()
-    {
-        return $this->hasMany(RubroTipoServicio::class);
+        return $this->belongsTo(RubroTipoServicio::class);
     }
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->useLogName('tipos_servicio')
-            ->logOnly(['nombre', 'descripcion', 'imagen', 'estado'])
+            ->useLogName('especialidades')
+            ->logOnly(['rubro_tipo_servicio_id', 'nombre', 'descripcion', 'imagen', 'estado'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }

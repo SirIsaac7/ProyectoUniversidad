@@ -38,8 +38,14 @@ class Rubro extends Model
     public function tiposServicio()
     {
         return $this->belongsToMany(TipoServicio::class, 'rubro_tipo_servicio')
+            ->using(RubroTipoServicio::class)
             ->withPivot('estado')
             ->withTimestamps();
+    }
+
+    public function rubroTipoServicios()
+    {
+        return $this->hasMany(RubroTipoServicio::class);
     }
 
 }
