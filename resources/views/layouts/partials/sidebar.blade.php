@@ -125,14 +125,49 @@
                 </li>
                 @endif
 
-                @can('ver proveedores')
-                    <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('perfiles-proveedores.*') ? 'active' : '' }}" href="{{ route('perfiles-proveedores.index') }}">
-                            <i class="ri-briefcase-4-line"></i>
-                            <span>Proveedores</span>
-                        </a>
-                    </li>
-                @endcan
+                @if (
+                    auth()->user()->can('ver proveedores') ||
+                    auth()->user()->can('ver especialidades proveedor')
+                )
+                <li class="nav-item">
+                    <a
+                        class="nav-link menu-link {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') ? 'active' : '' }}"
+                        href="#sidebarProveedores"
+                        data-bs-toggle="collapse"
+                        role="button"
+                        aria-expanded="{{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') ? 'true' : 'false' }}"
+                        aria-controls="sidebarProveedores"
+                    >
+                        <i class="ri-briefcase-4-line"></i>
+                        <span>Proveedores</span>
+                    </a>
+
+                    <div
+                        class="collapse menu-dropdown {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') ? 'show' : '' }}"
+                        id="sidebarProveedores"
+                    >
+                        <ul class="nav nav-sm flex-column">
+                            @can('ver proveedores')
+                                <li class="nav-item">
+                                    <a href="{{ route('perfiles-proveedores.index') }}" class="nav-link {{ request()->routeIs('perfiles-proveedores.*') ? 'active' : '' }}">
+                                        <i class="ri-user-star-line me-1"></i>
+                                        Perfiles
+                                    </a>
+                                </li>
+                            @endcan
+
+                            @can('ver especialidades proveedor')
+                                <li class="nav-item">
+                                    <a href="{{ route('proveedor-especialidades.index') }}" class="nav-link {{ request()->routeIs('proveedor-especialidades.*') ? 'active' : '' }}">
+                                        <i class="ri-price-tag-3-line me-1"></i>
+                                        Especialidades
+                                    </a>
+                                </li>
+                            @endcan
+                        </ul>
+                    </div>
+                </li>
+                @endif
 
             </ul>
         </div>

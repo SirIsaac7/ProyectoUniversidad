@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class ProveedorEspecialidad extends Pivot
 {
+    use LogsActivity;
+
     protected $table = 'proveedor_especialidad';
 
     public $incrementing = true;
@@ -33,5 +37,14 @@ class ProveedorEspecialidad extends Pivot
     public function especialidad()
     {
         return $this->belongsTo(Especialidad::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('proveedor_especialidad')
+            ->logOnly(['perfil_proveedor_id', 'especialidad_id', 'es_principal', 'estado'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }
