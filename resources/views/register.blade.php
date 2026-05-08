@@ -62,7 +62,7 @@
                     class="form-control pe-5 password-input @error('password') is-invalid @enderror"
                     id="password-input"
                     name="password"
-                    placeholder="Ingresa tu contrasena"
+                    placeholder="Ingresa tu contraseña"
                     required
                 >
                 <button
@@ -72,27 +72,33 @@
                 >
                     <i class="ri-eye-fill align-middle"></i>
                 </button>
-                @error('password')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @else
-                    <div class="invalid-feedback">Por favor ingresa tu contrasena.</div>
-                @enderror
             </div>
+            @error('password')
+                <div class="invalid-feedback d-block mt-1">
+                    <span class="badge border border-danger text-danger bg-transparent fw-semibold auth-error-badge">{{ $message }}</span>
+                </div>
+            @else
+                <div class="invalid-feedback mt-1 js-auth-password-feedback" data-password-feedback-for="password-input">
+                    <span class="badge border border-danger text-danger bg-transparent fw-semibold auth-error-badge">
+                        Por favor ingresa tu contraseña.
+                    </span>
+                </div>
+            @enderror
         </div>
 
         <div class="mb-3">
             <label for="password_confirmation" class="form-label">
-                Confirmar contrasena <span class="text-danger">*</span>
+                Confirmar contraseña <span class="text-danger">*</span>
             </label>
             <input
                 type="password"
                 class="form-control"
                 id="password_confirmation"
                 name="password_confirmation"
-                placeholder="Confirma tu contrasena"
+                placeholder="Confirma tu contraseña"
                 required
             >
-            <div class="invalid-feedback">Por favor confirma tu contrasena.</div>
+            <div class="invalid-feedback">Por favor confirma tu contraseña.</div>
         </div>
 
         <div class="mb-4">
@@ -103,7 +109,7 @@
         </div>
 
         <div id="password-contain" class="p-3 bg-light mb-2 rounded">
-            <h5 class="fs-13">La contrasena debe contener:</h5>
+            <h5 class="fs-13">La contraseña debe contener:</h5>
             <p class="fs-12 mb-2">Minimo <b>8 caracteres</b></p>
             <p class="fs-12 mb-2">Al menos una <b>letra minuscula</b></p>
             <p class="fs-12 mb-2">Al menos una <b>letra mayuscula</b></p>

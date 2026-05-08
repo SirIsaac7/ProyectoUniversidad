@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Recuperar contrasena')
+@section('title', 'Recuperar contraseña')
 
 @section('content')
 <div class="text-center mt-2">
@@ -15,7 +15,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('password.email') }}">
+    <form class="needs-validation" novalidate method="POST" action="{{ route('password.email') }}">
         @csrf
 
         <div class="mb-3">
@@ -34,6 +34,8 @@
             >
             @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>
+            @else
+                <div class="invalid-feedback">Por favor ingresa un correo electronico valido.</div>
             @enderror
         </div>
 

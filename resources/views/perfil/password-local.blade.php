@@ -32,7 +32,7 @@
             </div>
 
             <div class="card-body">
-                <form method="POST" action="{{ route('perfil.password-local.update') }}">
+                <form class="needs-validation" novalidate method="POST" action="{{ route('perfil.password-local.update') }}">
                     @csrf
                     @method('PUT')
 
@@ -50,6 +50,8 @@
                             >
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
+                            @else
+                                <div class="invalid-feedback">Por favor ingresa una nueva contraseña.</div>
                             @enderror
                         </div>
 
@@ -64,6 +66,7 @@
                                 name="password_confirmation"
                                 required
                             >
+                            <div class="invalid-feedback">Por favor confirma la nueva contraseña.</div>
                         </div>
 
                         <div class="col-12">
@@ -98,3 +101,7 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="{{ asset('assets/js/perfil.js') }}"></script>
+@endpush

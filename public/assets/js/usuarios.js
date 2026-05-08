@@ -2,6 +2,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const successMessageElement = document.getElementById('usuarios-success-message');
     const errorMessageElement = document.getElementById('usuarios-error-message');
 
+    document.querySelectorAll('.needs-validation').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            form.classList.add('was-validated');
+        });
+    });
+
     if (typeof Swal !== 'undefined' && successMessageElement?.dataset.message) {
         Swal.fire({
             title: 'Exito',

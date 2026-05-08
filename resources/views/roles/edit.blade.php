@@ -26,7 +26,7 @@
             </div>
 
             <div class="card-body">
-                <form method="POST" action="{{ route('roles.update', $role->id) }}">
+                <form class="needs-validation" novalidate method="POST" action="{{ route('roles.update', $role->id) }}">
                     @csrf
                     @method('PUT')
 
@@ -46,6 +46,8 @@
                         >
                         @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
+                        @else
+                            <div class="invalid-feedback">Por favor ingresa el nombre del rol.</div>
                         @enderror
                     </div>
 

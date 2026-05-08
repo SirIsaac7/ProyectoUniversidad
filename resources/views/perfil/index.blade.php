@@ -227,7 +227,7 @@
                             </div>
 
                             <div class="card-body">
-                                <form method="POST" action="{{ route('user-profile-information.update') }}">
+                                <form class="needs-validation" novalidate method="POST" action="{{ route('user-profile-information.update') }}">
                                     @csrf
                                     @method('PUT')
 
@@ -246,6 +246,8 @@
                                             >
                                             @error('name', 'updateProfileInformation')
                                                 <div class="invalid-feedback">{{ $message }}</div>
+                                            @else
+                                                <div class="invalid-feedback">Por favor ingresa tu nombre.</div>
                                             @enderror
                                         </div>
 
@@ -263,6 +265,8 @@
                                             >
                                             @error('email', 'updateProfileInformation')
                                                 <div class="invalid-feedback">{{ $message }}</div>
+                                            @else
+                                                <div class="invalid-feedback">Por favor ingresa un correo electronico valido.</div>
                                             @enderror
                                         </div>
 
@@ -287,7 +291,7 @@
 
                                 <div class="card-body">
                                     <p class="text-muted mb-4">
-                                        Como tu cuenta usa Google, aqui puedes crear o actualizar la contrasena local de este sistema.
+                                        Como tu cuenta usa Google, aqui puedes crear o actualizar la contraseña local de este sistema.
                                         Esta contraseña no reemplaza tu contraseña de Google.
                                     </p>
 
@@ -304,7 +308,7 @@
                                 </div>
 
                                 <div class="card-body">
-                                    <form method="POST" action="{{ route('user-password.update') }}">
+                                    <form class="needs-validation" novalidate method="POST" action="{{ route('user-password.update') }}">
                                         @csrf
                                         @method('PUT')
 
@@ -322,6 +326,8 @@
                                                 >
                                                 @error('current_password', 'updatePassword')
                                                     <div class="invalid-feedback">{{ $message }}</div>
+                                                @else
+                                                    <div class="invalid-feedback">Por favor ingresa tu contraseña actual.</div>
                                                 @enderror
                                             </div>
 
@@ -338,6 +344,8 @@
                                                 >
                                                 @error('password', 'updatePassword')
                                                     <div class="invalid-feedback">{{ $message }}</div>
+                                                @else
+                                                    <div class="invalid-feedback">Por favor ingresa una nueva contraseña.</div>
                                                 @enderror
                                             </div>
 
@@ -352,6 +360,7 @@
                                                     name="password_confirmation"
                                                     required
                                                 >
+                                                <div class="invalid-feedback">Por favor confirma la nueva contraseña.</div>
                                             </div>
 
                                             <div class="col-12">
@@ -447,7 +456,7 @@
                                     </div>
 
                                     @if ($twoFactorPending)
-                                        <form method="POST" action="{{ route('two-factor.confirm') }}" class="mt-4">
+                                        <form class="needs-validation mt-4" novalidate method="POST" action="{{ route('two-factor.confirm') }}">
                                             @csrf
 
                                             <div class="row g-3 align-items-end">
@@ -467,6 +476,8 @@
                                                     >
                                                     @error('code')
                                                         <div class="invalid-feedback">{{ $message }}</div>
+                                                    @else
+                                                        <div class="invalid-feedback">Por favor ingresa el codigo de confirmacion.</div>
                                                     @enderror
                                                 </div>
 

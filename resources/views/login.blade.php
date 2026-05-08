@@ -53,12 +53,18 @@
                 >
                     <i class="ri-eye-fill align-middle"></i>
                 </button>
-                @error('password')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @else
-                    <div class="invalid-feedback">Por favor ingresa tu contrasena.</div>
-                @enderror
             </div>
+            @error('password')
+                <div class="invalid-feedback d-block mt-1">
+                    <span class="badge border border-danger text-danger bg-transparent fw-semibold auth-error-badge">{{ $message }}</span>
+                </div>
+            @else
+                <div class="invalid-feedback mt-1 js-auth-password-feedback" data-password-feedback-for="password-input">
+                    <span class="badge border border-danger text-danger bg-transparent fw-semibold auth-error-badge">
+                        Por favor ingresa tu contrasena.
+                    </span>
+                </div>
+            @enderror
         </div>
 
         @if ($errors->has('email'))

@@ -1,15 +1,15 @@
 @extends('layouts.guest')
 
-@section('title', 'Confirmar contrasena')
+@section('title', 'Confirmar contraseña')
 
 @section('content')
 <div class="text-center mt-2">
     <h5 class="text-primary">Confirmar contraseña</h5>
-    <p class="text-muted">Por seguridad, confirma tu contrasña para continuar</p>
+    <p class="text-muted">Por seguridad, confirma tu contraseña para continuar</p>
 </div>
 
 <div class="p-2 mt-4">
-    <form method="POST" action="{{ route('password.confirm') }}">
+    <form class="needs-validation" novalidate method="POST" action="{{ route('password.confirm') }}">
         @csrf
 
         <div class="mb-3">
@@ -27,6 +27,8 @@
             >
             @error('password')
                 <div class="invalid-feedback">{{ $message }}</div>
+            @else
+                <div class="invalid-feedback">Por favor ingresa tu contraseña actual.</div>
             @enderror
         </div>
 

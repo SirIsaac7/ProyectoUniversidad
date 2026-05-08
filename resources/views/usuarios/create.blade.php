@@ -26,7 +26,7 @@
             </div>
 
             <div class="card-body">
-                <form method="POST" action="{{ route('usuarios.store') }}">
+                <form class="needs-validation" novalidate method="POST" action="{{ route('usuarios.store') }}">
                     @csrf
 
                     <div class="mb-3">
@@ -43,6 +43,8 @@
                         >
                         @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
+                        @else
+                            <div class="invalid-feedback">Por favor ingresa el nombre.</div>
                         @enderror
                     </div>
 
@@ -60,12 +62,14 @@
                         >
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
+                        @else
+                            <div class="invalid-feedback">Por favor ingresa un correo electronico valido.</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
                         <label for="password" class="form-label">
-                            Contrasena <span class="text-danger">*</span>
+                            Contraseña <span class="text-danger">*</span>
                         </label>
                         <input
                             type="password"
@@ -76,12 +80,14 @@
                         >
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
+                        @else
+                            <div class="invalid-feedback">Por favor ingresa una contraseña.</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
                         <label for="password_confirmation" class="form-label">
-                            Confirmar contrasena <span class="text-danger">*</span>
+                            Confirmar contraseña <span class="text-danger">*</span>
                         </label>
                         <input
                             type="password"
@@ -90,6 +96,7 @@
                             name="password_confirmation"
                             required
                         >
+                        <div class="invalid-feedback">Por favor confirma la contraseña.</div>
                     </div>
 
                     <div class="mb-4">
@@ -102,6 +109,8 @@
                         </select>
                         @error('estado')
                             <div class="invalid-feedback">{{ $message }}</div>
+                        @else
+                            <div class="invalid-feedback">Por favor selecciona el estado.</div>
                         @enderror
                     </div>
 

@@ -23,13 +23,15 @@
             </div>
 
             <div class="card-body">
-                <form method="POST" action="{{ route('especialidades.update', $especialidad->id) }}" enctype="multipart/form-data">
+                <form class="needs-validation" novalidate method="POST" action="{{ route('especialidades.update', $especialidad->id) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label for="rubro_tipo_servicio_id" class="form-label">Rubro y tipo de servicio</label>
+                            <label for="rubro_tipo_servicio_id" class="form-label">
+                                Rubro y tipo de servicio <span class="text-danger">*</span>
+                            </label>
                             <select
                                 name="rubro_tipo_servicio_id"
                                 id="rubro_tipo_servicio_id"
@@ -47,12 +49,16 @@
                                 @endforeach
                             </select>
                             @error('rubro_tipo_servicio_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback d-block js-rubro-tipo-servicio-feedback">{{ $message }}</div>
+                            @else
+                                <div class="invalid-feedback js-rubro-tipo-servicio-feedback">Por favor selecciona un rubro y tipo de servicio.</div>
                             @enderror
                         </div>
 
                         <div class="col-md-6">
-                            <label for="nombre" class="form-label">Nombre</label>
+                            <label for="nombre" class="form-label">
+                                Nombre <span class="text-danger">*</span>
+                            </label>
                             <input
                                 type="text"
                                 name="nombre"
@@ -63,6 +69,8 @@
                             >
                             @error('nombre')
                                 <div class="invalid-feedback">{{ $message }}</div>
+                            @else
+                                <div class="invalid-feedback">Por favor ingresa el nombre de la especialidad.</div>
                             @enderror
                         </div>
 

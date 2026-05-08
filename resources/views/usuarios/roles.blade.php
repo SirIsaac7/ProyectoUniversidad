@@ -31,7 +31,7 @@
                     <div class="form-control bg-light">{{ $usuario->name }} - {{ $usuario->email }}</div>
                 </div>
 
-                <form method="POST" action="{{ route('usuarios.roles.update', $usuario->id) }}">
+                <form class="needs-validation" novalidate method="POST" action="{{ route('usuarios.roles.update', $usuario->id) }}">
                     @csrf
                     @method('PUT')
 

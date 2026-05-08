@@ -30,7 +30,7 @@
     </div>
 
     <div class="card-body">
-        <form method="POST" action="{{ route('tipos-servicio.update', $tipoServicio->id) }}" enctype="multipart/form-data">
+        <form class="needs-validation" novalidate method="POST" action="{{ route('tipos-servicio.update', $tipoServicio->id) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -49,6 +49,8 @@
                     >
                     @error('nombre')
                         <div class="invalid-feedback">{{ $message }}</div>
+                    @else
+                        <div class="invalid-feedback">Por favor ingresa el nombre del tipo de servicio.</div>
                     @enderror
                 </div>
 
@@ -89,6 +91,8 @@
                     </div>
                     @error('rubros')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @else
+                        <div class="invalid-feedback d-block">Por favor selecciona al menos un rubro.</div>
                     @enderror
                     @error('rubros.*')
                         <div class="invalid-feedback d-block">{{ $message }}</div>

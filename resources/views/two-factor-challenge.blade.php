@@ -9,7 +9,7 @@
 </div>
 
 <div class="p-2 mt-4">
-    <form method="POST" action="{{ route('two-factor.login.store') }}">
+    <form class="needs-validation" novalidate method="POST" action="{{ route('two-factor.login.store') }}">
         @csrf
 
         <div class="mb-3">
@@ -29,6 +29,8 @@
             >
             @error('code')
                 <div class="invalid-feedback">{{ $message }}</div>
+            @else
+                <div class="invalid-feedback">Por favor ingresa el codigo de autenticacion.</div>
             @enderror
         </div>
 
@@ -43,7 +45,7 @@
         <span class="text-muted">o usa un codigo de recuperacion</span>
     </div>
 
-    <form method="POST" action="{{ route('two-factor.login.store') }}">
+    <form class="needs-validation" novalidate method="POST" action="{{ route('two-factor.login.store') }}">
         @csrf
 
         <div class="mb-3">
@@ -57,9 +59,12 @@
                 name="recovery_code"
                 autocomplete="one-time-code"
                 placeholder="Ingresa un codigo de recuperacion"
+                required
             >
             @error('recovery_code')
                 <div class="invalid-feedback">{{ $message }}</div>
+            @else
+                <div class="invalid-feedback">Por favor ingresa un codigo de recuperacion.</div>
             @enderror
         </div>
 

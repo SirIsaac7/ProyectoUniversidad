@@ -1,6 +1,17 @@
 document.addEventListener('DOMContentLoaded', function () {
     const tabla = document.getElementById('tabla-roles');
 
+    document.querySelectorAll('.needs-validation').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            form.classList.add('was-validated');
+        });
+    });
+
     if (tabla && typeof $ !== 'undefined') {
         $('#tabla-roles').DataTable({
             responsive: true,

@@ -153,6 +153,7 @@
     --}}
     <!-- password-addon init -->
     <script src="{{ asset('assets/js/pages/password-addon.init.js') }}"></script>
+    <script src="{{ asset('assets/js/auth-validation.js') }}"></script>
     @stack('scripts')
 </body>
 

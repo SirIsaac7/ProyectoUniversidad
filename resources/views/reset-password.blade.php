@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Restablecer contrasena')
+@section('title', 'Restablecer contraseña')
 
 @section('content')
 <div class="text-center mt-2">
@@ -9,7 +9,7 @@
 </div>
 
 <div class="p-2 mt-4">
-    <form method="POST" action="{{ route('password.update') }}">
+    <form class="needs-validation" novalidate method="POST" action="{{ route('password.update') }}">
         @csrf
 
         <input type="hidden" name="token" value="{{ $request->route('token') }}">
@@ -29,6 +29,8 @@
             >
             @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>
+            @else
+                <div class="invalid-feedback">Por favor ingresa un correo electronico valido.</div>
             @enderror
         </div>
 
@@ -45,6 +47,8 @@
             >
             @error('password')
                 <div class="invalid-feedback">{{ $message }}</div>
+            @else
+                <div class="invalid-feedback">Por favor ingresa una nueva contraseña.</div>
             @enderror
         </div>
 
@@ -59,6 +63,11 @@
                 name="password_confirmation"
                 required
             >
+            @error('password_confirmation')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @else
+                <div class="invalid-feedback">Por favor confirma la nueva contraseña.</div>
+            @enderror
         </div>
 
         <div class="mt-4">

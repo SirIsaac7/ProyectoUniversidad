@@ -30,7 +30,7 @@
     </div>
 
     <div class="card-body">
-        <form method="POST" action="{{ route('rubros.store') }}" enctype="multipart/form-data">
+        <form class="needs-validation" novalidate method="POST" action="{{ route('rubros.store') }}" enctype="multipart/form-data">
             @csrf
 
             <div class="row g-3">
@@ -48,6 +48,8 @@
                     >
                     @error('nombre')
                         <div class="invalid-feedback">{{ $message }}</div>
+                    @else
+                        <div class="invalid-feedback">Por favor ingresa el nombre del rubro.</div>
                     @enderror
                 </div>
 
@@ -61,6 +63,8 @@
                     </select>
                     @error('estado')
                         <div class="invalid-feedback">{{ $message }}</div>
+                    @else
+                        <div class="invalid-feedback">Por favor selecciona el estado.</div>
                     @enderror
                 </div>
 
