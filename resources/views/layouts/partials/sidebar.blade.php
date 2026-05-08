@@ -127,15 +127,16 @@
 
                 @if (
                     auth()->user()->can('ver proveedores') ||
-                    auth()->user()->can('ver especialidades proveedor')
+                    auth()->user()->can('ver especialidades proveedor') ||
+                    auth()->user()->can('ver horarios proveedor')
                 )
                 <li class="nav-item">
                     <a
-                        class="nav-link menu-link {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') ? 'active' : '' }}"
+                        class="nav-link menu-link {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') ? 'active' : '' }}"
                         href="#sidebarProveedores"
                         data-bs-toggle="collapse"
                         role="button"
-                        aria-expanded="{{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') ? 'true' : 'false' }}"
+                        aria-expanded="{{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') ? 'true' : 'false' }}"
                         aria-controls="sidebarProveedores"
                     >
                         <i class="ri-briefcase-4-line"></i>
@@ -143,7 +144,7 @@
                     </a>
 
                     <div
-                        class="collapse menu-dropdown {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') ? 'show' : '' }}"
+                        class="collapse menu-dropdown {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') ? 'show' : '' }}"
                         id="sidebarProveedores"
                     >
                         <ul class="nav nav-sm flex-column">
@@ -161,6 +162,15 @@
                                     <a href="{{ route('proveedor-especialidades.index') }}" class="nav-link {{ request()->routeIs('proveedor-especialidades.*') ? 'active' : '' }}">
                                         <i class="ri-price-tag-3-line me-1"></i>
                                         Especialidades
+                                    </a>
+                                </li>
+                            @endcan
+
+                            @can('ver horarios proveedor')
+                                <li class="nav-item">
+                                    <a href="{{ route('horarios-proveedor.index') }}" class="nav-link {{ request()->routeIs('horarios-proveedor.*') ? 'active' : '' }}">
+                                        <i class="ri-calendar-schedule-line me-1"></i>
+                                        Horarios
                                     </a>
                                 </li>
                             @endcan

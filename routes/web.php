@@ -11,6 +11,7 @@ use App\Http\Controllers\ProveedorEspecialidadController;
 use App\Http\Controllers\RubroController;
 use App\Http\Controllers\TipoServicioController;
 use App\Http\Controllers\EspecialidadController;
+use App\Http\Controllers\HorarioProveedorController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -33,4 +34,5 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::resource('especialidades', EspecialidadController::class)->except('show');
     Route::resource('perfiles-proveedores', PerfilProveedorController::class)->except('show');
     Route::resource('proveedor-especialidades', ProveedorEspecialidadController::class)->except('show');
+    Route::resource('horarios-proveedor', HorarioProveedorController::class)->except('show');
 });
