@@ -66,4 +66,9 @@ class User extends Authenticatable implements MustVerifyEmail
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
+
+    public function perfilProveedor()
+    {
+        return $this->hasOne(PerfilProveedor::class);
+    }
 }

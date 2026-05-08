@@ -125,6 +125,15 @@
                 </li>
                 @endif
 
+                @can('ver proveedores')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('perfiles-proveedores.*') ? 'active' : '' }}" href="{{ route('perfiles-proveedores.index') }}">
+                            <i class="ri-briefcase-4-line"></i>
+                            <span>Proveedores</span>
+                        </a>
+                    </li>
+                @endcan
+
             </ul>
         </div>
     </div>

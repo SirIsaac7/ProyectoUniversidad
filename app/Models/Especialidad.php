@@ -32,6 +32,19 @@ class Especialidad extends Model
         return $this->belongsTo(RubroTipoServicio::class);
     }
 
+    public function perfilesProveedores()
+    {
+        return $this->belongsToMany(PerfilProveedor::class, 'proveedor_especialidad')
+            ->using(ProveedorEspecialidad::class)
+            ->withPivot('es_principal', 'estado')
+            ->withTimestamps();
+    }
+
+    public function proveedorEspecialidades()
+    {
+        return $this->hasMany(ProveedorEspecialidad::class);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

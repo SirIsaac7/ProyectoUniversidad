@@ -6,6 +6,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\PerfilProveedorController;
 use App\Http\Controllers\RubroController;
 use App\Http\Controllers\TipoServicioController;
 use App\Http\Controllers\EspecialidadController;
@@ -29,4 +30,5 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::resource('rubros', RubroController::class)->except('show');
     Route::resource('tipos-servicio', TipoServicioController::class)->except('show');
     Route::resource('especialidades', EspecialidadController::class)->except('show');
+    Route::resource('perfiles-proveedores', PerfilProveedorController::class)->except('show');
 });

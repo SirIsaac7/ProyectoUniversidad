@@ -1,0 +1,31 @@
+.filepond--root {
+    margin-bottom: 0;
+}
+
+.filepond--panel-root {
+    background-color: transparent;
+}
+
+.filepond--drop-label {
+    color: var(--vz-body-color);
+    min-height: 180px;
+}
+
+.filepond--label-action {
+    text-decoration: underline;
+}
+
+.filepond--drip {
+    opacity: 0.08;
+}
+
+.proveedor-image-current {
+    background: rgba(var(--vz-light-rgb), 0.08);
+}
+
+.proveedor-image-current-preview {
+    width: 220px;
+    height: 140px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
