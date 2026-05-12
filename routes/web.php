@@ -7,9 +7,11 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PerfilProveedorController;
+use App\Http\Controllers\PortafolioProveedorController;
 use App\Http\Controllers\ProveedorEspecialidadController;
 use App\Http\Controllers\RubroController;
 use App\Http\Controllers\TipoServicioController;
+use App\Http\Controllers\UbicacionProveedorController;
 use App\Http\Controllers\EspecialidadController;
 use App\Http\Controllers\HorarioProveedorController;
 use Illuminate\Support\Facades\Route;
@@ -35,4 +37,6 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::resource('perfiles-proveedores', PerfilProveedorController::class)->except('show');
     Route::resource('proveedor-especialidades', ProveedorEspecialidadController::class)->except('show');
     Route::resource('horarios-proveedor', HorarioProveedorController::class)->except('show');
+    Route::resource('ubicaciones-proveedor', UbicacionProveedorController::class)->except('show');
+    Route::resource('portafolio-proveedor', PortafolioProveedorController::class)->except('show');
 });

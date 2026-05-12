@@ -128,15 +128,17 @@
                 @if (
                     auth()->user()->can('ver proveedores') ||
                     auth()->user()->can('ver especialidades proveedor') ||
-                    auth()->user()->can('ver horarios proveedor')
+                    auth()->user()->can('ver horarios proveedor') ||
+                    auth()->user()->can('ver ubicaciones proveedor') ||
+                    auth()->user()->can('ver portafolio proveedor')
                 )
                 <li class="nav-item">
                     <a
-                        class="nav-link menu-link {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') ? 'active' : '' }}"
+                        class="nav-link menu-link {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') ? 'active' : '' }}"
                         href="#sidebarProveedores"
                         data-bs-toggle="collapse"
                         role="button"
-                        aria-expanded="{{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') ? 'true' : 'false' }}"
+                        aria-expanded="{{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') ? 'true' : 'false' }}"
                         aria-controls="sidebarProveedores"
                     >
                         <i class="ri-briefcase-4-line"></i>
@@ -144,7 +146,7 @@
                     </a>
 
                     <div
-                        class="collapse menu-dropdown {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') ? 'show' : '' }}"
+                        class="collapse menu-dropdown {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') ? 'show' : '' }}"
                         id="sidebarProveedores"
                     >
                         <ul class="nav nav-sm flex-column">
@@ -171,6 +173,24 @@
                                     <a href="{{ route('horarios-proveedor.index') }}" class="nav-link {{ request()->routeIs('horarios-proveedor.*') ? 'active' : '' }}">
                                         <i class="ri-calendar-schedule-line me-1"></i>
                                         Horarios
+                                    </a>
+                                </li>
+                            @endcan
+
+                            @can('ver ubicaciones proveedor')
+                                <li class="nav-item">
+                                    <a href="{{ route('ubicaciones-proveedor.index') }}" class="nav-link {{ request()->routeIs('ubicaciones-proveedor.*') ? 'active' : '' }}">
+                                        <i class="ri-map-pin-line me-1"></i>
+                                        Ubicaciones
+                                    </a>
+                                </li>
+                            @endcan
+
+                            @can('ver portafolio proveedor')
+                                <li class="nav-item">
+                                    <a href="{{ route('portafolio-proveedor.index') }}" class="nav-link {{ request()->routeIs('portafolio-proveedor.*') ? 'active' : '' }}">
+                                        <i class="ri-gallery-line me-1"></i>
+                                        Portafolio
                                     </a>
                                 </li>
                             @endcan

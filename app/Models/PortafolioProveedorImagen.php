@@ -6,43 +6,37 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class PortafolioProveedor extends Model
+class PortafolioProveedorImagen extends Model
 {
     use LogsActivity;
 
-    protected $table = 'portafolio_proveedor';
+    protected $table = 'portafolio_proveedor_imagenes';
 
     protected $fillable = [
-        'perfil_proveedor_id',
+        'portafolio_proveedor_id',
+        'imagen',
         'titulo',
         'descripcion',
-        'fecha_trabajo',
         'estado',
     ];
 
     protected function casts(): array
     {
         return [
-            'fecha_trabajo' => 'date',
             'estado' => 'boolean',
         ];
     }
 
-    public function perfilProveedor()
+    public function portafolioProveedor()
     {
-        return $this->belongsTo(PerfilProveedor::class);
-    }
-
-    public function imagenes()
-    {
-        return $this->hasMany(PortafolioProveedorImagen::class);
+        return $this->belongsTo(PortafolioProveedor::class);
     }
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->useLogName('portafolio_proveedor')
-            ->logOnly(['perfil_proveedor_id', 'titulo', 'descripcion', 'fecha_trabajo', 'estado'])
+            ->useLogName('portafolio_proveedor_imagenes')
+            ->logOnly(['portafolio_proveedor_id', 'imagen', 'titulo', 'descripcion', 'estado'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }

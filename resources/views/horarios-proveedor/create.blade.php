@@ -3,21 +3,22 @@
 @section('title', 'Crear horario')
 
 @section('content')
-<div class="page-content">
-    <div class="container-fluid">
-        <div class="row mb-3">
-            <div class="col">
-                <h4 class="mb-sm-0">Crear horario</h4>
-            </div>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-transparent">
+            <h4 class="mb-sm-0">Crear horario</h4>
 
-            <div class="col-auto">
+            <div class="page-title-right">
                 <a href="{{ route('horarios-proveedor.index') }}" class="btn btn-light">
+                    <i class="ri-arrow-left-line align-bottom me-1"></i>
                     Volver
                 </a>
             </div>
         </div>
+    </div>
+</div>
 
-        <div class="card">
+<div class="card">
             <div class="card-header">
                 <h5 class="card-title mb-0">Formulario de horario</h5>
             </div>
@@ -137,8 +138,6 @@
                     </div>
                 </form>
             </div>
-        </div>
-    </div>
 </div>
 @endsection
 
