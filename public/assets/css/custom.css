@@ -23,64 +23,42 @@ File: Custom Css File
     background-color: rgba(var(--vz-danger-rgb), 0.12) !important;
 }
 
-/* Light mode soft UI */
-html[data-bs-theme="light"] {
-    --vz-body-bg: #f7f7ff;
-    --vz-body-color: #202338;
-    --vz-secondary-bg: rgba(255, 255, 255, 0.74);
-    --vz-border-color: #e3e2f5;
-    --vz-primary: #6d5dfc;
-    --vz-primary-rgb: 109, 93, 252;
-    --vz-success: #10b981;
-    --vz-success-rgb: 16, 185, 129;
+/* Light mode: sidebar, forms, buttons and tables only */
+html[data-bs-theme="light"] .app-menu.navbar-menu {
+    border-right: 1px solid #252836;
+    background-color: #151722;
 }
 
-html[data-bs-theme="light"] body {
-    background:
-        radial-gradient(circle at 12% 8%, rgba(109, 93, 252, 0.12), transparent 28rem),
-        radial-gradient(circle at 92% 0%, rgba(20, 184, 166, 0.10), transparent 24rem),
-        linear-gradient(135deg, #fbfbff 0%, #f4f7ff 48%, #f8fbfa 100%);
-    color: #202338;
+html[data-bs-theme="light"] .navbar-brand-box {
+    border-bottom: 1px solid #2a2d3a;
+    background-color: #151722;
 }
 
-html[data-bs-theme="light"] .page-content {
-    background: transparent;
+html[data-bs-theme="light"] .app-menu.navbar-menu .navbar-nav .nav-link,
+html[data-bs-theme="light"] .app-menu.navbar-menu .navbar-nav .nav-link i,
+html[data-bs-theme="light"] .app-menu.navbar-menu .navbar-nav .nav-sm .nav-link,
+html[data-bs-theme="light"] .app-menu.navbar-menu .navbar-nav .nav-sm .nav-link i,
+html[data-bs-theme="light"] .app-menu.navbar-menu .menu-title,
+html[data-bs-theme="light"] .app-menu.navbar-menu .nav-link[data-bs-toggle="collapse"]::after {
+    color: #ffffff !important;
 }
 
-html[data-bs-theme="light"] .page-title-box {
-    margin-bottom: 1.25rem;
-    padding-top: 0.25rem;
-    padding-bottom: 0.75rem;
-    background: transparent !important;
-    border-bottom: 0;
-    box-shadow: none;
+html[data-bs-theme="light"] .app-menu.navbar-menu .navbar-nav .nav-link:hover,
+html[data-bs-theme="light"] .app-menu.navbar-menu .navbar-nav .nav-link.active {
+    color: #7ddfe8 !important;
 }
 
-html[data-bs-theme="light"] .page-title-box h4 {
-    color: #1f2437;
-    font-size: 18px !important;
-    font-weight: 800;
-    letter-spacing: 0;
-    text-transform: none;
+html[data-bs-theme="light"] .app-menu.navbar-menu .navbar-nav .nav-link:hover i,
+html[data-bs-theme="light"] .app-menu.navbar-menu .navbar-nav .nav-link.active i {
+    color: #7ddfe8 !important;
 }
 
-html[data-bs-theme="light"] .card {
-    border: 1px solid rgba(220, 220, 242, 0.95);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.82);
-    box-shadow: 0 16px 38px rgba(62, 72, 110, 0.08);
-    backdrop-filter: blur(10px);
+html[data-bs-theme="light"] .menu-title {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-html[data-bs-theme="light"] .card-header,
-html[data-bs-theme="light"] .card-footer {
-    border-color: rgba(220, 220, 242, 0.9);
-    background: rgba(255, 255, 255, 0.46);
-}
-
-html[data-bs-theme="light"] .card-title {
-    color: #252940;
-    font-weight: 800;
+html[data-bs-theme="light"] .light-dark-mode i {
+    color: #f4b740 !important;
 }
 
 html[data-bs-theme="light"] .form-label {
@@ -266,6 +244,7 @@ html[data-bs-theme="dark"] .form-range::-moz-range-thumb {
     background: #6f5cff;
     box-shadow: 0 0 0 4px rgba(40, 199, 216, 0.18);
 }
+
 .portafolio-progress-nav {
     max-width: 760px;
     margin-left: auto;

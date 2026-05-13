@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DocumentoProveedorController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UsuarioController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\PortafolioProveedorController;
 use App\Http\Controllers\ProveedorEspecialidadController;
 use App\Http\Controllers\RubroController;
 use App\Http\Controllers\TipoServicioController;
+use App\Http\Controllers\TipoDocumentoProveedorController;
 use App\Http\Controllers\UbicacionProveedorController;
 use App\Http\Controllers\EspecialidadController;
 use App\Http\Controllers\HorarioProveedorController;
@@ -39,4 +41,6 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::resource('horarios-proveedor', HorarioProveedorController::class)->except('show');
     Route::resource('ubicaciones-proveedor', UbicacionProveedorController::class)->except('show');
     Route::resource('portafolio-proveedor', PortafolioProveedorController::class)->except('show');
+    Route::resource('tipos-documento-proveedor', TipoDocumentoProveedorController::class)->except('show');
+    Route::resource('documentos-proveedor', DocumentoProveedorController::class)->except('show');
 });

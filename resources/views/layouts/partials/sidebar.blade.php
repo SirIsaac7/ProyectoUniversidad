@@ -130,15 +130,17 @@
                     auth()->user()->can('ver especialidades proveedor') ||
                     auth()->user()->can('ver horarios proveedor') ||
                     auth()->user()->can('ver ubicaciones proveedor') ||
-                    auth()->user()->can('ver portafolio proveedor')
+                    auth()->user()->can('ver portafolio proveedor') ||
+                    auth()->user()->can('ver tipos documento proveedor') ||
+                    auth()->user()->can('ver documentos proveedor')
                 )
                 <li class="nav-item">
                     <a
-                        class="nav-link menu-link {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') ? 'active' : '' }}"
+                        class="nav-link menu-link {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') ? 'active' : '' }}"
                         href="#sidebarProveedores"
                         data-bs-toggle="collapse"
                         role="button"
-                        aria-expanded="{{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') ? 'true' : 'false' }}"
+                        aria-expanded="{{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') ? 'true' : 'false' }}"
                         aria-controls="sidebarProveedores"
                     >
                         <i class="ri-briefcase-4-line"></i>
@@ -146,7 +148,7 @@
                     </a>
 
                     <div
-                        class="collapse menu-dropdown {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') ? 'show' : '' }}"
+                        class="collapse menu-dropdown {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') ? 'show' : '' }}"
                         id="sidebarProveedores"
                     >
                         <ul class="nav nav-sm flex-column">
@@ -191,6 +193,24 @@
                                     <a href="{{ route('portafolio-proveedor.index') }}" class="nav-link {{ request()->routeIs('portafolio-proveedor.*') ? 'active' : '' }}">
                                         <i class="ri-gallery-line me-1"></i>
                                         Portafolio
+                                    </a>
+                                </li>
+                            @endcan
+
+                            @can('ver tipos documento proveedor')
+                                <li class="nav-item">
+                                    <a href="{{ route('tipos-documento-proveedor.index') }}" class="nav-link {{ request()->routeIs('tipos-documento-proveedor.*') ? 'active' : '' }}">
+                                        <i class="ri-file-list-3-line me-1"></i>
+                                        Tipos de documento
+                                    </a>
+                                </li>
+                            @endcan
+
+                            @can('ver documentos proveedor')
+                                <li class="nav-item">
+                                    <a href="{{ route('documentos-proveedor.index') }}" class="nav-link {{ request()->routeIs('documentos-proveedor.*') ? 'active' : '' }}">
+                                        <i class="ri-file-shield-2-line me-1"></i>
+                                        Documentos
                                     </a>
                                 </li>
                             @endcan
