@@ -132,15 +132,16 @@
                     auth()->user()->can('ver ubicaciones proveedor') ||
                     auth()->user()->can('ver portafolio proveedor') ||
                     auth()->user()->can('ver tipos documento proveedor') ||
-                    auth()->user()->can('ver documentos proveedor')
+                    auth()->user()->can('ver documentos proveedor') ||
+                    auth()->user()->can('ver mi perfil proveedor')
                 )
                 <li class="nav-item">
                     <a
-                        class="nav-link menu-link {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') ? 'active' : '' }}"
+                        class="nav-link menu-link {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') || request()->routeIs('mi-perfil-proveedor.*') ? 'active' : '' }}"
                         href="#sidebarProveedores"
                         data-bs-toggle="collapse"
                         role="button"
-                        aria-expanded="{{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') ? 'true' : 'false' }}"
+                        aria-expanded="{{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') || request()->routeIs('mi-perfil-proveedor.*') ? 'true' : 'false' }}"
                         aria-controls="sidebarProveedores"
                     >
                         <i class="ri-briefcase-4-line"></i>
@@ -148,10 +149,19 @@
                     </a>
 
                     <div
-                        class="collapse menu-dropdown {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') ? 'show' : '' }}"
+                        class="collapse menu-dropdown {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') || request()->routeIs('mi-perfil-proveedor.*') ? 'show' : '' }}"
                         id="sidebarProveedores"
                     >
                         <ul class="nav nav-sm flex-column">
+                            @can('ver mi perfil proveedor')
+                                <li class="nav-item">
+                                    <a href="{{ route('mi-perfil-proveedor.index') }}" class="nav-link {{ request()->routeIs('mi-perfil-proveedor.*') ? 'active' : '' }}">
+                                        <i class="ri-user-heart-line me-1"></i>
+                                        Mi perfil
+                                    </a>
+                                </li>
+                            @endcan
+
                             @can('ver proveedores')
                                 <li class="nav-item">
                                     <a href="{{ route('perfiles-proveedores.index') }}" class="nav-link {{ request()->routeIs('perfiles-proveedores.*') ? 'active' : '' }}">

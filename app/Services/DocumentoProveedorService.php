@@ -19,6 +19,16 @@ class DocumentoProveedorService
         ])->load('perfilProveedor.user', 'tipoDocumentoProveedor');
     }
 
+    public function createForPerfil(int $perfilProveedorId, array $data): DocumentoProveedor
+    {
+        return $this->create([
+            ...$data,
+            'perfil_proveedor_id' => $perfilProveedorId,
+            'estado_revision' => 'pendiente',
+            'observacion' => null,
+        ]);
+    }
+
     public function update(DocumentoProveedor $documentoProveedor, array $data): DocumentoProveedor
     {
         $archivo = $documentoProveedor->archivo;
@@ -38,6 +48,18 @@ class DocumentoProveedorService
         ]);
 
         return $documentoProveedor->load('perfilProveedor.user', 'tipoDocumentoProveedor');
+    }
+
+    public function updateForPerfil(DocumentoProveedor $documentoProveedor, int $perfilProveedorId, array $data): DocumentoProveedor
+    {
+        abort_unless((int) $documentoProveedor->perfil_proveedor_id === $perfilProveedorId, 403);
+
+        return $this->update($documentoProveedor, [
+            ...$data,
+            'perfil_proveedor_id' => $perfilProveedorId,
+            'estado_revision' => 'pendiente',
+            'observacion' => null,
+        ]);
     }
 
     public function delete(DocumentoProveedor $documentoProveedor): void

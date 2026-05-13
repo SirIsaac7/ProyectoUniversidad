@@ -2,11 +2,25 @@
 
 namespace App\Services;
 
+use App\Models\DocumentoProveedor;
+use App\Models\HorarioProveedor;
 use App\Models\PerfilProveedor;
-use Illuminate\Http\UploadedFile;
+use App\Models\PortafolioProveedor;
+use App\Models\ProveedorEspecialidad;
+use App\Models\UbicacionProveedor;
 
 class MiPerfilProveedorService
 {
+    public function __construct(
+        protected PerfilProveedorService $perfilProveedorService,
+        protected ProveedorEspecialidadService $proveedorEspecialidadService,
+        protected HorarioProveedorService $horarioProveedorService,
+        protected UbicacionProveedorService $ubicacionProveedorService,
+        protected PortafolioProveedorService $portafolioProveedorService,
+        protected DocumentoProveedorService $documentoProveedorService,
+    ) {
+    }
+
     public function getPerfilActual(): PerfilProveedor
     {
         return PerfilProveedor::with([
@@ -25,48 +39,70 @@ class MiPerfilProveedorService
     public function updatePerfilActual(array $data): PerfilProveedor
     {
         $perfilProveedor = $this->getPerfilActual();
-        $fotoPortada = $perfilProveedor->foto_portada;
 
-        if (! empty($data['foto_portada'])) {
-            $this->deleteImage($perfilProveedor->foto_portada);
-            $fotoPortada = $this->storeImage($data['foto_portada'], $data['nombre_publico']);
-        }
-
-        $perfilProveedor->update([
-            'nombre_publico' => $data['nombre_publico'],
-            'descripcion' => $data['descripcion'] ?? null,
-            'foto_portada' => $fotoPortada,
-            'anios_experiencia' => $data['anios_experiencia'] ?? null,
-        ]);
-
-        return $perfilProveedor->load('user');
+        return $this->perfilProveedorService->updateDatosBasicos($perfilProveedor, $data);
     }
 
-    protected function storeImage(UploadedFile $image, string $nombre): string
+    public function asignarEspecialidadActual(array $data): ProveedorEspecialidad
     {
-        $directorio = public_path('uploads/perfiles-proveedores');
+        $perfilProveedor = $this->getPerfilActual();
 
-        if (! file_exists($directorio)) {
-            mkdir($directorio, 0777, true);
-        }
-
-        $nombreArchivo = now()->format('Ymd_His_u') . '_' . str()->slug($nombre) . '.' . $image->getClientOriginalExtension();
-
-        $image->move($directorio, $nombreArchivo);
-
-        return 'uploads/perfiles-proveedores/' . $nombreArchivo;
+        return $this->proveedorEspecialidadService->createForPerfil($perfilProveedor->id, $data);
     }
 
-    protected function deleteImage(?string $ruta): void
+    public function actualizarEspecialidadActual(ProveedorEspecialidad $proveedorEspecialidad, array $data): ProveedorEspecialidad
     {
-        if (! $ruta) {
-            return;
-        }
+        $perfilProveedor = $this->getPerfilActual();
 
-        $rutaCompleta = public_path($ruta);
+        return $this->proveedorEspecialidadService->updateForPerfil($proveedorEspecialidad, $perfilProveedor->id, $data);
+    }
 
-        if (file_exists($rutaCompleta)) {
-            unlink($rutaCompleta);
-        }
+    public function crearHorarioActual(array $data): HorarioProveedor
+    {
+        $perfilProveedor = $this->getPerfilActual();
+
+        return $this->horarioProveedorService->createForPerfil($perfilProveedor->id, $data);
+    }
+
+    public function actualizarHorarioActual(HorarioProveedor $horarioProveedor, array $data): HorarioProveedor
+    {
+        $perfilProveedor = $this->getPerfilActual();
+
+        return $this->horarioProveedorService->updateForPerfil($horarioProveedor, $perfilProveedor->id, $data);
+    }
+
+    public function guardarUbicacionActual(array $data): UbicacionProveedor
+    {
+        $perfilProveedor = $this->getPerfilActual();
+
+        return $this->ubicacionProveedorService->createOrUpdateForPerfil($perfilProveedor->id, $data);
+    }
+
+    public function crearPortafolioActual(array $data): PortafolioProveedor
+    {
+        $perfilProveedor = $this->getPerfilActual();
+
+        return $this->portafolioProveedorService->createForPerfil($perfilProveedor->id, $data);
+    }
+
+    public function actualizarPortafolioActual(PortafolioProveedor $portafolioProveedor, array $data): PortafolioProveedor
+    {
+        $perfilProveedor = $this->getPerfilActual();
+
+        return $this->portafolioProveedorService->updateForPerfil($portafolioProveedor, $perfilProveedor->id, $data);
+    }
+
+    public function subirDocumentoActual(array $data): DocumentoProveedor
+    {
+        $perfilProveedor = $this->getPerfilActual();
+
+        return $this->documentoProveedorService->createForPerfil($perfilProveedor->id, $data);
+    }
+
+    public function actualizarDocumentoActual(DocumentoProveedor $documentoProveedor, array $data): DocumentoProveedor
+    {
+        $perfilProveedor = $this->getPerfilActual();
+
+        return $this->documentoProveedorService->updateForPerfil($documentoProveedor, $perfilProveedor->id, $data);
     }
 }

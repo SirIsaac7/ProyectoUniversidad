@@ -30,8 +30,8 @@
             @forelse ($perfilProveedor->horarios as $horario)
                 <tr>
                     <td>{{ $diasSemana[$horario->dia_semana] ?? 'Sin dia' }}</td>
-                    <td>{{ $horario->hora_inicio }}</td>
-                    <td>{{ $horario->hora_fin }}</td>
+                    <td>{{ optional($horario->hora_inicio)->format('H:i') ?: 'Sin hora' }}</td>
+                    <td>{{ optional($horario->hora_fin)->format('H:i') ?: 'Sin hora' }}</td>
                     <td>{{ ucfirst($horario->tipo_atencion) }}</td>
                     <td>
                         @if ($horario->disponible)

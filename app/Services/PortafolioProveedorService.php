@@ -23,6 +23,15 @@ class PortafolioProveedorService
         return $portafolioProveedor->load('perfilProveedor.user', 'imagenes');
     }
 
+    public function createForPerfil(int $perfilProveedorId, array $data): PortafolioProveedor
+    {
+        return $this->create([
+            ...$data,
+            'perfil_proveedor_id' => $perfilProveedorId,
+            'estado' => true,
+        ]);
+    }
+
     public function update(PortafolioProveedor $portafolioProveedor, array $data): PortafolioProveedor
     {
         $portafolioProveedor->update([
@@ -37,6 +46,17 @@ class PortafolioProveedorService
         $this->storeImages($portafolioProveedor, $data);
 
         return $portafolioProveedor->load('perfilProveedor.user', 'imagenes');
+    }
+
+    public function updateForPerfil(PortafolioProveedor $portafolioProveedor, int $perfilProveedorId, array $data): PortafolioProveedor
+    {
+        abort_unless((int) $portafolioProveedor->perfil_proveedor_id === $perfilProveedorId, 403);
+
+        return $this->update($portafolioProveedor, [
+            ...$data,
+            'perfil_proveedor_id' => $perfilProveedorId,
+            'estado' => $portafolioProveedor->estado,
+        ]);
     }
 
     public function toggleEstado(PortafolioProveedor $portafolioProveedor): PortafolioProveedor

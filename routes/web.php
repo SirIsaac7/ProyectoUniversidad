@@ -16,6 +16,7 @@ use App\Http\Controllers\TipoDocumentoProveedorController;
 use App\Http\Controllers\UbicacionProveedorController;
 use App\Http\Controllers\EspecialidadController;
 use App\Http\Controllers\HorarioProveedorController;
+use App\Http\Controllers\MiPerfilProveedorController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,6 +26,8 @@ Route::get('/', function () {
 Route::middleware('auth', 'verified')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil.index');
+    Route::get('/mi-perfil-proveedor', [MiPerfilProveedorController::class, 'index'])->name('mi-perfil-proveedor.index');
+    Route::put('/mi-perfil-proveedor', [MiPerfilProveedorController::class, 'update'])->name('mi-perfil-proveedor.update');
     Route::resource('permisos', PermissionController::class)->except('show');
     Route::resource('roles', RoleController::class)->except('show');
     Route::resource('usuarios', UsuarioController::class)->except(['show']);

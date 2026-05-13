@@ -51,6 +51,25 @@ class PerfilProveedorService
         return $perfilProveedor->load('user');
     }
 
+    public function updateDatosBasicos(PerfilProveedor $perfilProveedor, array $data): PerfilProveedor
+    {
+        $fotoPortada = $perfilProveedor->foto_portada;
+
+        if (! empty($data['foto_portada'])) {
+            $this->deleteImage($perfilProveedor->foto_portada);
+            $fotoPortada = $this->storeImage($data['foto_portada'], $data['nombre_publico']);
+        }
+
+        $perfilProveedor->update([
+            'nombre_publico' => $data['nombre_publico'],
+            'descripcion' => $data['descripcion'] ?? null,
+            'foto_portada' => $fotoPortada,
+            'anios_experiencia' => $data['anios_experiencia'] ?? null,
+        ]);
+
+        return $perfilProveedor->load('user');
+    }
+
     public function toggleEstado(PerfilProveedor $perfilProveedor): PerfilProveedor
     {
         $perfilProveedor->update([

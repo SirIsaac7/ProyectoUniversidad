@@ -28,6 +28,14 @@ class HorarioProveedorService
         ]);
     }
 
+    public function createForPerfil(int $perfilProveedorId, array $data): HorarioProveedor
+    {
+        return $this->create([
+            ...$data,
+            'perfil_proveedor_id' => $perfilProveedorId,
+        ]);
+    }
+
     public function update(HorarioProveedor $horarioProveedor, array $data): HorarioProveedor
     {
         $horarioProveedor->update([
@@ -36,9 +44,20 @@ class HorarioProveedorService
             'hora_inicio' => $data['hora_inicio'],
             'hora_fin' => $data['hora_fin'],
             'tipo_atencion' => $data['tipo_atencion'],
+            'disponible' => $data['disponible'] ?? $horarioProveedor->disponible,
         ]);
 
         return $horarioProveedor->load('perfilProveedor.user');
+    }
+
+    public function updateForPerfil(HorarioProveedor $horarioProveedor, int $perfilProveedorId, array $data): HorarioProveedor
+    {
+        abort_unless((int) $horarioProveedor->perfil_proveedor_id === $perfilProveedorId, 403);
+
+        return $this->update($horarioProveedor, [
+            ...$data,
+            'perfil_proveedor_id' => $perfilProveedorId,
+        ]);
     }
 
     public function toggleDisponible(HorarioProveedor $horarioProveedor): HorarioProveedor

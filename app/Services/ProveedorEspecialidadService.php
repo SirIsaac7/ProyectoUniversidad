@@ -36,6 +36,15 @@ class ProveedorEspecialidadService
         });
     }
 
+    public function createForPerfil(int $perfilProveedorId, array $data): ProveedorEspecialidad
+    {
+        return $this->create([
+            ...$data,
+            'perfil_proveedor_id' => $perfilProveedorId,
+            'estado' => true,
+        ]);
+    }
+
     public function update(ProveedorEspecialidad $proveedorEspecialidad, array $data): ProveedorEspecialidad
     {
         return DB::transaction(function () use ($proveedorEspecialidad, $data) {
@@ -57,6 +66,16 @@ class ProveedorEspecialidadService
                 'especialidad.rubroTipoServicio.tipoServicio',
             ]);
         });
+    }
+
+    public function updateForPerfil(ProveedorEspecialidad $proveedorEspecialidad, int $perfilProveedorId, array $data): ProveedorEspecialidad
+    {
+        abort_unless((int) $proveedorEspecialidad->perfil_proveedor_id === $perfilProveedorId, 403);
+
+        return $this->update($proveedorEspecialidad, [
+            ...$data,
+            'perfil_proveedor_id' => $perfilProveedorId,
+        ]);
     }
 
     public function toggleEstado(ProveedorEspecialidad $proveedorEspecialidad): ProveedorEspecialidad
