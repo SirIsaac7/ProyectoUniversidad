@@ -127,6 +127,21 @@
                             <small class="text-muted js-disponible-help"></small>
                         </div>
 
+                        <div class="col-md-3">
+                            <label for="estado" class="form-label">
+                                Estado <span class="text-danger">*</span>
+                            </label>
+                            <select name="estado" id="estado" class="form-select @error('estado') is-invalid @enderror" required>
+                                <option value="1" @selected(old('estado', '1') === '1')>Activo</option>
+                                <option value="0" @selected(old('estado') === '0')>Inactivo</option>
+                            </select>
+                            @error('estado')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @else
+                                <div class="invalid-feedback">Por favor selecciona el estado.</div>
+                            @enderror
+                        </div>
+
                         <div class="col-12">
                             <div class="d-flex justify-content-end gap-2">
                                 <a href="{{ route('horarios-proveedor.index') }}" class="btn btn-light">Cancelar</a>

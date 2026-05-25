@@ -9,6 +9,17 @@ class DocumentoProveedorService
 {
     public function create(array $data): DocumentoProveedor
     {
+        $documentoProveedor = DocumentoProveedor::where('perfil_proveedor_id', $data['perfil_proveedor_id'])
+            ->where('tipo_documento_proveedor_id', $data['tipo_documento_proveedor_id'])
+            ->first();
+
+        if ($documentoProveedor) {
+            return $this->update($documentoProveedor, [
+                ...$data,
+                'estado' => true,
+            ]);
+        }
+
         return DocumentoProveedor::create([
             'perfil_proveedor_id' => $data['perfil_proveedor_id'],
             'tipo_documento_proveedor_id' => $data['tipo_documento_proveedor_id'],
@@ -16,6 +27,7 @@ class DocumentoProveedorService
             'estado_revision' => $data['estado_revision'],
             'observacion' => $data['observacion'] ?? null,
             'fecha_revision' => $this->resolveFechaRevision($data['estado_revision']),
+            'estado' => $data['estado'] ?? true,
         ])->load('perfilProveedor.user', 'tipoDocumentoProveedor');
     }
 
@@ -45,6 +57,7 @@ class DocumentoProveedorService
             'estado_revision' => $data['estado_revision'],
             'observacion' => $data['observacion'] ?? null,
             'fecha_revision' => $this->resolveFechaRevision($data['estado_revision'], $documentoProveedor),
+            'estado' => $data['estado'] ?? $documentoProveedor->estado,
         ]);
 
         return $documentoProveedor->load('perfilProveedor.user', 'tipoDocumentoProveedor');
@@ -66,6 +79,24 @@ class DocumentoProveedorService
     {
         $this->deleteFile($documentoProveedor->archivo);
         $documentoProveedor->delete();
+    }
+
+    public function toggleEstado(DocumentoProveedor $documentoProveedor): DocumentoProveedor
+    {
+        $documentoProveedor->update([
+            'estado' => ! $documentoProveedor->estado,
+        ]);
+
+        return $documentoProveedor;
+    }
+
+    public function bajaLogica(DocumentoProveedor $documentoProveedor): DocumentoProveedor
+    {
+        $documentoProveedor->update([
+            'estado' => false,
+        ]);
+
+        return $documentoProveedor;
     }
 
     protected function resolveFechaRevision(string $estadoRevision, ?DocumentoProveedor $documentoProveedor = null): ?string

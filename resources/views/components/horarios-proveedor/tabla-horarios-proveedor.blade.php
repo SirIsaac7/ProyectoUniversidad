@@ -19,7 +19,7 @@ new class extends Component
     protected string $paginationTheme = 'bootstrap';
 
     protected $listeners = [
-        'confirmarCambioDisponibilidadHorarioProveedor' => 'toggleDisponible',
+        'confirmarCambioEstadoHorarioProveedor' => 'toggleEstado',
     ];
 
     public array $dias = [
@@ -78,19 +78,19 @@ new class extends Component
         return $this->sortDirection === 'asc' ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line';
     }
 
-    public function toggleDisponible(int $horarioProveedorId): void
+    public function toggleEstado(int $horarioProveedorId): void
     {
         abort_unless(auth()->user()->can('eliminar horarios proveedor'), 403);
 
         $horarioProveedor = HorarioProveedor::findOrFail($horarioProveedorId);
 
         $horarioProveedor->update([
-            'disponible' => ! $horarioProveedor->disponible,
+            'estado' => ! $horarioProveedor->estado,
         ]);
 
         $this->dispatch(
-            'horario-proveedor-disponibilidad-cambiada',
-            message: $horarioProveedor->disponible
+            'horario-proveedor-estado-cambiado',
+            message: $horarioProveedor->estado
                 ? 'Horario activado correctamente.'
                 : 'Horario inactivado correctamente.'
         );
@@ -243,6 +243,11 @@ new class extends Component
                         </button>
                     </th>
                     <th>
+                        <button type="button" class="btn btn-link p-0 text-reset fw-semibold" wire:click="sortBy('estado')">
+                            Estado <i class="{{ $this->sortIcon('estado') }} ms-1 small text-muted"></i>
+                        </button>
+                    </th>
+                    <th>
                         <button type="button" class="btn btn-link p-0 text-reset fw-semibold" wire:click="sortBy('created_at')">
                             Fecha de creacion <i class="{{ $this->sortIcon('created_at') }} ms-1 small text-muted"></i>
                         </button>
@@ -272,6 +277,13 @@ new class extends Component
                                 <span class="badge bg-danger-subtle text-danger">No disponible</span>
                             @endif
                         </td>
+                        <td>
+                            @if ($horarioProveedor->estado)
+                                <span class="badge bg-success-subtle text-success">Activo</span>
+                            @else
+                                <span class="badge bg-danger-subtle text-danger">Inactivo</span>
+                            @endif
+                        </td>
                         <td>{{ optional($horarioProveedor->created_at)->format('d/m/Y H:i') }}</td>
                         <td>
                             <div class="hstack gap-2">
@@ -288,13 +300,13 @@ new class extends Component
                                 @can('eliminar horarios proveedor')
                                     <button
                                         type="button"
-                                        class="btn btn-sm js-toggle-horario-proveedor-livewire {{ $horarioProveedor->disponible ? 'btn-soft-danger' : 'btn-soft-success' }}"
-                                        title="{{ $horarioProveedor->disponible ? 'Inactivar' : 'Activar' }}"
+                                        class="btn btn-sm js-toggle-horario-proveedor-livewire {{ $horarioProveedor->estado ? 'btn-soft-danger' : 'btn-soft-success' }}"
+                                        title="{{ $horarioProveedor->estado ? 'Inactivar' : 'Activar' }}"
                                         data-horario-proveedor-id="{{ $horarioProveedor->id }}"
                                         data-proveedor-nombre="{{ $horarioProveedor->perfilProveedor?->nombre_publico }}"
                                         data-dia="{{ $this->dias[$horarioProveedor->dia_semana] ?? 'este dia' }}"
                                         data-horario="{{ $this->formatHora($horarioProveedor->hora_inicio) }} - {{ $this->formatHora($horarioProveedor->hora_fin) }}"
-                                        data-accion="{{ $horarioProveedor->disponible ? 'inactivar' : 'activar' }}"
+                                        data-accion="{{ $horarioProveedor->estado ? 'inactivar' : 'activar' }}"
                                     >
                                         <i class="ri-refresh-line align-bottom"></i>
                                     </button>
@@ -304,7 +316,7 @@ new class extends Component
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center text-muted py-4">
+                        <td colspan="9" class="text-center text-muted py-4">
                             No se encontraron horarios.
                         </td>
                     </tr>

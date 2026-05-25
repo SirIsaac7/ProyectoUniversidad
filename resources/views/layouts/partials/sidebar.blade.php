@@ -29,9 +29,9 @@
                 <li class="menu-title"><span>Menu</span></li>
 
                 <li class="nav-item">
-                    <a class="nav-link menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
-                        <i class="ri-dashboard-2-line"></i>
-                        <span>Dashboard</span>
+                    <a class="nav-link menu-link {{ request()->routeIs('inicio') ? 'active' : '' }}" href="{{ route('inicio') }}">
+                        <i class="ri-home-4-line"></i>
+                        <span>Inicio</span>
                     </a>
                 </li>
 
@@ -125,23 +125,83 @@
                 </li>
                 @endif
 
-                @if (
-                    auth()->user()->can('ver proveedores') ||
-                    auth()->user()->can('ver especialidades proveedor') ||
-                    auth()->user()->can('ver horarios proveedor') ||
-                    auth()->user()->can('ver ubicaciones proveedor') ||
-                    auth()->user()->can('ver portafolio proveedor') ||
-                    auth()->user()->can('ver tipos documento proveedor') ||
-                    auth()->user()->can('ver documentos proveedor') ||
-                    auth()->user()->can('ver mi perfil proveedor')
-                )
+                @php
+                    $usuarioActual = auth()->user();
+                    $puedeVerMiPerfilProveedor = $usuarioActual->can('visualizar perfil proveedor');
+                    $puedeVerAdministracionProveedores = ! $usuarioActual->hasRole('proveedor') && (
+                        $usuarioActual->can('ver proveedores') ||
+                        $usuarioActual->can('ver especialidades proveedor') ||
+                        $usuarioActual->can('ver horarios proveedor') ||
+                        $usuarioActual->can('ver ubicaciones proveedor') ||
+                        $usuarioActual->can('ver portafolio proveedor') ||
+                        $usuarioActual->can('ver tipos documento proveedor') ||
+                        $usuarioActual->can('ver documentos proveedor')
+                    );
+                    $puedeVerMenuMiPerfilProveedor = $puedeVerMiPerfilProveedor && ! $puedeVerAdministracionProveedores;
+                @endphp
+
+                @if ($puedeVerMenuMiPerfilProveedor)
+                    <li class="nav-item">
+                        <a href="{{ route('mi-perfil-proveedor.index') }}" class="nav-link menu-link {{ request()->routeIs('mi-perfil-proveedor.*') ? 'active' : '' }} js-mi-perfil-sidebar-link" data-mi-perfil-section="">
+                            <i class="ri-user-heart-line"></i>
+                            <span>Mi perfil</span>
+                        </a>
+                    </li>
+
+                    @can('gestionar especialidades proveedor')
+                        <li class="nav-item">
+                            <a href="{{ route('mi-perfil-proveedor.index') }}#mis-especialidades" class="nav-link menu-link js-mi-perfil-sidebar-link" data-mi-perfil-section="mis-especialidades">
+                                <i class="ri-price-tag-3-line"></i>
+                                <span>Mis especialidades</span>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('gestionar horarios proveedor')
+                        <li class="nav-item">
+                            <a href="{{ route('mi-perfil-proveedor.index') }}#mis-horarios" class="nav-link menu-link js-mi-perfil-sidebar-link" data-mi-perfil-section="mis-horarios">
+                                <i class="ri-calendar-schedule-line"></i>
+                                <span>Mis horarios</span>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('gestionar ubicacion proveedor')
+                        <li class="nav-item">
+                            <a href="{{ route('mi-perfil-proveedor.index') }}#mi-ubicacion" class="nav-link menu-link js-mi-perfil-sidebar-link" data-mi-perfil-section="mi-ubicacion">
+                                <i class="ri-map-pin-line"></i>
+                                <span>Mi ubicacion</span>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('gestionar portafolio proveedor')
+                        <li class="nav-item">
+                            <a href="{{ route('mi-perfil-proveedor.index') }}#mi-portafolio" class="nav-link menu-link js-mi-perfil-sidebar-link" data-mi-perfil-section="mi-portafolio">
+                                <i class="ri-folder-image-line"></i>
+                                <span>Mi portafolio</span>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('gestionar documentos proveedor')
+                        <li class="nav-item">
+                            <a href="{{ route('mi-perfil-proveedor.index') }}#mis-documentos" class="nav-link menu-link js-mi-perfil-sidebar-link" data-mi-perfil-section="mis-documentos">
+                                <i class="ri-file-list-3-line"></i>
+                                <span>Mis documentos</span>
+                            </a>
+                        </li>
+                    @endcan
+                @endif
+
+                @if ($puedeVerAdministracionProveedores)
                 <li class="nav-item">
                     <a
-                        class="nav-link menu-link {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') || request()->routeIs('mi-perfil-proveedor.*') ? 'active' : '' }}"
+                        class="nav-link menu-link {{ ($puedeVerAdministracionProveedores && (request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*'))) || request()->routeIs('mi-perfil-proveedor.*') ? 'active' : '' }}"
                         href="#sidebarProveedores"
                         data-bs-toggle="collapse"
                         role="button"
-                        aria-expanded="{{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') || request()->routeIs('mi-perfil-proveedor.*') ? 'true' : 'false' }}"
+                        aria-expanded="{{ ($puedeVerAdministracionProveedores && (request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*'))) || request()->routeIs('mi-perfil-proveedor.*') ? 'true' : 'false' }}"
                         aria-controls="sidebarProveedores"
                     >
                         <i class="ri-briefcase-4-line"></i>
@@ -149,81 +209,74 @@
                     </a>
 
                     <div
-                        class="collapse menu-dropdown {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') || request()->routeIs('mi-perfil-proveedor.*') ? 'show' : '' }}"
+                        class="collapse menu-dropdown {{ ($puedeVerAdministracionProveedores && (request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*'))) || request()->routeIs('mi-perfil-proveedor.*') ? 'show' : '' }}"
                         id="sidebarProveedores"
                     >
                         <ul class="nav nav-sm flex-column">
-                            @can('ver mi perfil proveedor')
-                                <li class="nav-item">
-                                    <a href="{{ route('mi-perfil-proveedor.index') }}" class="nav-link {{ request()->routeIs('mi-perfil-proveedor.*') ? 'active' : '' }}">
-                                        <i class="ri-user-heart-line me-1"></i>
-                                        Mi perfil
-                                    </a>
-                                </li>
-                            @endcan
+                            @if ($puedeVerAdministracionProveedores)
+                                @can('ver proveedores')
+                                    <li class="nav-item">
+                                        <a href="{{ route('perfiles-proveedores.index') }}" class="nav-link {{ request()->routeIs('perfiles-proveedores.*') ? 'active' : '' }}">
+                                            <i class="ri-user-star-line me-1"></i>
+                                            Perfiles
+                                        </a>
+                                    </li>
+                                @endcan
 
-                            @can('ver proveedores')
-                                <li class="nav-item">
-                                    <a href="{{ route('perfiles-proveedores.index') }}" class="nav-link {{ request()->routeIs('perfiles-proveedores.*') ? 'active' : '' }}">
-                                        <i class="ri-user-star-line me-1"></i>
-                                        Perfiles
-                                    </a>
-                                </li>
-                            @endcan
+                                @can('ver especialidades proveedor')
+                                    <li class="nav-item">
+                                        <a href="{{ route('proveedor-especialidades.index') }}" class="nav-link {{ request()->routeIs('proveedor-especialidades.*') ? 'active' : '' }}">
+                                            <i class="ri-price-tag-3-line me-1"></i>
+                                            Especialidades
+                                        </a>
+                                    </li>
+                                @endcan
 
-                            @can('ver especialidades proveedor')
-                                <li class="nav-item">
-                                    <a href="{{ route('proveedor-especialidades.index') }}" class="nav-link {{ request()->routeIs('proveedor-especialidades.*') ? 'active' : '' }}">
-                                        <i class="ri-price-tag-3-line me-1"></i>
-                                        Especialidades
-                                    </a>
-                                </li>
-                            @endcan
+                                @can('ver horarios proveedor')
+                                    <li class="nav-item">
+                                        <a href="{{ route('horarios-proveedor.index') }}" class="nav-link {{ request()->routeIs('horarios-proveedor.*') ? 'active' : '' }}">
+                                            <i class="ri-calendar-schedule-line me-1"></i>
+                                            Horarios
+                                        </a>
+                                    </li>
+                                @endcan
 
-                            @can('ver horarios proveedor')
-                                <li class="nav-item">
-                                    <a href="{{ route('horarios-proveedor.index') }}" class="nav-link {{ request()->routeIs('horarios-proveedor.*') ? 'active' : '' }}">
-                                        <i class="ri-calendar-schedule-line me-1"></i>
-                                        Horarios
-                                    </a>
-                                </li>
-                            @endcan
+                                @can('ver ubicaciones proveedor')
+                                    <li class="nav-item">
+                                        <a href="{{ route('ubicaciones-proveedor.index') }}" class="nav-link {{ request()->routeIs('ubicaciones-proveedor.*') ? 'active' : '' }}">
+                                            <i class="ri-map-pin-line me-1"></i>
+                                            Ubicaciones
+                                        </a>
+                                    </li>
+                                @endcan
 
-                            @can('ver ubicaciones proveedor')
-                                <li class="nav-item">
-                                    <a href="{{ route('ubicaciones-proveedor.index') }}" class="nav-link {{ request()->routeIs('ubicaciones-proveedor.*') ? 'active' : '' }}">
-                                        <i class="ri-map-pin-line me-1"></i>
-                                        Ubicaciones
-                                    </a>
-                                </li>
-                            @endcan
+                                @can('ver portafolio proveedor')
+                                    <li class="nav-item">
+                                        <a href="{{ route('portafolio-proveedor.index') }}" class="nav-link {{ request()->routeIs('portafolio-proveedor.*') ? 'active' : '' }}">
+                                            <i class="ri-gallery-line me-1"></i>
+                                            Portafolio
+                                        </a>
+                                    </li>
+                                @endcan
 
-                            @can('ver portafolio proveedor')
-                                <li class="nav-item">
-                                    <a href="{{ route('portafolio-proveedor.index') }}" class="nav-link {{ request()->routeIs('portafolio-proveedor.*') ? 'active' : '' }}">
-                                        <i class="ri-gallery-line me-1"></i>
-                                        Portafolio
-                                    </a>
-                                </li>
-                            @endcan
+                                @can('ver tipos documento proveedor')
+                                    <li class="nav-item">
+                                        <a href="{{ route('tipos-documento-proveedor.index') }}" class="nav-link {{ request()->routeIs('tipos-documento-proveedor.*') ? 'active' : '' }}">
+                                            <i class="ri-file-list-3-line me-1"></i>
+                                            Tipos de documento
+                                        </a>
+                                    </li>
+                                @endcan
 
-                            @can('ver tipos documento proveedor')
-                                <li class="nav-item">
-                                    <a href="{{ route('tipos-documento-proveedor.index') }}" class="nav-link {{ request()->routeIs('tipos-documento-proveedor.*') ? 'active' : '' }}">
-                                        <i class="ri-file-list-3-line me-1"></i>
-                                        Tipos de documento
-                                    </a>
-                                </li>
-                            @endcan
-
-                            @can('ver documentos proveedor')
-                                <li class="nav-item">
-                                    <a href="{{ route('documentos-proveedor.index') }}" class="nav-link {{ request()->routeIs('documentos-proveedor.*') ? 'active' : '' }}">
-                                        <i class="ri-file-shield-2-line me-1"></i>
-                                        Documentos
-                                    </a>
-                                </li>
-                            @endcan
+                                @can('ver documentos proveedor')
+                                    <li class="nav-item">
+                                        <a href="{{ route('documentos-proveedor.index') }}" class="nav-link {{ request()->routeIs('documentos-proveedor.*') ? 'active' : '' }}">
+                                            <i class="ri-file-shield-2-line me-1"></i>
+                                            Documentos
+                                        </a>
+                                    </li>
+                                @endcan
+                            @endif
                         </ul>
                     </div>
                 </li>

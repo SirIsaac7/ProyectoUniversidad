@@ -119,7 +119,7 @@ document.addEventListener('click', function (event) {
 
     if (typeof Swal === 'undefined') {
         if (typeof Livewire !== 'undefined') {
-            Livewire.dispatch('confirmarCambioDisponibilidadHorarioProveedor', { horarioProveedorId: horarioProveedorId });
+            Livewire.dispatch('confirmarCambioEstadoHorarioProveedor', { horarioProveedorId: horarioProveedorId });
         }
         return;
     }
@@ -137,13 +137,13 @@ document.addEventListener('click', function (event) {
         focusCancel: true
     }).then((result) => {
         if (result.isConfirmed && typeof Livewire !== 'undefined') {
-            Livewire.dispatch('confirmarCambioDisponibilidadHorarioProveedor', { horarioProveedorId: horarioProveedorId });
+            Livewire.dispatch('confirmarCambioEstadoHorarioProveedor', { horarioProveedorId: horarioProveedorId });
         }
     });
 });
 
 document.addEventListener('livewire:init', function () {
-    Livewire.on('horario-proveedor-disponibilidad-cambiada', function (event) {
+    Livewire.on('horario-proveedor-estado-cambiado', function (event) {
         if (typeof Swal === 'undefined') {
             return;
         }

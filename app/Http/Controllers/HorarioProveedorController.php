@@ -65,9 +65,9 @@ class HorarioProveedorController extends Controller
     {
         $horarioProveedor = HorarioProveedor::findOrFail($horarios_proveedor);
 
-        $this->horarioProveedorService->toggleDisponible($horarioProveedor);
+        $this->horarioProveedorService->toggleEstado($horarioProveedor);
 
-        $mensaje = $horarioProveedor->disponible
+        $mensaje = $horarioProveedor->estado
             ? 'Horario activado correctamente.'
             : 'Horario inactivado correctamente.';
 

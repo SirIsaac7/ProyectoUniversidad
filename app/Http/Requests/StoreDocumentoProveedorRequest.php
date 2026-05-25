@@ -25,11 +25,13 @@ class StoreDocumentoProveedorRequest extends FormRequest
                 'integer',
                 Rule::exists('tipos_documento_proveedor', 'id')->where('estado', true),
                 Rule::unique('documentos_proveedor', 'tipo_documento_proveedor_id')
-                    ->where('perfil_proveedor_id', $this->input('perfil_proveedor_id')),
+                    ->where('perfil_proveedor_id', $this->input('perfil_proveedor_id'))
+                    ->where('estado', true),
             ],
             'archivo' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:5120'],
             'estado_revision' => ['required', Rule::in(['pendiente', 'aprobado', 'rechazado'])],
             'observacion' => ['nullable', 'required_if:estado_revision,rechazado', 'string', 'max:1000'],
+            'estado' => ['required', 'boolean'],
         ];
     }
 

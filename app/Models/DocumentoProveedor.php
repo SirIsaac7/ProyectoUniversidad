@@ -19,12 +19,14 @@ class DocumentoProveedor extends Model
         'estado_revision',
         'observacion',
         'fecha_revision',
+        'estado',
     ];
 
     protected function casts(): array
     {
         return [
             'fecha_revision' => 'datetime',
+            'estado' => 'boolean',
         ];
     }
 
@@ -49,6 +51,7 @@ class DocumentoProveedor extends Model
                 'estado_revision',
                 'observacion',
                 'fecha_revision',
+                'estado',
             ])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();

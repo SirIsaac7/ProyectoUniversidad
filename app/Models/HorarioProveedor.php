@@ -19,6 +19,7 @@ class HorarioProveedor extends Model
         'hora_fin',
         'tipo_atencion',
         'disponible',
+        'estado',
     ];
 
     protected function casts(): array
@@ -28,6 +29,7 @@ class HorarioProveedor extends Model
             'hora_inicio' => 'datetime:H:i',
             'hora_fin' => 'datetime:H:i',
             'disponible' => 'boolean',
+            'estado' => 'boolean',
         ];
     }
 
@@ -40,7 +42,7 @@ class HorarioProveedor extends Model
     {
         return LogOptions::defaults()
             ->useLogName('horarios_proveedor')
-            ->logOnly(['perfil_proveedor_id', 'dia_semana', 'hora_inicio', 'hora_fin', 'tipo_atencion', 'disponible'])
+            ->logOnly(['perfil_proveedor_id', 'dia_semana', 'hora_inicio', 'hora_fin', 'tipo_atencion', 'disponible', 'estado'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }

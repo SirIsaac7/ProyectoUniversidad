@@ -34,6 +34,8 @@ class UpdateHorarioProveedorRequest extends FormRequest
             ],
             'hora_fin' => ['required', 'date_format:H:i', 'after:hora_inicio'],
             'tipo_atencion' => ['required', 'string', Rule::in(['domicilio', 'local', 'remoto', 'mixto'])],
+            'disponible' => ['required', 'boolean'],
+            'estado' => ['required', 'boolean'],
         ];
     }
 }

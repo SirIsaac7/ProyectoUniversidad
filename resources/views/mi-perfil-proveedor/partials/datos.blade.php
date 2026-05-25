@@ -15,6 +15,7 @@
             <p class="text-muted mb-0">{{ $perfilProveedor->user?->email }}</p>
         </div>
 
+        @can('actualizar perfil proveedor')
         <form class="needs-validation" novalidate method="POST" action="{{ route('mi-perfil-proveedor.update') }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -77,5 +78,10 @@
                 </button>
             </div>
         </form>
+        @else
+            <div class="alert alert-info mb-0">
+                Puedes visualizar tu perfil, pero no tienes permiso para actualizarlo.
+            </div>
+        @endcan
     </div>
 </div>

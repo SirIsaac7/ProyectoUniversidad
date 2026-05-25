@@ -17,7 +17,7 @@ new class extends Component
     protected string $paginationTheme = 'bootstrap';
 
     protected $listeners = [
-        'confirmarEliminarDocumentoProveedor' => 'eliminar',
+        'confirmarCambioEstadoDocumentoProveedor' => 'toggleEstado',
     ];
 
     public function updatedSearch(): void
@@ -56,25 +56,26 @@ new class extends Component
         return $this->sortDirection === 'asc' ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line';
     }
 
-    public function eliminar(int $documentoProveedorId): void
+    public function toggleEstado(int $documentoProveedorId): void
     {
         abort_unless(auth()->user()->can('eliminar documentos proveedor'), 403);
 
         $documentoProveedor = DocumentoProveedor::findOrFail($documentoProveedorId);
-        $archivo = $documentoProveedor->archivo;
+        $documentoProveedor->update([
+            'estado' => ! $documentoProveedor->estado,
+        ]);
 
-        $documentoProveedor->delete();
-
-        if ($archivo && file_exists(public_path($archivo))) {
-            unlink(public_path($archivo));
-        }
-
-        $this->dispatch('documento-proveedor-eliminado', message: 'Documento del proveedor eliminado correctamente.');
+        $this->dispatch(
+            'documento-proveedor-estado-cambiado',
+            message: $documentoProveedor->estado
+                ? 'Documento del proveedor activado correctamente.'
+                : 'Documento del proveedor inactivado correctamente.'
+        );
     }
 
     public function with(): array
     {
-        $allowedSorts = ['id', 'estado_revision', 'fecha_revision', 'created_at'];
+        $allowedSorts = ['id', 'estado_revision', 'estado', 'fecha_revision', 'created_at'];
         $sortField = in_array($this->sortField, $allowedSorts, true) ? $this->sortField : 'id';
 
         $documentosProveedor = DocumentoProveedor::query()
@@ -159,6 +160,11 @@ new class extends Component
                             Revision <i class="{{ $this->sortIcon('estado_revision') }} ms-1 small text-muted"></i>
                         </button>
                     </th>
+                    <th>
+                        <button type="button" class="btn btn-link p-0 text-reset fw-semibold" wire:click="sortBy('estado')">
+                            Estado <i class="{{ $this->sortIcon('estado') }} ms-1 small text-muted"></i>
+                        </button>
+                    </th>
                     <th>Archivo</th>
                     <th>
                         <button type="button" class="btn btn-link p-0 text-reset fw-semibold" wire:click="sortBy('fecha_revision')">
@@ -193,6 +199,13 @@ new class extends Component
                                 <span class="badge bg-danger-subtle text-danger">Rechazado</span>
                             @else
                                 <span class="badge bg-warning-subtle text-warning">Pendiente</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if ($documentoProveedor->estado)
+                                <span class="badge bg-success-subtle text-success">Activo</span>
+                            @else
+                                <span class="badge bg-danger-subtle text-danger">Inactivo</span>
                             @endif
                         </td>
                         <td>
@@ -243,13 +256,14 @@ new class extends Component
                                 @can('eliminar documentos proveedor')
                                     <button
                                         type="button"
-                                        class="btn btn-sm btn-soft-danger js-delete-documento-proveedor-livewire"
-                                        title="Eliminar"
+                                        class="btn btn-sm js-toggle-documento-proveedor-livewire {{ $documentoProveedor->estado ? 'btn-soft-danger' : 'btn-soft-success' }}"
+                                        title="{{ $documentoProveedor->estado ? 'Inactivar' : 'Activar' }}"
                                         data-documento-proveedor-id="{{ $documentoProveedor->id }}"
                                         data-proveedor-nombre="{{ $documentoProveedor->perfilProveedor?->nombre_publico }}"
                                         data-tipo-documento-nombre="{{ $documentoProveedor->tipoDocumentoProveedor?->nombre }}"
+                                        data-accion="{{ $documentoProveedor->estado ? 'inactivar' : 'activar' }}"
                                     >
-                                        <i class="ri-delete-bin-line align-bottom"></i>
+                                        <i class="ri-refresh-line align-bottom"></i>
                                     </button>
                                 @endcan
                             </div>
@@ -257,7 +271,7 @@ new class extends Component
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center text-muted py-4">
+                        <td colspan="9" class="text-center text-muted py-4">
                             No se encontraron documentos del proveedor.
                         </td>
                     </tr>

@@ -3,7 +3,7 @@
         <div class="navbar-header">
             <div class="d-flex">
                 <div class="navbar-brand-box horizontal-logo">
-                    <a href="{{ route('dashboard') }}" class="logo logo-dark">
+                    <a href="{{ route('inicio') }}" class="logo logo-dark">
                         <span class="logo-sm">
                             <img src="{{ asset('assets/images/logo-sm.png') }}" alt="Logo" height="22">
                         </span>
@@ -12,7 +12,7 @@
                         </span>
                     </a>
 
-                    <a href="{{ route('dashboard') }}" class="logo logo-light">
+                    <a href="{{ route('inicio') }}" class="logo logo-light">
                         <span class="logo-sm">
                             <img src="{{ asset('assets/images/logo-sm.png') }}" alt="Logo" height="22">
                         </span>
@@ -48,9 +48,9 @@
                         <div class="p-2">
                             <div class="row g-0">
                                 <div class="col">
-                                    <a class="dropdown-icon-item" href="{{ route('dashboard') }}">
-                                        <img src="{{ asset('assets/images/brands/github.png') }}" alt="Dashboard">
-                                        <span>Dashboard</span>
+                                    <a class="dropdown-icon-item" href="{{ route('inicio') }}">
+                                        <img src="{{ asset('assets/images/brands/github.png') }}" alt="Inicio">
+                                        <span>Inicio</span>
                                     </a>
                                 </div>
                                 <div class="col">

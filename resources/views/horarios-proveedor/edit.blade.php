@@ -113,15 +113,34 @@
                         </div>
 
                         <div class="col-md-3">
-                            <label class="form-label">Disponibilidad actual</label>
-                            <div>
-                                @if ($horarioProveedor->disponible)
-                                    <span class="badge bg-success-subtle text-success">Disponible</span>
-                                @else
-                                    <span class="badge bg-danger-subtle text-danger">No disponible</span>
-                                @endif
-                            </div>
-                            <small class="text-muted js-disponible-help" data-fixed="{{ $horarioProveedor->disponible ? '1' : '0' }}"></small>
+                            <label for="disponible" class="form-label">
+                                Disponible <span class="text-danger">*</span>
+                            </label>
+                            <select name="disponible" id="disponible" class="form-select @error('disponible') is-invalid @enderror" required>
+                                <option value="1" @selected(old('disponible', (string) (int) $horarioProveedor->disponible) === '1')>Si</option>
+                                <option value="0" @selected(old('disponible', (string) (int) $horarioProveedor->disponible) === '0')>No</option>
+                            </select>
+                            @error('disponible')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @else
+                                <div class="invalid-feedback">Por favor selecciona si esta disponible.</div>
+                            @enderror
+                            <small class="text-muted js-disponible-help"></small>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="estado" class="form-label">
+                                Estado <span class="text-danger">*</span>
+                            </label>
+                            <select name="estado" id="estado" class="form-select @error('estado') is-invalid @enderror" required>
+                                <option value="1" @selected(old('estado', (string) (int) $horarioProveedor->estado) === '1')>Activo</option>
+                                <option value="0" @selected(old('estado', (string) (int) $horarioProveedor->estado) === '0')>Inactivo</option>
+                            </select>
+                            @error('estado')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @else
+                                <div class="invalid-feedback">Por favor selecciona el estado.</div>
+                            @enderror
                         </div>
 
                         <div class="col-12">

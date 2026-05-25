@@ -16,6 +16,7 @@ class PortafolioProveedor extends Model
         'perfil_proveedor_id',
         'titulo',
         'descripcion',
+        'imagen',
         'fecha_trabajo',
         'estado',
     ];

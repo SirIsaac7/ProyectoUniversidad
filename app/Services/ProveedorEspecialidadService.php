@@ -22,6 +22,29 @@ class ProveedorEspecialidadService
     public function create(array $data): ProveedorEspecialidad
     {
         return DB::transaction(function () use ($data) {
+            $proveedorEspecialidad = ProveedorEspecialidad::where('perfil_proveedor_id', $data['perfil_proveedor_id'])
+                ->where('especialidad_id', $data['especialidad_id'])
+                ->first();
+
+            if ($proveedorEspecialidad) {
+                $this->resetPrincipalIfNeeded(
+                    (int) $data['perfil_proveedor_id'],
+                    (bool) $data['es_principal'],
+                    $proveedorEspecialidad->id
+                );
+
+                $proveedorEspecialidad->update([
+                    'es_principal' => $data['es_principal'],
+                    'estado' => $data['estado'],
+                ]);
+
+                return $proveedorEspecialidad->load([
+                    'perfilProveedor.user',
+                    'especialidad.rubroTipoServicio.rubro',
+                    'especialidad.rubroTipoServicio.tipoServicio',
+                ]);
+            }
+
             $this->resetPrincipalIfNeeded(
                 (int) $data['perfil_proveedor_id'],
                 (bool) $data['es_principal']
@@ -82,6 +105,16 @@ class ProveedorEspecialidadService
     {
         $proveedorEspecialidad->update([
             'estado' => ! $proveedorEspecialidad->estado,
+        ]);
+
+        return $proveedorEspecialidad;
+    }
+
+    public function bajaLogica(ProveedorEspecialidad $proveedorEspecialidad): ProveedorEspecialidad
+    {
+        $proveedorEspecialidad->update([
+            'estado' => false,
+            'es_principal' => false,
         ]);
 
         return $proveedorEspecialidad;

@@ -25,6 +25,7 @@ class HorarioProveedorService
             'hora_fin' => $data['hora_fin'],
             'tipo_atencion' => $data['tipo_atencion'],
             'disponible' => $data['disponible'],
+            'estado' => $data['estado'] ?? true,
         ]);
     }
 
@@ -45,6 +46,7 @@ class HorarioProveedorService
             'hora_fin' => $data['hora_fin'],
             'tipo_atencion' => $data['tipo_atencion'],
             'disponible' => $data['disponible'] ?? $horarioProveedor->disponible,
+            'estado' => $data['estado'] ?? $horarioProveedor->estado,
         ]);
 
         return $horarioProveedor->load('perfilProveedor.user');
@@ -64,6 +66,24 @@ class HorarioProveedorService
     {
         $horarioProveedor->update([
             'disponible' => ! $horarioProveedor->disponible,
+        ]);
+
+        return $horarioProveedor;
+    }
+
+    public function toggleEstado(HorarioProveedor $horarioProveedor): HorarioProveedor
+    {
+        $horarioProveedor->update([
+            'estado' => ! $horarioProveedor->estado,
+        ]);
+
+        return $horarioProveedor;
+    }
+
+    public function bajaLogica(HorarioProveedor $horarioProveedor): HorarioProveedor
+    {
+        $horarioProveedor->update([
+            'estado' => false,
         ]);
 
         return $horarioProveedor;

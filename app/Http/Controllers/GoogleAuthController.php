@@ -83,6 +83,6 @@ class GoogleAuthController extends Controller
                 ->with('status', 'local-password-required');
         }
 
-        return redirect()->route('dashboard');
+        return redirect()->route('inicio');
     }
 }

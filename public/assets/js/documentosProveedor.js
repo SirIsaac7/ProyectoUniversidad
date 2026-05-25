@@ -119,12 +119,13 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 document.addEventListener('click', function (event) {
-    const deleteButton = event.target.closest('.js-delete-documento-proveedor-livewire');
+    const deleteButton = event.target.closest('.js-toggle-documento-proveedor-livewire');
 
     if (deleteButton) {
         const documentoProveedorId = Number(deleteButton.dataset.documentoProveedorId);
         const proveedor = deleteButton.dataset.proveedorNombre || 'este proveedor';
         const tipoDocumento = deleteButton.dataset.tipoDocumentoNombre || 'este documento';
+        const accion = deleteButton.dataset.accion || 'cambiar el estado de';
 
         if (!documentoProveedorId) {
             return;
@@ -132,17 +133,17 @@ document.addEventListener('click', function (event) {
 
         if (typeof Swal === 'undefined') {
             if (typeof Livewire !== 'undefined') {
-                Livewire.dispatch('confirmarEliminarDocumentoProveedor', { documentoProveedorId: documentoProveedorId });
+                Livewire.dispatch('confirmarCambioEstadoDocumentoProveedor', { documentoProveedorId: documentoProveedorId });
             }
             return;
         }
 
         Swal.fire({
             title: 'Estas seguro?',
-            text: `Se eliminara ${tipoDocumento} de ${proveedor}.`,
+            text: `Se procedera a ${accion} ${tipoDocumento} de ${proveedor}.`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Si, eliminar',
+            confirmButtonText: 'Si, continuar',
             cancelButtonText: 'Cancelar',
             confirmButtonColor: '#f06548',
             cancelButtonColor: '#6c757d',
@@ -150,7 +151,7 @@ document.addEventListener('click', function (event) {
             focusCancel: true
         }).then((result) => {
             if (result.isConfirmed && typeof Livewire !== 'undefined') {
-                Livewire.dispatch('confirmarEliminarDocumentoProveedor', { documentoProveedorId: documentoProveedorId });
+                Livewire.dispatch('confirmarCambioEstadoDocumentoProveedor', { documentoProveedorId: documentoProveedorId });
             }
         });
     }
@@ -205,7 +206,7 @@ document.addEventListener('click', function (event) {
 });
 
 document.addEventListener('livewire:init', function () {
-    Livewire.on('documento-proveedor-eliminado', function (event) {
+    Livewire.on('documento-proveedor-estado-cambiado', function (event) {
         if (typeof Swal === 'undefined') {
             return;
         }

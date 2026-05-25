@@ -60,11 +60,15 @@ class DocumentoProveedorController extends Controller
 
     public function destroy(DocumentoProveedor $documentos_proveedor)
     {
-        $this->documentoProveedorService->delete($documentos_proveedor);
+        $this->documentoProveedorService->toggleEstado($documentos_proveedor);
+
+        $mensaje = $documentos_proveedor->estado
+            ? 'Documento del proveedor activado correctamente.'
+            : 'Documento del proveedor inactivado correctamente.';
 
         return redirect()
             ->route('documentos-proveedor.index')
-            ->with('success', 'Documento del proveedor eliminado correctamente.');
+            ->with('success', $mensaje);
     }
 
     protected function formData(?DocumentoProveedor $documentoProveedor = null): array

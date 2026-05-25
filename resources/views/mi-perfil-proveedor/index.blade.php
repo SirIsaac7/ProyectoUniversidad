@@ -16,61 +16,31 @@
 @endif
 
 <div class="row g-3">
-    <div class="col-xl-4">
+    <div class="col-xl-4" id="miPerfilProveedorDatos">
         @include('mi-perfil-proveedor.partials.datos')
     </div>
 
-    <div class="col-xl-8">
+    <div class="col-xl-8" id="miPerfilProveedorSecciones">
         <div class="card">
-            <div class="card-header">
-                <ul class="nav nav-tabs-custom card-header-tabs border-bottom-0" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#mis-especialidades" role="tab">
-                            Especialidades
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#mis-horarios" role="tab">
-                            Horarios
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#mi-ubicacion" role="tab">
-                            Ubicacion
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#mi-portafolio" role="tab">
-                            Portafolio
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#mis-documentos" role="tab">
-                            Documentos
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
             <div class="card-body">
                 <div class="tab-content">
-                    <div class="tab-pane active" id="mis-especialidades" role="tabpanel">
+                    <div class="tab-pane fade show active" id="mis-especialidades" role="tabpanel">
                         @include('mi-perfil-proveedor.partials.especialidades')
                     </div>
 
-                    <div class="tab-pane" id="mis-horarios" role="tabpanel">
+                    <div class="tab-pane fade" id="mis-horarios" role="tabpanel">
                         @include('mi-perfil-proveedor.partials.horarios')
                     </div>
 
-                    <div class="tab-pane" id="mi-ubicacion" role="tabpanel">
+                    <div class="tab-pane fade" id="mi-ubicacion" role="tabpanel">
                         @include('mi-perfil-proveedor.partials.ubicacion')
                     </div>
 
-                    <div class="tab-pane" id="mi-portafolio" role="tabpanel">
+                    <div class="tab-pane fade" id="mi-portafolio" role="tabpanel">
                         @include('mi-perfil-proveedor.partials.portafolio')
                     </div>
 
-                    <div class="tab-pane" id="mis-documentos" role="tabpanel">
+                    <div class="tab-pane fade" id="mis-documentos" role="tabpanel">
                         @include('mi-perfil-proveedor.partials.documentos')
                     </div>
                 </div>

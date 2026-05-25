@@ -10,15 +10,18 @@ class PortafolioProveedorService
 {
     public function create(array $data): PortafolioProveedor
     {
+        $imagenPrincipal = $this->storeFirstImage($data, $data['titulo']);
+
         $portafolioProveedor = PortafolioProveedor::create([
             'perfil_proveedor_id' => $data['perfil_proveedor_id'],
             'titulo' => $data['titulo'],
             'descripcion' => $data['descripcion'] ?? null,
+            'imagen' => $imagenPrincipal,
             'fecha_trabajo' => $data['fecha_trabajo'] ?? null,
             'estado' => $data['estado'],
         ]);
 
-        $this->storeImages($portafolioProveedor, $data);
+        $this->storeImages($portafolioProveedor, $data, $imagenPrincipal);
 
         return $portafolioProveedor->load('perfilProveedor.user', 'imagenes');
     }
@@ -68,7 +71,16 @@ class PortafolioProveedorService
         return $portafolioProveedor;
     }
 
-    protected function storeImages(PortafolioProveedor $portafolioProveedor, array $data): void
+    public function bajaLogica(PortafolioProveedor $portafolioProveedor): PortafolioProveedor
+    {
+        $portafolioProveedor->update([
+            'estado' => false,
+        ]);
+
+        return $portafolioProveedor;
+    }
+
+    protected function storeImages(PortafolioProveedor $portafolioProveedor, array $data, ?string $firstImagePath = null): void
     {
         $processedImages = [];
 
@@ -84,15 +96,29 @@ class PortafolioProveedorService
             }
 
             $processedImages[] = $imageSignature;
+            $imagePath = $index === array_key_first($data['imagenes']) && $firstImagePath
+                ? $firstImagePath
+                : $this->storeImage($image, $portafolioProveedor->titulo);
 
             PortafolioProveedorImagen::create([
                 'portafolio_proveedor_id' => $portafolioProveedor->id,
-                'imagen' => $this->storeImage($image, $portafolioProveedor->titulo),
+                'imagen' => $imagePath,
                 'titulo' => $data['imagenes_titulo'][$index] ?? null,
                 'descripcion' => $data['imagenes_descripcion'][$index] ?? null,
                 'estado' => true,
             ]);
         }
+    }
+
+    protected function storeFirstImage(array $data, string $titulo): ?string
+    {
+        foreach (($data['imagenes'] ?? []) as $image) {
+            if ($image instanceof UploadedFile && $image->isValid()) {
+                return $this->storeImage($image, $titulo);
+            }
+        }
+
+        return null;
     }
 
     protected function updateExistingImages(PortafolioProveedor $portafolioProveedor, array $data): void

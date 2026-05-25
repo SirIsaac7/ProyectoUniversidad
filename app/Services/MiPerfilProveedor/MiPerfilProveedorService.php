@@ -1,13 +1,22 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\MiPerfilProveedor;
 
 use App\Models\DocumentoProveedor;
+use App\Models\Especialidad;
 use App\Models\HorarioProveedor;
 use App\Models\PerfilProveedor;
 use App\Models\PortafolioProveedor;
 use App\Models\ProveedorEspecialidad;
+use App\Models\TipoDocumentoProveedor;
 use App\Models\UbicacionProveedor;
+use App\Services\DocumentoProveedorService;
+use App\Services\HorarioProveedorService;
+use App\Services\PerfilProveedorService;
+use App\Services\PortafolioProveedorService;
+use App\Services\ProveedorEspecialidadService;
+use App\Services\UbicacionProveedorService;
+use Illuminate\Database\Eloquent\Collection;
 
 class MiPerfilProveedorService
 {
@@ -25,15 +34,37 @@ class MiPerfilProveedorService
     {
         return PerfilProveedor::with([
             'user',
+            'proveedorEspecialidades' => fn ($query) => $query->where('estado', true),
             'proveedorEspecialidades.especialidad.rubroTipoServicio.rubro',
             'proveedorEspecialidades.especialidad.rubroTipoServicio.tipoServicio',
-            'horarios',
+            'horarios' => fn ($query) => $query->where('estado', true),
             'ubicacion',
+            'portafolio' => fn ($query) => $query->where('estado', true),
             'portafolio.imagenes',
+            'documentos' => fn ($query) => $query->where('estado', true),
             'documentos.tipoDocumentoProveedor',
         ])
             ->where('user_id', auth()->id())
             ->firstOrFail();
+    }
+
+    public function getEspecialidadesDisponibles(): Collection
+    {
+        return Especialidad::with('rubroTipoServicio.rubro', 'rubroTipoServicio.tipoServicio')
+            ->where('estado', true)
+            ->whereHas('rubroTipoServicio', fn ($query) => $query->where('estado', true))
+            ->whereHas('rubroTipoServicio.rubro', fn ($query) => $query->where('estado', true))
+            ->whereHas('rubroTipoServicio.tipoServicio', fn ($query) => $query->where('estado', true))
+            ->orderBy('nombre')
+            ->get();
+    }
+
+    public function getTiposDocumentoDisponibles(): Collection
+    {
+        return TipoDocumentoProveedor::query()
+            ->where('estado', true)
+            ->orderBy('nombre')
+            ->get();
     }
 
     public function updatePerfilActual(array $data): PerfilProveedor
@@ -104,5 +135,41 @@ class MiPerfilProveedorService
         $perfilProveedor = $this->getPerfilActual();
 
         return $this->documentoProveedorService->updateForPerfil($documentoProveedor, $perfilProveedor->id, $data);
+    }
+
+    public function eliminarEspecialidadActual(ProveedorEspecialidad $proveedorEspecialidad): void
+    {
+        $perfilProveedor = $this->getPerfilActual();
+
+        abort_unless((int) $proveedorEspecialidad->perfil_proveedor_id === $perfilProveedor->id, 403);
+
+        $this->proveedorEspecialidadService->bajaLogica($proveedorEspecialidad);
+    }
+
+    public function eliminarHorarioActual(HorarioProveedor $horarioProveedor): void
+    {
+        $perfilProveedor = $this->getPerfilActual();
+
+        abort_unless((int) $horarioProveedor->perfil_proveedor_id === $perfilProveedor->id, 403);
+
+        $this->horarioProveedorService->bajaLogica($horarioProveedor);
+    }
+
+    public function eliminarPortafolioActual(PortafolioProveedor $portafolioProveedor): void
+    {
+        $perfilProveedor = $this->getPerfilActual();
+
+        abort_unless((int) $portafolioProveedor->perfil_proveedor_id === $perfilProveedor->id, 403);
+
+        $this->portafolioProveedorService->bajaLogica($portafolioProveedor);
+    }
+
+    public function eliminarDocumentoActual(DocumentoProveedor $documentoProveedor): void
+    {
+        $perfilProveedor = $this->getPerfilActual();
+
+        abort_unless((int) $documentoProveedor->perfil_proveedor_id === $perfilProveedor->id, 403);
+
+        $this->documentoProveedorService->bajaLogica($documentoProveedor);
     }
 }

@@ -116,6 +116,21 @@
                     @enderror
                 </div>
 
+                <div class="col-lg-6">
+                    <label for="estado" class="form-label">
+                        Estado <span class="text-danger">*</span>
+                    </label>
+                    <select name="estado" id="estado" class="form-select @error('estado') is-invalid @enderror" required>
+                        <option value="1" @selected(old('estado', (string) (int) $documentoProveedor->estado) === '1')>Activo</option>
+                        <option value="0" @selected(old('estado', (string) (int) $documentoProveedor->estado) === '0')>Inactivo</option>
+                    </select>
+                    @error('estado')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @else
+                        <div class="invalid-feedback">Por favor selecciona el estado.</div>
+                    @enderror
+                </div>
+
                 <div class="col-12">
                     <label for="observacion" class="form-label">Observacion</label>
                     <textarea class="form-control js-observacion-revision @error('observacion') is-invalid @enderror" id="observacion" name="observacion" rows="4">{{ old('observacion', $documentoProveedor->observacion) }}</textarea>
