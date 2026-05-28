@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Mi ubicacion')
+@section('title', 'Mi ubicación')
 
 @section('content')
 <div class="row">
     <div class="col-12">
         <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-transparent">
-            <h4 class="mb-sm-0">Mi ubicacion</h4>
+            <h4 class="mb-sm-0">Mi ubicación</h4>
         </div>
     </div>
 </div>
