@@ -142,7 +142,7 @@
 
                 @if ($puedeVerMenuMiPerfilProveedor)
                     <li class="nav-item">
-                        <a href="{{ route('mi-perfil-proveedor.index') }}" class="nav-link menu-link {{ request()->routeIs('mi-perfil-proveedor.*') ? 'active' : '' }} js-mi-perfil-sidebar-link" data-mi-perfil-section="">
+                        <a href="{{ route('mi-perfil-proveedor.index') }}" class="nav-link menu-link {{ request()->routeIs('mi-perfil-proveedor.index') ? 'active' : '' }}">
                             <i class="ri-user-heart-line"></i>
                             <span>Mi perfil</span>
                         </a>
@@ -150,7 +150,7 @@
 
                     @can('gestionar especialidades proveedor')
                         <li class="nav-item">
-                            <a href="{{ route('mi-perfil-proveedor.index') }}#mis-especialidades" class="nav-link menu-link js-mi-perfil-sidebar-link" data-mi-perfil-section="mis-especialidades">
+                            <a href="{{ route('mi-perfil-proveedor.especialidades.index') }}" class="nav-link menu-link {{ request()->routeIs('mi-perfil-proveedor.especialidades.*') ? 'active' : '' }}">
                                 <i class="ri-price-tag-3-line"></i>
                                 <span>Mis especialidades</span>
                             </a>
@@ -159,7 +159,7 @@
 
                     @can('gestionar horarios proveedor')
                         <li class="nav-item">
-                            <a href="{{ route('mi-perfil-proveedor.index') }}#mis-horarios" class="nav-link menu-link js-mi-perfil-sidebar-link" data-mi-perfil-section="mis-horarios">
+                            <a href="{{ route('mi-perfil-proveedor.horarios.index') }}" class="nav-link menu-link {{ request()->routeIs('mi-perfil-proveedor.horarios.*') ? 'active' : '' }}">
                                 <i class="ri-calendar-schedule-line"></i>
                                 <span>Mis horarios</span>
                             </a>
@@ -168,7 +168,7 @@
 
                     @can('gestionar ubicacion proveedor')
                         <li class="nav-item">
-                            <a href="{{ route('mi-perfil-proveedor.index') }}#mi-ubicacion" class="nav-link menu-link js-mi-perfil-sidebar-link" data-mi-perfil-section="mi-ubicacion">
+                            <a href="{{ route('mi-perfil-proveedor.ubicacion.index') }}" class="nav-link menu-link {{ request()->routeIs('mi-perfil-proveedor.ubicacion.*') ? 'active' : '' }}">
                                 <i class="ri-map-pin-line"></i>
                                 <span>Mi ubicacion</span>
                             </a>
@@ -177,7 +177,7 @@
 
                     @can('gestionar portafolio proveedor')
                         <li class="nav-item">
-                            <a href="{{ route('mi-perfil-proveedor.index') }}#mi-portafolio" class="nav-link menu-link js-mi-perfil-sidebar-link" data-mi-perfil-section="mi-portafolio">
+                            <a href="{{ route('mi-perfil-proveedor.portafolio.index') }}" class="nav-link menu-link {{ request()->routeIs('mi-perfil-proveedor.portafolio.*') ? 'active' : '' }}">
                                 <i class="ri-folder-image-line"></i>
                                 <span>Mi portafolio</span>
                             </a>
@@ -186,7 +186,7 @@
 
                     @can('gestionar documentos proveedor')
                         <li class="nav-item">
-                            <a href="{{ route('mi-perfil-proveedor.index') }}#mis-documentos" class="nav-link menu-link js-mi-perfil-sidebar-link" data-mi-perfil-section="mis-documentos">
+                            <a href="{{ route('mi-perfil-proveedor.documentos.index') }}" class="nav-link menu-link {{ request()->routeIs('mi-perfil-proveedor.documentos.*') ? 'active' : '' }}">
                                 <i class="ri-file-list-3-line"></i>
                                 <span>Mis documentos</span>
                             </a>
@@ -197,11 +197,11 @@
                 @if ($puedeVerAdministracionProveedores)
                 <li class="nav-item">
                     <a
-                        class="nav-link menu-link {{ ($puedeVerAdministracionProveedores && (request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*'))) || request()->routeIs('mi-perfil-proveedor.*') ? 'active' : '' }}"
+                        class="nav-link menu-link {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') ? 'active' : '' }}"
                         href="#sidebarProveedores"
                         data-bs-toggle="collapse"
                         role="button"
-                        aria-expanded="{{ ($puedeVerAdministracionProveedores && (request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*'))) || request()->routeIs('mi-perfil-proveedor.*') ? 'true' : 'false' }}"
+                        aria-expanded="{{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') ? 'true' : 'false' }}"
                         aria-controls="sidebarProveedores"
                     >
                         <i class="ri-briefcase-4-line"></i>
@@ -209,7 +209,7 @@
                     </a>
 
                     <div
-                        class="collapse menu-dropdown {{ ($puedeVerAdministracionProveedores && (request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*'))) || request()->routeIs('mi-perfil-proveedor.*') ? 'show' : '' }}"
+                        class="collapse menu-dropdown {{ request()->routeIs('perfiles-proveedores.*') || request()->routeIs('proveedor-especialidades.*') || request()->routeIs('horarios-proveedor.*') || request()->routeIs('ubicaciones-proveedor.*') || request()->routeIs('portafolio-proveedor.*') || request()->routeIs('tipos-documento-proveedor.*') || request()->routeIs('documentos-proveedor.*') ? 'show' : '' }}"
                         id="sidebarProveedores"
                     >
                         <ul class="nav nav-sm flex-column">

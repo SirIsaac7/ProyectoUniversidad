@@ -103,8 +103,11 @@ class ProveedorEspecialidadService
 
     public function toggleEstado(ProveedorEspecialidad $proveedorEspecialidad): ProveedorEspecialidad
     {
+        $nuevoEstado = ! $proveedorEspecialidad->estado;
+
         $proveedorEspecialidad->update([
-            'estado' => ! $proveedorEspecialidad->estado,
+            'estado' => $nuevoEstado,
+            'es_principal' => $nuevoEstado ? $proveedorEspecialidad->es_principal : false,
         ]);
 
         return $proveedorEspecialidad;
@@ -115,6 +118,15 @@ class ProveedorEspecialidadService
         $proveedorEspecialidad->update([
             'estado' => false,
             'es_principal' => false,
+        ]);
+
+        return $proveedorEspecialidad;
+    }
+
+    public function activar(ProveedorEspecialidad $proveedorEspecialidad): ProveedorEspecialidad
+    {
+        $proveedorEspecialidad->update([
+            'estado' => true,
         ]);
 
         return $proveedorEspecialidad;

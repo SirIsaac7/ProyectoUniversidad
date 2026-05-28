@@ -23,7 +23,7 @@
             'texto' => 'Gestiona tu disponibilidad',
             'icono' => 'ri-calendar-schedule-line',
             'color' => 'info',
-            'url' => route('mi-perfil-proveedor.index') . '#mis-horarios',
+            'url' => route('mi-perfil-proveedor.horarios.index'),
         ],
         [
             'permiso' => 'gestionar ubicacion proveedor',
@@ -31,7 +31,7 @@
             'texto' => 'Edita tu zona de atencion',
             'icono' => 'ri-map-pin-line',
             'color' => 'success',
-            'url' => route('mi-perfil-proveedor.index') . '#mi-ubicacion',
+            'url' => route('mi-perfil-proveedor.ubicacion.index'),
         ],
         [
             'permiso' => 'gestionar portafolio proveedor',
@@ -39,7 +39,7 @@
             'texto' => 'Agrega evidencia a tu portafolio',
             'icono' => 'ri-folder-image-line',
             'color' => 'warning',
-            'url' => route('mi-perfil-proveedor.index') . '#mi-portafolio',
+            'url' => route('mi-perfil-proveedor.portafolio.index'),
         ],
         [
             'permiso' => 'gestionar documentos proveedor',
@@ -47,7 +47,7 @@
             'texto' => 'Gestiona tus archivos',
             'icono' => 'ri-file-list-3-line',
             'color' => 'info',
-            'url' => route('mi-perfil-proveedor.index') . '#mis-documentos',
+            'url' => route('mi-perfil-proveedor.documentos.index'),
         ],
         [
             'permiso' => 'gestionar especialidades proveedor',
@@ -55,7 +55,7 @@
             'texto' => 'Administra tus servicios',
             'icono' => 'ri-price-tag-3-line',
             'color' => 'primary',
-            'url' => route('mi-perfil-proveedor.index') . '#mis-especialidades',
+            'url' => route('mi-perfil-proveedor.especialidades.index'),
         ],
     ];
 @endphp

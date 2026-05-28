@@ -16,7 +16,12 @@ use App\Http\Controllers\TipoDocumentoProveedorController;
 use App\Http\Controllers\UbicacionProveedorController;
 use App\Http\Controllers\EspecialidadController;
 use App\Http\Controllers\HorarioProveedorController;
-use App\Http\Controllers\MiPerfilProveedor\MiPerfilProveedorController;
+use App\Http\Controllers\MiPerfilProveedor\DocumentoController as MiDocumentoProveedorController;
+use App\Http\Controllers\MiPerfilProveedor\EspecialidadController as MiEspecialidadProveedorController;
+use App\Http\Controllers\MiPerfilProveedor\HorarioController as MiHorarioProveedorController;
+use App\Http\Controllers\MiPerfilProveedor\PerfilController as MiPerfilController;
+use App\Http\Controllers\MiPerfilProveedor\PortafolioController as MiPortafolioProveedorController;
+use App\Http\Controllers\MiPerfilProveedor\UbicacionController as MiUbicacionProveedorController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,21 +32,27 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::get('/inicio', [InicioController::class, 'index'])->name('inicio');
     Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil.index');
     //Esta rutas son de MI PERFIL PROVEEDOR
-    Route::get('/mi-perfil-proveedor', [MiPerfilProveedorController::class, 'index'])->name('mi-perfil-proveedor.index');
-    Route::put('/mi-perfil-proveedor', [MiPerfilProveedorController::class, 'update'])->name('mi-perfil-proveedor.update');
-    Route::post('/mi-perfil-proveedor/especialidades', [MiPerfilProveedorController::class, 'storeEspecialidad'])->name('mi-perfil-proveedor.especialidades.store');
-    Route::put('/mi-perfil-proveedor/especialidades/{proveedorEspecialidad}', [MiPerfilProveedorController::class, 'updateEspecialidad'])->name('mi-perfil-proveedor.especialidades.update');
-    Route::delete('/mi-perfil-proveedor/especialidades/{proveedorEspecialidad}', [MiPerfilProveedorController::class, 'destroyEspecialidad'])->name('mi-perfil-proveedor.especialidades.destroy');
-    Route::post('/mi-perfil-proveedor/horarios', [MiPerfilProveedorController::class, 'storeHorario'])->name('mi-perfil-proveedor.horarios.store');
-    Route::put('/mi-perfil-proveedor/horarios/{horarioProveedor}', [MiPerfilProveedorController::class, 'updateHorario'])->name('mi-perfil-proveedor.horarios.update');
-    Route::delete('/mi-perfil-proveedor/horarios/{horarioProveedor}', [MiPerfilProveedorController::class, 'destroyHorario'])->name('mi-perfil-proveedor.horarios.destroy');
-    Route::post('/mi-perfil-proveedor/ubicacion', [MiPerfilProveedorController::class, 'storeUbicacion'])->name('mi-perfil-proveedor.ubicacion.store');
-    Route::post('/mi-perfil-proveedor/portafolio', [MiPerfilProveedorController::class, 'storePortafolio'])->name('mi-perfil-proveedor.portafolio.store');
-    Route::put('/mi-perfil-proveedor/portafolio/{portafolioProveedor}', [MiPerfilProveedorController::class, 'updatePortafolio'])->name('mi-perfil-proveedor.portafolio.update');
-    Route::delete('/mi-perfil-proveedor/portafolio/{portafolioProveedor}', [MiPerfilProveedorController::class, 'destroyPortafolio'])->name('mi-perfil-proveedor.portafolio.destroy');
-    Route::post('/mi-perfil-proveedor/documentos', [MiPerfilProveedorController::class, 'storeDocumento'])->name('mi-perfil-proveedor.documentos.store');
-    Route::put('/mi-perfil-proveedor/documentos/{documentoProveedor}', [MiPerfilProveedorController::class, 'updateDocumento'])->name('mi-perfil-proveedor.documentos.update');
-    Route::delete('/mi-perfil-proveedor/documentos/{documentoProveedor}', [MiPerfilProveedorController::class, 'destroyDocumento'])->name('mi-perfil-proveedor.documentos.destroy');
+    Route::get('/mi-perfil-proveedor', [MiPerfilController::class, 'index'])->name('mi-perfil-proveedor.index');
+    Route::put('/mi-perfil-proveedor', [MiPerfilController::class, 'update'])->name('mi-perfil-proveedor.update');
+    Route::get('/mi-perfil-proveedor/especialidades', [MiEspecialidadProveedorController::class, 'index'])->name('mi-perfil-proveedor.especialidades.index');
+    Route::post('/mi-perfil-proveedor/especialidades', [MiEspecialidadProveedorController::class, 'store'])->name('mi-perfil-proveedor.especialidades.store');
+    Route::put('/mi-perfil-proveedor/especialidades/{proveedorEspecialidad}', [MiEspecialidadProveedorController::class, 'update'])->name('mi-perfil-proveedor.especialidades.update');
+    Route::patch('/mi-perfil-proveedor/especialidades/{proveedorEspecialidad}/activar', [MiEspecialidadProveedorController::class, 'activar'])->name('mi-perfil-proveedor.especialidades.activar');
+    Route::delete('/mi-perfil-proveedor/especialidades/{proveedorEspecialidad}', [MiEspecialidadProveedorController::class, 'destroy'])->name('mi-perfil-proveedor.especialidades.destroy');
+    Route::get('/mi-perfil-proveedor/horarios', [MiHorarioProveedorController::class, 'index'])->name('mi-perfil-proveedor.horarios.index');
+    Route::post('/mi-perfil-proveedor/horarios', [MiHorarioProveedorController::class, 'store'])->name('mi-perfil-proveedor.horarios.store');
+    Route::put('/mi-perfil-proveedor/horarios/{horarioProveedor}', [MiHorarioProveedorController::class, 'update'])->name('mi-perfil-proveedor.horarios.update');
+    Route::delete('/mi-perfil-proveedor/horarios/{horarioProveedor}', [MiHorarioProveedorController::class, 'destroy'])->name('mi-perfil-proveedor.horarios.destroy');
+    Route::get('/mi-perfil-proveedor/ubicacion', [MiUbicacionProveedorController::class, 'index'])->name('mi-perfil-proveedor.ubicacion.index');
+    Route::post('/mi-perfil-proveedor/ubicacion', [MiUbicacionProveedorController::class, 'store'])->name('mi-perfil-proveedor.ubicacion.store');
+    Route::get('/mi-perfil-proveedor/portafolio', [MiPortafolioProveedorController::class, 'index'])->name('mi-perfil-proveedor.portafolio.index');
+    Route::post('/mi-perfil-proveedor/portafolio', [MiPortafolioProveedorController::class, 'store'])->name('mi-perfil-proveedor.portafolio.store');
+    Route::put('/mi-perfil-proveedor/portafolio/{portafolioProveedor}', [MiPortafolioProveedorController::class, 'update'])->name('mi-perfil-proveedor.portafolio.update');
+    Route::delete('/mi-perfil-proveedor/portafolio/{portafolioProveedor}', [MiPortafolioProveedorController::class, 'destroy'])->name('mi-perfil-proveedor.portafolio.destroy');
+    Route::get('/mi-perfil-proveedor/documentos', [MiDocumentoProveedorController::class, 'index'])->name('mi-perfil-proveedor.documentos.index');
+    Route::post('/mi-perfil-proveedor/documentos', [MiDocumentoProveedorController::class, 'store'])->name('mi-perfil-proveedor.documentos.store');
+    Route::put('/mi-perfil-proveedor/documentos/{documentoProveedor}', [MiDocumentoProveedorController::class, 'update'])->name('mi-perfil-proveedor.documentos.update');
+    Route::delete('/mi-perfil-proveedor/documentos/{documentoProveedor}', [MiDocumentoProveedorController::class, 'destroy'])->name('mi-perfil-proveedor.documentos.destroy');
     //FIN de rutas de MI PERFIL PROVEEDOR
     Route::resource('permisos', PermissionController::class)->except('show');
     Route::resource('roles', RoleController::class)->except('show');

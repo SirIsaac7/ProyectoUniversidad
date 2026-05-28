@@ -1,0 +1,362 @@
+.mi-horarios-dashboard .card {
+    border-radius: 10px;
+}
+
+.mi-horarios-dashboard {
+    padding-bottom: 18px;
+}
+
+.mi-horario-stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    border-radius: 10px;
+    font-size: 24px;
+}
+
+.mi-horario-item {
+    position: relative;
+    overflow: visible;
+    padding: 12px;
+    border: 1px solid var(--vz-border-color);
+    border-radius: 10px;
+    background: var(--vz-card-bg);
+    transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+}
+
+.mi-horario-item::before {
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 0;
+    width: 0;
+    border-radius: 0 8px 8px 0;
+    background: linear-gradient(
+        180deg,
+        var(--vz-primary),
+        #0ab39c,
+        var(--vz-primary)
+    );
+    background-size: 100% 220%;
+    content: "";
+    opacity: 0;
+    transition: width .25s ease, opacity .25s ease;
+}
+
+.mi-horario-item.is-calendar-highlighted {
+    border-color: rgba(var(--vz-primary-rgb), .65);
+    box-shadow: 0 10px 26px rgba(var(--vz-primary-rgb), .18);
+    transform: translateX(2px);
+}
+
+.mi-horario-item.is-calendar-highlighted::before {
+    width: 6px;
+    opacity: 1;
+    animation: miHorarioLineaActiva 1.15s linear infinite;
+}
+
+.mi-horario-item.is-hidden-by-edit {
+    display: none;
+}
+
+.mi-horario-edit-btn {
+    border-color: rgba(247, 184, 75, .24);
+    background: rgba(247, 184, 75, .14);
+    color: #d89000;
+}
+
+.mi-horario-edit-btn:hover,
+.mi-horario-edit-btn:focus {
+    border-color: rgba(247, 184, 75, .38);
+    background: rgba(247, 184, 75, .24);
+    color: #b87500;
+}
+
+.mi-horario-edit-panel {
+    padding: 18px;
+    border: 1px solid rgba(var(--vz-primary-rgb), .16);
+    border-radius: 12px;
+    background:
+        radial-gradient(circle at 88% 18%, rgba(var(--vz-primary-rgb), .09), transparent 28%),
+        linear-gradient(135deg, rgba(var(--vz-primary-rgb), .045), rgba(255, 255, 255, .02));
+}
+
+.mi-horario-edit-heading-icon,
+.mi-horario-input-icon > i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mi-horario-edit-heading-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: rgba(var(--vz-primary-rgb), .12);
+    color: var(--vz-primary);
+    font-size: 22px;
+}
+
+.mi-horario-edit-underline {
+    display: block;
+    width: 76px;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--vz-primary);
+}
+
+.mi-horario-input-icon {
+    position: relative;
+}
+
+.mi-horario-input-icon > i {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    z-index: 2;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(var(--vz-primary-rgb), .10);
+    color: var(--vz-primary);
+    font-size: 16px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.mi-horario-input-icon .form-control,
+.mi-horario-input-icon .form-select {
+    min-height: 46px;
+    padding-left: 52px;
+}
+
+.mi-horario-edit-info {
+    border-color: rgba(64, 81, 137, .14);
+    background: rgba(64, 81, 137, .06);
+    color: var(--vz-body-color);
+}
+
+[data-bs-theme="dark"] .mi-horario-edit-btn {
+    border-color: rgba(247, 184, 75, .28);
+    background: rgba(247, 184, 75, .18);
+    color: #f7c45c;
+}
+
+[data-bs-theme="dark"] .mi-horario-edit-btn:hover,
+[data-bs-theme="dark"] .mi-horario-edit-btn:focus {
+    border-color: rgba(247, 184, 75, .42);
+    background: rgba(247, 184, 75, .26);
+    color: #ffd47a;
+}
+
+[data-bs-theme="dark"] .mi-horario-edit-panel {
+    border-color: rgba(var(--vz-primary-rgb), .22);
+    background:
+        radial-gradient(circle at 88% 18%, rgba(var(--vz-primary-rgb), .14), transparent 28%),
+        linear-gradient(135deg, rgba(var(--vz-primary-rgb), .08), rgba(255, 255, 255, .015));
+}
+
+[data-bs-theme="dark"] .mi-horario-edit-info {
+    border-color: rgba(173, 181, 189, .14);
+    background: rgba(173, 181, 189, .08);
+}
+
+@keyframes miHorarioLineaActiva {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 0 220%;
+    }
+}
+
+.mi-horario-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-size: 13px;
+}
+
+.mi-horario-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mi-horarios-habituales-list {
+    max-height: 560px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
+    padding-bottom: 10px;
+    scrollbar-width: thin;
+}
+
+.mi-horarios-habituales-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mi-horarios-habituales-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mi-horarios-habituales-list::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(var(--vz-primary-rgb), .32);
+}
+
+.mi-horarios-habituales-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--vz-primary-rgb), .48);
+}
+
+#miHorariosCalendar .fc-toolbar-title {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+#miHorariosCalendar .fc-button {
+    border-radius: 8px;
+    text-transform: capitalize;
+}
+
+#miHorariosCalendar .fc-daygrid-day-number,
+#miHorariosCalendar .fc-col-header-cell-cushion {
+    color: var(--vz-body-color);
+    text-decoration: none;
+}
+
+#miHorariosCalendar .fc-event {
+    border: 0;
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-size: 12px;
+}
+
+#miHorariosCalendar .mi-calendar-event-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    width: 100%;
+    text-align: center;
+    line-height: 1.15;
+}
+
+#miHorariosCalendar .mi-calendar-event-time {
+    font-weight: 700;
+}
+
+#miHorariosCalendar .mi-calendar-event-status {
+    display: block;
+    font-weight: 600;
+}
+
+#miHorariosCalendar .mi-event-disponible {
+    background: rgba(10, 179, 156, .16);
+    color: #0ab39c;
+}
+
+#miHorariosCalendar .mi-event-no-disponible {
+    background: rgba(135, 138, 153, .16);
+    color: var(--vz-secondary-color);
+}
+
+#miHorariosCalendar .fc-daygrid-event-dot {
+    display: none;
+}
+
+[data-bs-theme="dark"] #miHorariosCalendar .mi-event-disponible {
+    background: rgba(10, 179, 156, .18);
+}
+
+[data-bs-theme="dark"] #miHorariosCalendar .mi-event-no-disponible {
+    background: rgba(173, 181, 189, .16);
+}
+
+@media (max-width: 767.98px) {
+    #miHorariosCalendar .fc-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+.mi-horario-create-widget {
+    position: relative;
+}
+
+.mi-horario-create-intro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 240px;
+    text-align: center;
+    transition: all .25s ease;
+}
+
+.mi-horario-create-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 92px;
+    height: 92px;
+    margin-bottom: 16px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(85, 110, 230, .16), rgba(10, 179, 156, .16));
+    color: var(--vz-primary);
+    font-size: 46px;
+    transition: all .25s ease;
+}
+
+.mi-horario-create-badge {
+    display: block;
+    max-width: 320px;
+    white-space: normal;
+    line-height: 1.45;
+    padding: 10px 14px;
+    border: 1px solid rgba(85, 110, 230, .22);
+    background: rgba(85, 110, 230, .10);
+    color: var(--vz-primary);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.mi-horario-create-form {
+    display: none;
+    margin-top: 18px;
+}
+
+.mi-horario-create-widget.is-open .mi-horario-create-intro {
+    align-items: center;
+    min-height: auto;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.mi-horario-create-widget.is-open .mi-horario-create-icon {
+    width: 54px;
+    height: 54px;
+    margin-bottom: 10px;
+    border-radius: 14px;
+    font-size: 28px;
+}
+
+.mi-horario-create-widget.is-open #miHorarioOpenForm {
+    display: none;
+}
+
+.mi-horario-create-widget.is-open .mi-horario-create-form {
+    display: block;
+}
+
+[data-bs-theme="dark"] .mi-horario-create-badge {
+    background: rgba(85, 110, 230, .18);
+    border-color: rgba(85, 110, 230, .28);
+    color: #cfd6ff;
+}

@@ -3,9 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const radioSlider = document.querySelector('.js-mi-radio-slider');
     const radioInput = document.getElementById('radio_cobertura_km');
     const radioValue = document.getElementById('miRadioCoberturaValue');
-    const datosContainer = document.getElementById('miPerfilProveedorDatos');
-    const seccionesContainer = document.getElementById('miPerfilProveedorSecciones');
-    const secciones = ['mis-especialidades', 'mis-horarios', 'mi-ubicacion', 'mi-portafolio', 'mis-documentos'];
 
     const showInfo = function (title, text) {
         if (typeof Swal === 'undefined') {
@@ -20,59 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
             confirmButtonColor: '#405189'
         });
     };
-
-    const marcarEnlaceActivo = function (section) {
-        document.querySelectorAll('.js-mi-perfil-sidebar-link').forEach(function (link) {
-            const linkSection = link.dataset.miPerfilSection || '';
-
-            link.classList.toggle('active', linkSection === section);
-        });
-    };
-
-    const ocultarSecciones = function () {
-        datosContainer?.classList.remove('d-none');
-        seccionesContainer?.classList.add('d-none');
-        seccionesContainer?.classList.remove('col-xl-12');
-        seccionesContainer?.classList.add('col-xl-8');
-
-        secciones.forEach(function (sectionId) {
-            document.getElementById(sectionId)?.classList.remove('show', 'active');
-        });
-
-        marcarEnlaceActivo('');
-    };
-
-    const mostrarSeccion = function (section) {
-        datosContainer?.classList.add('d-none');
-        seccionesContainer?.classList.remove('d-none');
-        seccionesContainer?.classList.remove('col-xl-8');
-        seccionesContainer?.classList.add('col-xl-12');
-
-        secciones.forEach(function (sectionId) {
-            const pane = document.getElementById(sectionId);
-
-            pane?.classList.toggle('show', sectionId === section);
-            pane?.classList.toggle('active', sectionId === section);
-        });
-
-        marcarEnlaceActivo(section);
-    };
-
-    const activarSeccionActual = function () {
-        const section = window.location.hash.replace('#', '');
-
-        if (!section) {
-            ocultarSecciones();
-            return;
-        }
-
-        if (secciones.includes(section)) {
-            mostrarSeccion(section);
-        }
-    };
-
-    activarSeccionActual();
-    window.addEventListener('hashchange', activarSeccionActual);
 
     document.querySelectorAll('.needs-validation').forEach(function (form) {
         form.addEventListener('submit', function (event) {
@@ -96,8 +40,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     radioSlider?.addEventListener('input', function () {
-        radioInput.value = radioSlider.value;
-        radioValue.textContent = radioSlider.value;
+        if (radioInput) {
+            radioInput.value = radioSlider.value;
+        }
+
+        if (radioValue) {
+            radioValue.textContent = radioSlider.value;
+        }
     });
 
     document.querySelectorAll('.js-mi-imagen-preview-input').forEach(function (input) {
@@ -127,8 +76,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         navigator.geolocation.getCurrentPosition(function (position) {
-            document.getElementById('latitud').value = position.coords.latitude.toFixed(7);
-            document.getElementById('longitud').value = position.coords.longitude.toFixed(7);
+            const latitudInput = document.getElementById('latitud');
+            const longitudInput = document.getElementById('longitud');
+
+            if (latitudInput) {
+                latitudInput.value = position.coords.latitude.toFixed(7);
+            }
+
+            if (longitudInput) {
+                longitudInput.value = position.coords.longitude.toFixed(7);
+            }
         }, function () {
             showInfo('Ubicacion no disponible', 'Activa el permiso de ubicacion del navegador o ingresa las coordenadas manualmente.');
         }, {
@@ -148,10 +105,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             Swal.fire({
                 title: 'Estas seguro?',
-                text: 'Esta accion retirara el registro de tu perfil, pero no lo borrara definitivamente.',
+                text: 'El registro seleccionado ya no estará disponible en tu perfil.',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Si, retirar',
+                confirmButtonText: 'Si, eliminar',
                 cancelButtonText: 'Cancelar',
                 confirmButtonColor: '#f06548',
                 cancelButtonColor: '#6c757d',
