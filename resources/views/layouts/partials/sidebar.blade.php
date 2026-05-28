@@ -170,7 +170,7 @@
                         <li class="nav-item">
                             <a href="{{ route('mi-perfil-proveedor.ubicacion.index') }}" class="nav-link menu-link {{ request()->routeIs('mi-perfil-proveedor.ubicacion.*') ? 'active' : '' }}">
                                 <i class="ri-map-pin-line"></i>
-                                <span>Mi ubicacion</span>
+                                <span>Mi ubicación</span>
                             </a>
                         </li>
                     @endcan

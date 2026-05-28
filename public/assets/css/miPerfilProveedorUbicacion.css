@@ -1,0 +1,116 @@
+.mi-ubicacion-dashboard {
+    padding-bottom: 18px;
+}
+
+.mi-ubicacion-dashboard .card {
+    border-radius: 10px;
+}
+
+.mi-ubicacion-stat .card-body {
+    display: flex;
+    align-items: center;
+    min-height: 112px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+}
+
+.mi-ubicacion-stat-icon,
+.mi-ubicacion-tip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mi-ubicacion-stat-icon {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+    border-radius: 14px;
+    font-size: 30px;
+}
+
+.mi-ubicacion-map {
+    min-height: 380px;
+}
+
+.mi-ubicacion-map-card .card-body {
+    min-height: 100%;
+}
+
+.mi-ubicacion-form-panel {
+    padding: 18px;
+    border: 1px solid var(--vz-border-color);
+    border-radius: 10px;
+    background: var(--vz-card-bg);
+}
+
+.mi-ubicacion-side-card {
+    min-height: auto;
+}
+
+.mi-ubicacion-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid var(--vz-border-color);
+    border-radius: 10px;
+    background: rgba(var(--vz-light-rgb), .36);
+}
+
+.mi-ubicacion-summary-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 12px;
+    font-size: 22px;
+}
+
+.mi-ubicacion-summary-address,
+.mi-ubicacion-inline-tip {
+    padding: 14px;
+    border-color: rgba(var(--vz-primary-rgb), .18);
+    border: 1px solid rgba(var(--vz-primary-rgb), .18);
+    border-radius: 10px;
+    background: rgba(var(--vz-primary-rgb), .06);
+    color: var(--vz-body-color);
+}
+
+.mi-ubicacion-tip-icon {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 50%;
+    background: rgba(247, 184, 75, .16);
+    color: #f7b84b;
+    font-size: 20px;
+}
+
+.mi-ubicacion-inline-tip .d-flex {
+    min-width: 0;
+}
+
+.mi-ubicacion-inline-tip p,
+.mi-ubicacion-inline-tip .badge {
+    white-space: normal;
+}
+
+[data-bs-theme="dark"] .mi-ubicacion-summary-item {
+    background: rgba(255, 255, 255, .03);
+}
+
+[data-bs-theme="dark"] .mi-ubicacion-inline-tip,
+[data-bs-theme="dark"] .mi-ubicacion-summary-address {
+    border-color: rgba(var(--vz-primary-rgb), .24);
+    background: rgba(var(--vz-primary-rgb), .10);
+}
+
+@media (max-width: 767.98px) {
+    .mi-ubicacion-map {
+        min-height: 320px;
+    }
+
+}

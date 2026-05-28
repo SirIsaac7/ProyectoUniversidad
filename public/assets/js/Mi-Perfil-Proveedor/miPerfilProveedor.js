@@ -1,22 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
     const successMessageElement = document.getElementById('mi-perfil-proveedor-success-message');
-    const radioSlider = document.querySelector('.js-mi-radio-slider');
-    const radioInput = document.getElementById('radio_cobertura_km');
-    const radioValue = document.getElementById('miRadioCoberturaValue');
-
-    const showInfo = function (title, text) {
-        if (typeof Swal === 'undefined') {
-            return;
-        }
-
-        Swal.fire({
-            title: title,
-            text: text,
-            icon: 'info',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#405189'
-        });
-    };
 
     document.querySelectorAll('.needs-validation').forEach(function (form) {
         form.addEventListener('submit', function (event) {
@@ -39,16 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    radioSlider?.addEventListener('input', function () {
-        if (radioInput) {
-            radioInput.value = radioSlider.value;
-        }
-
-        if (radioValue) {
-            radioValue.textContent = radioSlider.value;
-        }
-    });
-
     document.querySelectorAll('.js-mi-imagen-preview-input').forEach(function (input) {
         input.addEventListener('change', function () {
             const preview = input.closest('form')?.querySelector('.js-mi-imagen-preview');
@@ -66,32 +39,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             reader.readAsDataURL(file);
-        });
-    });
-
-    document.querySelector('.js-mi-ubicacion-actual')?.addEventListener('click', function () {
-        if (!navigator.geolocation) {
-            showInfo('Ubicacion no disponible', 'Tu navegador no permite obtener la ubicacion actual.');
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(function (position) {
-            const latitudInput = document.getElementById('latitud');
-            const longitudInput = document.getElementById('longitud');
-
-            if (latitudInput) {
-                latitudInput.value = position.coords.latitude.toFixed(7);
-            }
-
-            if (longitudInput) {
-                longitudInput.value = position.coords.longitude.toFixed(7);
-            }
-        }, function () {
-            showInfo('Ubicacion no disponible', 'Activa el permiso de ubicacion del navegador o ingresa las coordenadas manualmente.');
-        }, {
-            enableHighAccuracy: true,
-            timeout: 8000,
-            maximumAge: 60000
         });
     });
 

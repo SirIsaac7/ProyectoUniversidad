@@ -20,6 +20,19 @@ class UbicacionService
             ->firstOrFail();
     }
 
+    public function obtenerDatosVista(): array
+    {
+        $perfilProveedor = $this->getPerfilActual();
+        $ubicacion = $perfilProveedor->ubicacion;
+
+        return [
+            'perfilProveedor' => $perfilProveedor,
+            'ubicacion' => $ubicacion,
+            'tieneUbicacion' => (bool) $ubicacion,
+            'radioCobertura' => $ubicacion?->radio_cobertura_km ?: 1,
+        ];
+    }
+
     public function guardarActual(array $data): UbicacionProveedor
     {
         return $this->ubicacionProveedorService->createOrUpdateForPerfil(

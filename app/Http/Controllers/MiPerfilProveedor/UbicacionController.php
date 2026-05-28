@@ -16,9 +16,7 @@ class UbicacionController extends Controller
 
     public function index()
     {
-        return view('mi-perfil-proveedor.ubicacion.index', [
-            'perfilProveedor' => $this->ubicacionService->getPerfilActual(),
-        ]);
+        return view('mi-perfil-proveedor.ubicacion.index', $this->ubicacionService->obtenerDatosVista());
     }
 
     public function store(StoreMiUbicacionProveedorRequest $request)
