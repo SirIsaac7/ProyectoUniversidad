@@ -25,6 +25,29 @@ class DocumentoService
             ->firstOrFail();
     }
 
+    public function obtenerDatosVista(): array
+    {
+        $perfilProveedor = $this->getPerfilActual();
+        $tiposDocumentoDisponibles = $this->getTiposDocumentoDisponibles();
+        $documentos = $perfilProveedor->documentos;
+        $documentosAprobados = $documentos->where('estado_revision', 'aprobado')->count();
+        $documentosPendientes = $documentos->where('estado_revision', 'pendiente')->count();
+        $documentosRechazados = $documentos->where('estado_revision', 'rechazado')->count();
+        $ultimoDocumento = $documentos->sortByDesc('updated_at')->first();
+        $carpetas = $this->prepararCarpetas($tiposDocumentoDisponibles, $documentos);
+
+        return compact(
+            'perfilProveedor',
+            'tiposDocumentoDisponibles',
+            'documentos',
+            'documentosAprobados',
+            'documentosPendientes',
+            'documentosRechazados',
+            'ultimoDocumento',
+            'carpetas'
+        );
+    }
+
     public function getTiposDocumentoDisponibles(): Collection
     {
         return TipoDocumentoProveedor::query()
@@ -57,5 +80,25 @@ class DocumentoService
         abort_unless((int) $documentoProveedor->perfil_proveedor_id === $perfilProveedor->id, 403);
 
         $this->documentoProveedorService->bajaLogica($documentoProveedor);
+    }
+
+    private function prepararCarpetas(Collection $tiposDocumentoDisponibles, $documentos): array
+    {
+        $colores = ['primary', 'warning', 'success', 'info', 'danger'];
+        $icono = 'ri-folder-2-line';
+
+        return $tiposDocumentoDisponibles
+            ->values()
+            ->map(function (TipoDocumentoProveedor $tipoDocumento, int $indice) use ($documentos, $colores, $icono) {
+                return [
+                    'id' => $tipoDocumento->id,
+                    'nombre' => $tipoDocumento->nombre,
+                    'descripcion' => $tipoDocumento->descripcion ?: ($tipoDocumento->obligatorio ? 'Documento obligatorio' : 'Documento opcional'),
+                    'icono' => $icono,
+                    'color' => $colores[$indice % count($colores)],
+                    'documentos' => $documentos->where('tipo_documento_proveedor_id', $tipoDocumento->id),
+                ];
+            })
+            ->all();
     }
 }

@@ -1,0 +1,37 @@
+html[data-bs-theme="light"] {
+    --vz-border-color: #cfd5e3;
+    --vz-border-color-translucent: rgba(94, 105, 129, .24);
+}
+
+html[data-bs-theme="light"] .card,
+html[data-bs-theme="light"] .modal-content,
+html[data-bs-theme="light"] .dropdown-menu,
+html[data-bs-theme="light"] .offcanvas,
+html[data-bs-theme="light"] .toast,
+html[data-bs-theme="light"] .alert,
+html[data-bs-theme="light"] .list-group-item,
+html[data-bs-theme="light"] .mi-documento-folder,
+html[data-bs-theme="light"] .mi-documentos-list-card,
+html[data-bs-theme="light"] .mi-documento-side-panel,
+html[data-bs-theme="light"] .mi-documento-side-placeholder,
+html[data-bs-theme="light"] .mi-especialidad-card,
+html[data-bs-theme="light"] .mi-especialidad-side-panel,
+html[data-bs-theme="light"] .mi-especialidad-side-placeholder,
+html[data-bs-theme="light"] .mi-ubicacion-map-card,
+html[data-bs-theme="light"] .mi-ubicacion-side-card {
+    border-color: #cfd5e3 !important;
+}
+
+html[data-bs-theme="light"] .table > :not(caption) > * > *,
+html[data-bs-theme="light"] .mi-documento-row,
+html[data-bs-theme="light"] .mi-documentos-table-head,
+html[data-bs-theme="light"] .mi-documentos-list-card {
+    border-color: #d4d9e6 !important;
+}
+
+html[data-bs-theme="light"] .form-control,
+html[data-bs-theme="light"] .form-select,
+html[data-bs-theme="light"] .choices__inner,
+html[data-bs-theme="light"] .input-group-text {
+    border-color: #cbd2e2 !important;
+}

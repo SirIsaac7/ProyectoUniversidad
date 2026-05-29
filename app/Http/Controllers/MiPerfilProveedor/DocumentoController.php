@@ -18,10 +18,10 @@ class DocumentoController extends Controller
 
     public function index()
     {
-        return view('mi-perfil-proveedor.documentos.index', [
-            'perfilProveedor' => $this->documentoService->getPerfilActual(),
-            'tiposDocumentoDisponibles' => $this->documentoService->getTiposDocumentoDisponibles(),
-        ]);
+        return view(
+            'mi-perfil-proveedor.documentos.index',
+            $this->documentoService->obtenerDatosVista()
+        );
     }
 
     public function store(StoreMiDocumentoProveedorRequest $request)
