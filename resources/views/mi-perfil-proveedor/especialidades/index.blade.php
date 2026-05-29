@@ -178,7 +178,19 @@
                                 </div>
                             </div>
                         @empty
-                            <div class="text-center text-muted py-4">Aun no tienes especialidades registradas.</div>
+                            <div class="mi-perfil-empty-state">
+                                <span class="mi-perfil-empty-icon bg-primary-subtle text-primary">
+                                    <i class="ri-tools-line"></i>
+                                </span>
+                                <h5>Aun no tienes especialidades</h5>
+                                <p>Agrega las areas de servicio que dominas para que los clientes puedan encontrarte.</p>
+                                @can('gestionar especialidades proveedor')
+                                    <button type="button" class="btn btn-primary btn-sm js-mi-especialidad-panel-toggle" data-panel-target="miEspecialidadCreatePanel">
+                                        <i class="ri-add-line align-bottom me-1"></i>
+                                        Agregar especialidad
+                                    </button>
+                                @endcan
+                            </div>
                         @endforelse
                     </div>
                 </div>

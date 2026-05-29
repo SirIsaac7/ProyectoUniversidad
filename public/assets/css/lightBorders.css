@@ -18,7 +18,12 @@ html[data-bs-theme="light"] .mi-especialidad-card,
 html[data-bs-theme="light"] .mi-especialidad-side-panel,
 html[data-bs-theme="light"] .mi-especialidad-side-placeholder,
 html[data-bs-theme="light"] .mi-ubicacion-map-card,
-html[data-bs-theme="light"] .mi-ubicacion-side-card {
+html[data-bs-theme="light"] .mi-ubicacion-side-card,
+html[data-bs-theme="light"] .mi-portafolio-card,
+html[data-bs-theme="light"] .mi-portafolio-side-panel,
+html[data-bs-theme="light"] .mi-portafolio-side-placeholder,
+html[data-bs-theme="light"] .mi-portafolio-current-image,
+html[data-bs-theme="light"] .mi-perfil-empty-state {
     border-color: #cfd5e3 !important;
 }
 

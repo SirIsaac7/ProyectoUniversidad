@@ -217,11 +217,29 @@
                                 @endforeach
 
                                 @if ($documentos->isEmpty())
-                                    <div class="text-center text-muted py-5">Aun no tienes documentos cargados.</div>
+                                    <div class="mi-perfil-empty-state">
+                                        <span class="mi-perfil-empty-icon bg-primary-subtle text-primary">
+                                            <i class="ri-folder-upload-line"></i>
+                                        </span>
+                                        <h5>Aun no tienes documentos</h5>
+                                        <p>Sube tus documentos de verificacion para que administracion pueda revisar tu perfil.</p>
+                                        @can('gestionar documentos proveedor')
+                                            <button type="button" class="btn btn-primary btn-sm js-mi-documento-panel-toggle" data-panel-target="miDocumentoCreatePanel">
+                                                <i class="ri-upload-2-line align-bottom me-1"></i>
+                                                Subir documento
+                                            </button>
+                                        @endcan
+                                    </div>
                                 @endif
 
                                 <div class="mi-documentos-empty-filter d-none" id="miDocumentosEmptyFilter">
-                                    No tienes documentos cargados en esta carpeta.
+                                    <div class="mi-perfil-empty-state">
+                                        <span class="mi-perfil-empty-icon bg-info-subtle text-info">
+                                            <i class="ri-folder-info-line"></i>
+                                        </span>
+                                        <h5>Carpeta vacia</h5>
+                                        <p>No tienes documentos cargados en esta carpeta.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

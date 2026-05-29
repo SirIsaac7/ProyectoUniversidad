@@ -48,6 +48,7 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::get('/mi-perfil-proveedor/portafolio', [MiPortafolioProveedorController::class, 'index'])->name('mi-perfil-proveedor.portafolio.index');
     Route::post('/mi-perfil-proveedor/portafolio', [MiPortafolioProveedorController::class, 'store'])->name('mi-perfil-proveedor.portafolio.store');
     Route::put('/mi-perfil-proveedor/portafolio/{portafolioProveedor}', [MiPortafolioProveedorController::class, 'update'])->name('mi-perfil-proveedor.portafolio.update');
+    Route::patch('/mi-perfil-proveedor/portafolio/{portafolioProveedor}/activar', [MiPortafolioProveedorController::class, 'activar'])->name('mi-perfil-proveedor.portafolio.activar');
     Route::delete('/mi-perfil-proveedor/portafolio/{portafolioProveedor}', [MiPortafolioProveedorController::class, 'destroy'])->name('mi-perfil-proveedor.portafolio.destroy');
     Route::get('/mi-perfil-proveedor/documentos', [MiDocumentoProveedorController::class, 'index'])->name('mi-perfil-proveedor.documentos.index');
     Route::post('/mi-perfil-proveedor/documentos', [MiDocumentoProveedorController::class, 'store'])->name('mi-perfil-proveedor.documentos.store');

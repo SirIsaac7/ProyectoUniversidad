@@ -158,7 +158,19 @@
                                 @include('mi-perfil-proveedor.horarios.partials.edit')
                             </div>
                         @empty
-                            <div class="text-center text-muted py-4">Aun no tienes horarios registrados.</div>
+                            <div class="mi-perfil-empty-state">
+                                <span class="mi-perfil-empty-icon bg-primary-subtle text-primary">
+                                    <i class="ri-calendar-schedule-line"></i>
+                                </span>
+                                <h5>Aun no tienes horarios</h5>
+                                <p>Agrega tus dias y horas de atencion para que los clientes sepan cuando puedes atender.</p>
+                                @can('gestionar horarios proveedor')
+                                    <button type="button" class="btn btn-primary btn-sm" id="miHorarioOpenEmptyForm">
+                                        <i class="ri-add-line align-bottom me-1"></i>
+                                        Agregar horario
+                                    </button>
+                                @endcan
+                            </div>
                         @endforelse
                     </div>
                 </div>

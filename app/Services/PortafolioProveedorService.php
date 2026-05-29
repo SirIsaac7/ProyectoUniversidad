@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\PortafolioProveedor;
 use App\Models\PortafolioProveedorImagen;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Schema;
 
 class PortafolioProveedorService
 {
@@ -12,14 +13,19 @@ class PortafolioProveedorService
     {
         $imagenPrincipal = $this->storeFirstImage($data, $data['titulo']);
 
-        $portafolioProveedor = PortafolioProveedor::create([
+        $datosPortafolio = [
             'perfil_proveedor_id' => $data['perfil_proveedor_id'],
             'titulo' => $data['titulo'],
             'descripcion' => $data['descripcion'] ?? null,
-            'imagen' => $imagenPrincipal,
             'fecha_trabajo' => $data['fecha_trabajo'] ?? null,
             'estado' => $data['estado'],
-        ]);
+        ];
+
+        if (Schema::hasColumn('portafolio_proveedor', 'imagen')) {
+            $datosPortafolio['imagen'] = $imagenPrincipal;
+        }
+
+        $portafolioProveedor = PortafolioProveedor::create($datosPortafolio);
 
         $this->storeImages($portafolioProveedor, $data, $imagenPrincipal);
 
@@ -75,6 +81,15 @@ class PortafolioProveedorService
     {
         $portafolioProveedor->update([
             'estado' => false,
+        ]);
+
+        return $portafolioProveedor;
+    }
+
+    public function activar(PortafolioProveedor $portafolioProveedor): PortafolioProveedor
+    {
+        $portafolioProveedor->update([
+            'estado' => true,
         ]);
 
         return $portafolioProveedor;

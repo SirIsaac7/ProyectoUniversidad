@@ -18,9 +18,10 @@ class PortafolioController extends Controller
 
     public function index()
     {
-        return view('mi-perfil-proveedor.portafolio.index', [
-            'perfilProveedor' => $this->portafolioService->getPerfilActual(),
-        ]);
+        return view(
+            'mi-perfil-proveedor.portafolio.index',
+            $this->portafolioService->obtenerDatosVista()
+        );
     }
 
     public function store(StoreMiPortafolioProveedorRequest $request)
@@ -42,5 +43,12 @@ class PortafolioController extends Controller
         $this->portafolioService->eliminarActual($portafolioProveedor);
 
         return back()->with('success', 'Trabajo retirado del portafolio correctamente.');
+    }
+
+    public function activar(PortafolioProveedor $portafolioProveedor)
+    {
+        $this->portafolioService->activarActual($portafolioProveedor);
+
+        return back()->with('success', 'Trabajo activado en el portafolio correctamente.');
     }
 }

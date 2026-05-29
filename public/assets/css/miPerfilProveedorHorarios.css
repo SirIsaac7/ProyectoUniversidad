@@ -17,6 +17,41 @@
     font-size: 24px;
 }
 
+.mi-perfil-empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    min-height: 250px;
+    padding: 28px 18px;
+    border: 1px dashed rgba(var(--vz-primary-rgb), .28);
+    border-radius: 10px;
+    background: rgba(var(--vz-primary-rgb), .035);
+    text-align: center;
+}
+
+.mi-perfil-empty-state h5 {
+    margin-bottom: 0;
+}
+
+.mi-perfil-empty-state p {
+    max-width: 430px;
+    margin-bottom: 4px;
+    color: var(--vz-secondary-color);
+}
+
+.mi-perfil-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 74px;
+    height: 74px;
+    border-radius: 20px;
+    font-size: 38px;
+}
+
 .mi-horario-item {
     position: relative;
     overflow: visible;

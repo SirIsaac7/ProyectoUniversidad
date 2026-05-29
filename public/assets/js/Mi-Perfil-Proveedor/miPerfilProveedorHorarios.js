@@ -146,12 +146,13 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
     const createWidget = document.getElementById('miHorarioCreateWidget');
     const openFormButton = document.getElementById('miHorarioOpenForm');
+    const openEmptyFormButton = document.getElementById('miHorarioOpenEmptyForm');
 
-    if (!createWidget || !openFormButton) {
+    if (!createWidget || (!openFormButton && !openEmptyFormButton)) {
         return;
     }
 
-    openFormButton.addEventListener('click', function () {
+    const openForm = function () {
         createWidget.classList.add('is-open');
 
         const firstInput = createWidget.querySelector('select, input');
@@ -160,7 +161,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 firstInput.focus();
             }, 250);
         }
-    });
+    };
+
+    openFormButton?.addEventListener('click', openForm);
+    openEmptyFormButton?.addEventListener('click', openForm);
 });
 
 document.addEventListener('DOMContentLoaded', function () {
