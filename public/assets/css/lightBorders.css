@@ -23,7 +23,12 @@ html[data-bs-theme="light"] .mi-portafolio-card,
 html[data-bs-theme="light"] .mi-portafolio-side-panel,
 html[data-bs-theme="light"] .mi-portafolio-side-placeholder,
 html[data-bs-theme="light"] .mi-portafolio-current-image,
-html[data-bs-theme="light"] .mi-perfil-empty-state {
+html[data-bs-theme="light"] .mi-perfil-empty-state,
+html[data-bs-theme="light"] .mi-perfil-preview-card,
+html[data-bs-theme="light"] .mi-perfil-form-card,
+html[data-bs-theme="light"] .mi-perfil-detail-card,
+html[data-bs-theme="light"] .mi-perfil-file-summary,
+html[data-bs-theme="light"] .mi-perfil-detail-card {
     border-color: #cfd5e3 !important;
 }
 

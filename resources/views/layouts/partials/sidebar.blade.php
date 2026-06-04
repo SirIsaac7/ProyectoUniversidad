@@ -144,7 +144,7 @@
                     <li class="nav-item">
                         <a href="{{ route('mi-perfil-proveedor.index') }}" class="nav-link menu-link {{ request()->routeIs('mi-perfil-proveedor.index') ? 'active' : '' }}">
                             <i class="ri-user-heart-line"></i>
-                            <span>Mi perfil</span>
+                            <span>Datos Generales</span>
                         </a>
                     </li>
 

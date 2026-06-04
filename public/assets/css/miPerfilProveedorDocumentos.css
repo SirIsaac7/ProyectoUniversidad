@@ -367,14 +367,15 @@
 }
 
 .mi-documento-view-btn {
-    border: 1px solid rgba(64, 81, 137, .25);
-    color: var(--vz-secondary-color);
+    border: 1px solid rgba(63, 167, 214, .42);
+    background: rgba(63, 167, 214, .12);
+    color: #3fa7d6;
 }
 
 .mi-documento-view-btn:hover,
 .mi-documento-view-btn:focus {
-    background: rgba(64, 81, 137, .08);
-    color: var(--vz-body-color);
+    background: rgba(63, 167, 214, .20);
+    color: #2f91bd;
 }
 
 .mi-documento-edit-btn {
