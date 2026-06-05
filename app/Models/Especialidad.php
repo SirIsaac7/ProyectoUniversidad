@@ -45,6 +45,11 @@ class Especialidad extends Model
         return $this->hasMany(ProveedorEspecialidad::class);
     }
 
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Policies\InicioPolicy;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Event;
@@ -23,8 +24,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::define('view-inicio', [InicioPolicy::class, 'view']);
+
         Gate::before(function ($user, string $ability) {
-            return $user->hasRole('superadmin') ? true : null;
+            return $user->hasRole('SUPERADMIN') ? true : null;
         });
 
         Event::listen(Login::class, function (Login $event){

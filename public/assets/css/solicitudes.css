@@ -1,0 +1,193 @@
+.solicitudes-form-card .form-text {
+    min-height: 1.25rem;
+}
+
+.solicitudes-form-card .choices {
+    margin-bottom: 0;
+}
+
+.solicitudes-form-card .choices__inner {
+    min-height: calc(1.5em + 1rem + 2px);
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+}
+
+.solicitudes-form-card .choices[data-type*=select-one] .choices__inner {
+    padding-bottom: 0.5rem;
+}
+
+.solicitudes-form-card .choices__list--dropdown,
+.solicitudes-form-card .choices__list[aria-expanded] {
+    border-radius: 0.375rem;
+}
+
+.solicitudes-form-card .choices__list--dropdown .choices__item,
+.solicitudes-form-card .choices__list[aria-expanded] .choices__item {
+    padding: 0.65rem 0.9rem;
+}
+
+.solicitudes-form-card .choices__list--dropdown .choices__input,
+.solicitudes-form-card .choices__list[aria-expanded] .choices__input {
+    margin: 0.75rem;
+    width: calc(100% - 1.5rem);
+}
+
+.solicitudes-form-card .invalid-feedback.d-block {
+    display: block !important;
+}
+
+.solicitudes-table td small {
+    display: inline-block;
+    max-width: 230px;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.solicitudes-cliente .card {
+    border-radius: 10px;
+}
+
+.solicitud-stat-card .card-body {
+    padding: 22px;
+}
+
+.solicitud-stat-icon {
+    width: 54px;
+    height: 54px;
+    flex: 0 0 54px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 26px;
+}
+
+.solicitudes-filter-card .card-body {
+    padding: 18px;
+}
+
+.solicitud-search-icon {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.solicitud-client-card {
+    overflow: hidden;
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.solicitud-client-card:hover,
+.solicitud-client-card.is-selected {
+    transform: translateY(-2px);
+    border-color: rgba(var(--vz-primary-rgb), .45);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .08);
+}
+
+.solicitud-client-thumb {
+    width: 64px;
+    height: 64px;
+    flex: 0 0 64px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(var(--vz-primary-rgb), .10);
+    color: var(--vz-primary);
+    font-size: 30px;
+}
+
+.solicitud-client-meta {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+}
+
+.solicitud-client-meta i {
+    font-size: 18px;
+    margin-top: 2px;
+}
+
+.solicitud-status-badge {
+    min-width: 112px;
+    justify-content: center;
+    display: inline-flex;
+    align-items: center;
+    padding: .5rem .65rem;
+}
+
+.solicitud-detail-panel {
+    top: 84px;
+}
+
+.solicitud-side-panel {
+    top: 84px;
+}
+
+.solicitud-panel-icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 22px;
+}
+
+.solicitud-detail-list {
+    border-top: 1px solid var(--vz-border-color);
+}
+
+.solicitud-detail-row {
+    display: grid;
+    grid-template-columns: 24px minmax(94px, .8fr) minmax(0, 1.4fr);
+    gap: 10px;
+    align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--vz-border-color);
+}
+
+.solicitud-detail-row i {
+    color: var(--vz-secondary-color);
+    font-size: 18px;
+}
+
+.solicitud-detail-row span {
+    color: var(--vz-secondary-color);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.solicitud-detail-row strong {
+    color: var(--vz-body-color);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: normal;
+    word-break: break-word;
+}
+
+[data-bs-theme="dark"] .solicitud-client-card:hover,
+[data-bs-theme="dark"] .solicitud-client-card.is-selected {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .24);
+}
+
+@media (max-width: 1199.98px) {
+    .solicitud-detail-panel,
+    .solicitud-side-panel {
+        position: static !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .solicitud-detail-row {
+        grid-template-columns: 24px 1fr;
+    }
+
+    .solicitud-detail-row strong {
+        grid-column: 2;
+    }
+}

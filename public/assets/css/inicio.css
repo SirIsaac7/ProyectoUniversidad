@@ -1,4 +1,6 @@
-.inicio-proveedor .card {
+.inicio-proveedor .card,
+.inicio-admin .card,
+.inicio-cliente .card {
     border-radius: 10px;
 }
 

@@ -5,6 +5,10 @@
 @section('content')
 @if ($tipoInicio === 'proveedor')
     @include('inicio.partials.proveedor', ['data' => $inicioProveedor])
+@elseif ($tipoInicio === 'admin')
+    @include('inicio.partials.admin', ['data' => $inicioAdmin])
+@elseif ($tipoInicio === 'cliente')
+    @include('inicio.partials.cliente', ['data' => $inicioCliente])
 @else
     <div class="row">
         <div class="col-12">

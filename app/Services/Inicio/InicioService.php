@@ -3,6 +3,7 @@
 namespace App\Services\Inicio;
 
 use App\Models\PerfilProveedor;
+use Illuminate\Support\Facades\Gate;
 use Spatie\Activitylog\Models\Activity;
 
 class InicioService
@@ -23,16 +24,38 @@ class InicioService
             ->where('user_id', $user->id)
             ->first();
 
-        if ($perfilProveedor && $user->can('visualizar perfil proveedor')) {
+        if ($perfilProveedor && Gate::allows('view-inicio', 'proveedor')) {
             return [
                 'tipoInicio' => 'proveedor',
                 'inicioProveedor' => $this->getProveedorData($perfilProveedor),
+                'inicioAdmin' => null,
+                'inicioCliente' => null,
+            ];
+        }
+
+        if (Gate::allows('view-inicio', 'admin')) {
+            return [
+                'tipoInicio' => 'admin',
+                'inicioProveedor' => null,
+                'inicioAdmin' => [],
+                'inicioCliente' => null,
+            ];
+        }
+
+        if (Gate::allows('view-inicio', 'cliente')) {
+            return [
+                'tipoInicio' => 'cliente',
+                'inicioProveedor' => null,
+                'inicioAdmin' => null,
+                'inicioCliente' => [],
             ];
         }
 
         return [
             'tipoInicio' => 'general',
             'inicioProveedor' => null,
+            'inicioAdmin' => null,
+            'inicioCliente' => null,
         ];
     }
 
@@ -91,4 +114,5 @@ class InicioService
             ->take(4)
             ->get();
     }
+
 }

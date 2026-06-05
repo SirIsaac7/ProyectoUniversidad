@@ -1,0 +1,30 @@
+.citas-table td,
+.citas-table th {
+    vertical-align: middle;
+}
+
+.citas-table small {
+    display: block;
+    line-height: 1.35;
+}
+
+.citas-table .badge {
+    font-size: 0.78rem;
+    padding: 0.38rem 0.58rem;
+}
+
+.citas-table td .btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.citas-table thead .btn-link {
+    width: auto;
+    height: auto;
+    display: inline;
+    align-items: initial;
+    justify-content: initial;
+}

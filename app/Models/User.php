@@ -71,4 +71,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(PerfilProveedor::class);
     }
+
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class, 'cliente_user_id');
+    }
+
+    public function historialSolicitudes()
+    {
+        return $this->hasMany(HistorialSolicitud::class);
+    }
 }

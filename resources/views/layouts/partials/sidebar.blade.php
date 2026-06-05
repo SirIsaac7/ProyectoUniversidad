@@ -128,7 +128,7 @@
                 @php
                     $usuarioActual = auth()->user();
                     $puedeVerMiPerfilProveedor = $usuarioActual->can('visualizar perfil proveedor');
-                    $puedeVerAdministracionProveedores = ! $usuarioActual->hasRole('proveedor') && (
+                    $puedeVerAdministracionProveedores = ! $usuarioActual->hasRole('PROVEEDOR') && (
                         $usuarioActual->can('ver proveedores') ||
                         $usuarioActual->can('ver especialidades proveedor') ||
                         $usuarioActual->can('ver horarios proveedor') ||
@@ -280,6 +280,87 @@
                         </ul>
                     </div>
                 </li>
+                @endif
+
+                @can('ver solicitudes')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('solicitudes.*') ? 'active' : '' }}" href="{{ route('solicitudes.index') }}">
+                            <i class="ri-calendar-check-line"></i>
+                            <span>Solicitudes</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('ver citas')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('citas.*') ? 'active' : '' }}" href="{{ route('citas.index') }}">
+                            <i class="ri-calendar-event-line"></i>
+                            <span>Citas</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('ver solicitudes')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('historial-solicitudes.*') ? 'active' : '' }}" href="{{ route('historial-solicitudes.index') }}">
+                            <i class="ri-time-line"></i>
+                            <span>Historial de solicitudes</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @if ($usuarioActual->hasRole('CLIENTE') && $usuarioActual->can('ver mis solicitudes'))
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('cliente.solicitudes.*') ? 'active' : '' }}" href="{{ route('cliente.solicitudes.index') }}">
+                            <i class="ri-file-list-2-line"></i>
+                            <span>Mis solicitudes</span>
+                        </a>
+                    </li>
+                @endif
+
+                @if ($usuarioActual->hasRole('CLIENTE') && $usuarioActual->can('ver mis citas'))
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('cliente.citas.*') ? 'active' : '' }}" href="{{ route('cliente.citas.index') }}">
+                            <i class="ri-calendar-check-line"></i>
+                            <span>Mis citas</span>
+                        </a>
+                    </li>
+                @endif
+
+                @if ($usuarioActual->hasRole('CLIENTE') && $usuarioActual->can('ver mis solicitudes'))
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('cliente.historial-solicitudes.*') ? 'active' : '' }}" href="{{ route('cliente.historial-solicitudes.index') }}">
+                            <i class="ri-history-line"></i>
+                            <span>Mi historial de solicitudes</span>
+                        </a>
+                    </li>
+                @endif
+
+                @if ($usuarioActual->hasRole('PROVEEDOR') && $usuarioActual->can('ver solicitudes proveedor'))
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('proveedor.solicitudes.*') ? 'active' : '' }}" href="{{ route('proveedor.solicitudes.index') }}">
+                            <i class="ri-inbox-archive-line"></i>
+                            <span>Solicitudes recibidas</span>
+                        </a>
+                    </li>
+                @endif
+
+                @if ($usuarioActual->hasRole('PROVEEDOR') && $usuarioActual->can('ver mis citas'))
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('proveedor.citas.*') ? 'active' : '' }}" href="{{ route('proveedor.citas.index') }}">
+                            <i class="ri-calendar-todo-line"></i>
+                            <span>Citas recibidas</span>
+                        </a>
+                    </li>
+                @endif
+
+                @if ($usuarioActual->hasRole('PROVEEDOR') && $usuarioActual->can('ver solicitudes proveedor'))
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('proveedor.historial-solicitudes.*') ? 'active' : '' }}" href="{{ route('proveedor.historial-solicitudes.index') }}">
+                            <i class="ri-history-line"></i>
+                            <span>Historial recibido</span>
+                        </a>
+                    </li>
                 @endif
 
             </ul>

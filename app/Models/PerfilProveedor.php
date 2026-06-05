@@ -69,6 +69,11 @@ class PerfilProveedor extends Model
         return $this->hasMany(PortafolioProveedor::class);
     }
 
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

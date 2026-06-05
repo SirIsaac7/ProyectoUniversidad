@@ -38,7 +38,7 @@ class UpdatePerfilProveedorRequest extends FormRequest
     {
         $validator->after(function (Validator $validator) {
             $usuarioEsProveedor = User::whereKey($this->input('user_id'))
-                ->whereHas('roles', fn ($query) => $query->where('name', 'proveedor'))
+                ->whereHas('roles', fn ($query) => $query->where('name', 'PROVEEDOR'))
                 ->exists();
 
             if (! $usuarioEsProveedor) {
