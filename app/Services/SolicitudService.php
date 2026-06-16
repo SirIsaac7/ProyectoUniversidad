@@ -6,11 +6,13 @@ use App\Models\PerfilProveedor;
 use App\Models\ProveedorEspecialidad;
 use App\Models\Solicitud;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 class SolicitudService
 {
     public function __construct(
-        protected HistorialSolicitudService $historialSolicitudService
+        protected HistorialSolicitudService $historialSolicitudService,
+        protected NotificacionService $notificacionService
     ) {
     }
 
@@ -83,6 +85,16 @@ class SolicitudService
             'Solicitud creada por el cliente'
         );
 
+        $solicitud->load('perfilProveedor.user');
+
+        if ($solicitud->perfilProveedor?->user) {
+            $this->notificacionService->nuevaSolicitudParaProveedor(
+                proveedor: $solicitud->perfilProveedor->user,
+                cliente: $cliente->name,
+                url: route('proveedor.solicitudes.index')
+            );
+        }
+
         return $solicitud;
     }
 
@@ -149,6 +161,16 @@ class SolicitudService
             $comentario
         );
 
+        $solicitud->load('cliente');
+
+        if ($solicitud->cliente) {
+            $this->notificacionService->solicitudActualizadaParaCliente(
+                cliente: $solicitud->cliente,
+                estado: $estado,
+                url: route('cliente.solicitudes.index')
+            );
+        }
+
         return $solicitud;
     }
 
@@ -183,6 +205,130 @@ class SolicitudService
             'aceptadas' => (clone $query)->where('estado', 'aceptada')->count(),
             'enProceso' => (clone $query)->where('estado', 'en_proceso')->count(),
             'completadas' => (clone $query)->where('estado', 'finalizada')->count(),
+        ];
+    }
+
+    public function estadosVistaCliente(): array
+    {
+        return [
+            'pendiente' => ['label' => 'Pendiente', 'class' => 'warning', 'icon' => 'ri-time-line'],
+            'aceptada' => ['label' => 'Aceptada', 'class' => 'success', 'icon' => 'ri-checkbox-circle-line'],
+            'rechazada' => ['label' => 'Rechazada', 'class' => 'danger', 'icon' => 'ri-close-circle-line'],
+            'cancelada' => ['label' => 'Cancelada', 'class' => 'danger', 'icon' => 'ri-close-circle-line'],
+            'en_proceso' => ['label' => 'En proceso', 'class' => 'info', 'icon' => 'ri-loader-2-line'],
+            'finalizada' => ['label' => 'Completada', 'class' => 'primary', 'icon' => 'ri-flag-line'],
+        ];
+    }
+
+    public function estadisticasVistaCliente(array $resumenSolicitudes): array
+    {
+        return [
+            [
+                'titulo' => 'Pendientes',
+                'valor' => $resumenSolicitudes['pendientes'],
+                'texto' => 'En espera de respuesta',
+                'icono' => 'ri-time-line',
+                'color' => 'warning',
+            ],
+            [
+                'titulo' => 'Aceptadas',
+                'valor' => $resumenSolicitudes['aceptadas'],
+                'texto' => 'Solicitud aceptada',
+                'icono' => 'ri-calendar-check-line',
+                'color' => 'info',
+            ],
+            [
+                'titulo' => 'En proceso',
+                'valor' => $resumenSolicitudes['enProceso'],
+                'texto' => 'Servicio en curso',
+                'icono' => 'ri-tools-line',
+                'color' => 'success',
+            ],
+            [
+                'titulo' => 'Completadas',
+                'valor' => $resumenSolicitudes['completadas'],
+                'texto' => 'Servicios finalizados',
+                'icono' => 'ri-calendar-check-line',
+                'color' => 'primary',
+            ],
+        ];
+    }
+
+    public function solicitudesVistaCliente($solicitudes, array $estadoMeta)
+    {
+        return $solicitudes->getCollection()
+            ->map(function (Solicitud $solicitud) use ($estadoMeta) {
+                $rubro = $solicitud->especialidad?->rubroTipoServicio?->rubro?->nombre ?? 'Sin rubro';
+                $tipoServicio = $solicitud->especialidad?->rubroTipoServicio?->tipoServicio?->nombre ?? 'Sin tipo';
+                $especialidad = $solicitud->especialidad?->nombre ?? 'Sin especialidad';
+                $proveedor = $solicitud->perfilProveedor?->nombre_publico ?? 'Sin proveedor';
+                $fechaTexto = $solicitud->fecha_solicitada ? $solicitud->fecha_solicitada->format('d/m/Y') : 'Sin fecha';
+                $horaTexto = $solicitud->hora_solicitada?->format('H:i') ?: 'Sin hora';
+                $zona = $solicitud->zona ?: 'Sin zona';
+                $direccion = $solicitud->direccion ?: 'Sin direccion';
+                $meta = $estadoMeta[$solicitud->estado] ?? [
+                    'label' => ucfirst(str_replace('_', ' ', $solicitud->estado)),
+                    'class' => 'secondary',
+                    'icon' => 'ri-information-line',
+                ];
+
+                return [
+                    'modelo' => $solicitud,
+                    'id' => $solicitud->id,
+                    'titulo' => $solicitud->titulo,
+                    'descripcion' => $solicitud->descripcion,
+                    'estado' => $solicitud->estado,
+                    'meta' => $meta,
+                    'created_timestamp' => optional($solicitud->created_at)->timestamp ?? 0,
+                    'search' => Str::lower(
+                        $solicitud->titulo . ' ' .
+                        $solicitud->descripcion . ' ' .
+                        $proveedor . ' ' .
+                        $especialidad . ' ' .
+                        $rubro . ' ' .
+                        $tipoServicio . ' ' .
+                        trim(($solicitud->zona ?: 'Sin zona') . ($solicitud->direccion ? ', ' . $solicitud->direccion : ''))
+                    ),
+                    'fecha_texto' => $fechaTexto,
+                    'hora_texto' => $horaTexto,
+                    'rubro' => $rubro,
+                    'tipo_servicio' => $tipoServicio,
+                    'especialidad' => $especialidad,
+                    'proveedor' => $proveedor,
+                    'zona' => $zona,
+                    'direccion' => $direccion,
+                    'tipo_atencion' => ucfirst(str_replace('_', ' ', $solicitud->tipo_atencion)),
+                    'puede_editar' => $solicitud->estado === 'pendiente',
+                    'puede_cancelar' => ! in_array($solicitud->estado, ['cancelada', 'finalizada'], true),
+                ];
+            });
+    }
+
+    public function detalleVistaCliente(?Solicitud $solicitud, array $estadoMeta): ?array
+    {
+        if (! $solicitud) {
+            return null;
+        }
+
+        $meta = $estadoMeta[$solicitud->estado] ?? [
+            'label' => ucfirst(str_replace('_', ' ', $solicitud->estado)),
+            'class' => 'secondary',
+            'icon' => 'ri-information-line',
+        ];
+
+        return [
+            'id' => $solicitud->id,
+            'titulo' => $solicitud->titulo,
+            'descripcion' => $solicitud->descripcion,
+            'meta' => $meta,
+            'categoria' => ($solicitud->especialidad?->rubroTipoServicio?->rubro?->nombre ?? 'Sin rubro')
+                . ' - ' . ($solicitud->especialidad?->rubroTipoServicio?->tipoServicio?->nombre ?? 'Sin tipo'),
+            'especialidad' => $solicitud->especialidad?->nombre ?? 'Sin especialidad',
+            'proveedor' => $solicitud->perfilProveedor?->nombre_publico ?? 'Sin proveedor',
+            'fecha' => ($solicitud->fecha_solicitada?->format('d/m/Y') ?: 'Sin fecha')
+                . ' - ' . ($solicitud->hora_solicitada?->format('H:i') ?: 'Sin hora'),
+            'ubicacion' => ($solicitud->zona ?: 'Sin zona') . ' - ' . ($solicitud->direccion ?: 'Sin direccion'),
+            'tipo_atencion' => ucfirst(str_replace('_', ' ', $solicitud->tipo_atencion)),
         ];
     }
 

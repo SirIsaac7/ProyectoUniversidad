@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Panel administrativo" name="description" />
     <meta content="Proyecto Integrador" name="author" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
 
     <script src="{{ asset('assets/js/layout.js') }}"></script>
@@ -65,6 +66,25 @@
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/responsive.bootstrap.min.js"></script>
+    @auth
+        <script>
+            window.usuarioAutenticadoId = @json(auth()->id());
+            window.notificacionesRutas = {
+                recientes: @json(route('notificaciones.recientes')),
+                leerTodas: @json(route('notificaciones.leer-todas')),
+                leer: @json(url('/notificaciones/__ID__/leer')),
+            };
+            window.reverbConfig = {
+                key: @json(config('broadcasting.connections.reverb.key')),
+                host: @json(config('broadcasting.connections.reverb.options.host') ?: '127.0.0.1'),
+                port: @json(config('broadcasting.connections.reverb.options.port') ?: 8080),
+                scheme: @json(config('broadcasting.connections.reverb.options.scheme') ?: 'http'),
+            };
+        </script>
+        <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
+        <script src="{{ asset('assets/js/notificaciones.js') }}"></script>
+    @endauth
     @stack('scripts')
     @livewireScripts
 </body>

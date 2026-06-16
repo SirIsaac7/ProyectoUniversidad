@@ -282,56 +282,70 @@
                 </li>
                 @endif
 
-                @can('ver solicitudes')
+                @if ($usuarioActual->can('ver solicitudes') || $usuarioActual->can('ver citas'))
                     <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('solicitudes.*') ? 'active' : '' }}" href="{{ route('solicitudes.index') }}">
-                            <i class="ri-calendar-check-line"></i>
-                            <span>Solicitudes</span>
-                        </a>
-                    </li>
-                @endcan
-
-                @can('ver citas')
-                    <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('citas.*') ? 'active' : '' }}" href="{{ route('citas.index') }}">
+                        <a
+                            class="nav-link menu-link {{ request()->routeIs('solicitudes.*') || request()->routeIs('citas.*') || request()->routeIs('historial-solicitudes.*') ? 'active' : '' }}"
+                            href="#sidebarCitas"
+                            data-bs-toggle="collapse"
+                            role="button"
+                            aria-expanded="{{ request()->routeIs('solicitudes.*') || request()->routeIs('citas.*') || request()->routeIs('historial-solicitudes.*') ? 'true' : 'false' }}"
+                            aria-controls="sidebarCitas"
+                        >
                             <i class="ri-calendar-event-line"></i>
                             <span>Citas</span>
                         </a>
-                    </li>
-                @endcan
 
-                @can('ver solicitudes')
+                        <div
+                            class="collapse menu-dropdown {{ request()->routeIs('solicitudes.*') || request()->routeIs('citas.*') || request()->routeIs('historial-solicitudes.*') ? 'show' : '' }}"
+                            id="sidebarCitas"
+                        >
+                            <ul class="nav nav-sm flex-column">
+                                @can('ver solicitudes')
+                                    <li class="nav-item">
+                                        <a href="{{ route('solicitudes.index') }}" class="nav-link {{ request()->routeIs('solicitudes.*') ? 'active' : '' }}">
+                                            <i class="ri-calendar-check-line me-1"></i>
+                                            Solicitudes
+                                        </a>
+                                    </li>
+                                @endcan
+
+                                @can('ver citas')
+                                    <li class="nav-item">
+                                        <a href="{{ route('citas.index') }}" class="nav-link {{ request()->routeIs('citas.*') ? 'active' : '' }}">
+                                            <i class="ri-calendar-event-line me-1"></i>
+                                            Citas
+                                        </a>
+                                    </li>
+                                @endcan
+
+                                @can('ver solicitudes')
+                                    <li class="nav-item">
+                                        <a href="{{ route('historial-solicitudes.index') }}" class="nav-link {{ request()->routeIs('historial-solicitudes.*') ? 'active' : '' }}">
+                                            <i class="ri-time-line me-1"></i>
+                                            Historial
+                                        </a>
+                                    </li>
+                                @endcan
+                            </ul>
+                        </div>
+                    </li>
+                @endif
+
+                @if ($usuarioActual->hasRole('CLIENTE') && $usuarioActual->can('buscar servicios'))
                     <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('historial-solicitudes.*') ? 'active' : '' }}" href="{{ route('historial-solicitudes.index') }}">
-                            <i class="ri-time-line"></i>
-                            <span>Historial de solicitudes</span>
+                        <a class="nav-link menu-link {{ request()->routeIs('cliente.buscar-servicios.*') ? 'active' : '' }}" href="{{ route('cliente.buscar-servicios.index') }}">
+                            <i class="ri-search-eye-line"></i>
+                            <span>Buscar servicios</span>
                         </a>
                     </li>
-                @endcan
+                @endif
 
                 @if ($usuarioActual->hasRole('CLIENTE') && $usuarioActual->can('ver mis solicitudes'))
                     <li class="nav-item">
                         <a class="nav-link menu-link {{ request()->routeIs('cliente.solicitudes.*') ? 'active' : '' }}" href="{{ route('cliente.solicitudes.index') }}">
                             <i class="ri-file-list-2-line"></i>
                             <span>Mis solicitudes</span>
-                        </a>
-                    </li>
-                @endif
-
-                @if ($usuarioActual->hasRole('CLIENTE') && $usuarioActual->can('ver mis citas'))
-                    <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('cliente.citas.*') ? 'active' : '' }}" href="{{ route('cliente.citas.index') }}">
-                            <i class="ri-calendar-check-line"></i>
-                            <span>Mis citas</span>
-                        </a>
-                    </li>
-                @endif
-
-                @if ($usuarioActual->hasRole('CLIENTE') && $usuarioActual->can('ver mis solicitudes'))
-                    <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('cliente.historial-solicitudes.*') ? 'active' : '' }}" href="{{ route('cliente.historial-solicitudes.index') }}">
-                            <i class="ri-history-line"></i>
-                            <span>Mi historial de solicitudes</span>
                         </a>
                     </li>
                 @endif

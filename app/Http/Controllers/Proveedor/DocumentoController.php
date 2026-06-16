@@ -19,7 +19,7 @@ class DocumentoController extends Controller
     public function index()
     {
         return view(
-            'mi-perfil-proveedor.documentos.index',
+            'proveedor.documentos.index',
             $this->documentoService->obtenerDatosVista()
         );
     }

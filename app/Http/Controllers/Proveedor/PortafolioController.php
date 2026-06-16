@@ -19,7 +19,7 @@ class PortafolioController extends Controller
     public function index()
     {
         return view(
-            'mi-perfil-proveedor.portafolio.index',
+            'proveedor.portafolio.index',
             $this->portafolioService->obtenerDatosVista()
         );
     }

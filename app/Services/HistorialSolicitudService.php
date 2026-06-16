@@ -40,7 +40,7 @@ class HistorialSolicitudService
             ->with(['user:id,name,email', 'solicitud.perfilProveedor'])
             ->whereHas('solicitud', fn ($query) => $query->where('cliente_user_id', $cliente->id))
             ->latest()
-            ->paginate(10);
+            ->paginate(10, ['*'], 'historial_page');
     }
 
     public function historialProveedor(PerfilProveedor $perfilProveedor)
@@ -58,5 +58,24 @@ class HistorialSolicitudService
             ->with(['user:id,name,email', 'solicitud.cliente', 'solicitud.perfilProveedor'])
             ->latest()
             ->paginate(15);
+    }
+
+    public function historialVistaCliente($historiales)
+    {
+        return $historiales->getCollection()
+            ->map(function (HistorialSolicitud $historial) {
+                return [
+                    'solicitud' => $historial->solicitud?->titulo ?? 'Sin solicitud',
+                    'proveedor' => $historial->solicitud?->perfilProveedor?->nombre_publico ?? 'Sin proveedor',
+                    'estado_anterior' => $historial->estado_anterior
+                        ? ucfirst(str_replace('_', ' ', $historial->estado_anterior))
+                        : 'Sin estado',
+                    'estado_nuevo' => ucfirst(str_replace('_', ' ', $historial->estado_nuevo)),
+                    'usuario' => $historial->user?->name ?? 'Sistema',
+                    'email' => $historial->user?->email,
+                    'comentario' => $historial->comentario ?: 'Sin comentario',
+                    'fecha' => optional($historial->created_at)->format('d/m/Y H:i'),
+                ];
+            });
     }
 }

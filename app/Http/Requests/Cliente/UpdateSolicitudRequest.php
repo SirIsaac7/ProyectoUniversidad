@@ -35,7 +35,7 @@ class UpdateSolicitudRequest extends FormRequest
             'zona' => ['nullable', 'string', 'max:255'],
             'latitud' => ['nullable', 'numeric', 'between:-90,90'],
             'longitud' => ['nullable', 'numeric', 'between:-180,180'],
-            'fecha_solicitada' => ['nullable', 'date'],
+            'fecha_solicitada' => ['nullable', 'date', 'after_or_equal:today'],
             'hora_solicitada' => ['nullable', 'date_format:H:i'],
             'observaciones' => ['nullable', 'string', 'max:1000'],
         ];

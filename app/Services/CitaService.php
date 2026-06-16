@@ -36,7 +36,7 @@ class CitaService
             ])
             ->whereHas('solicitud', fn ($query) => $query->where('cliente_user_id', $cliente->id))
             ->latest()
-            ->paginate(10);
+            ->paginate(10, ['*'], 'citas_page');
     }
 
     public function citasProveedor(PerfilProveedor $perfilProveedor)
@@ -50,6 +50,43 @@ class CitaService
             ->whereHas('solicitud', fn ($query) => $query->where('perfil_proveedor_id', $perfilProveedor->id))
             ->latest()
             ->paginate(10);
+    }
+
+    public function estadosVistaCliente(): array
+    {
+        return [
+            'programada' => ['label' => 'Programada', 'class' => 'primary', 'icon' => 'ri-calendar-check-line'],
+            'reprogramada' => ['label' => 'Reprogramada', 'class' => 'info', 'icon' => 'ri-calendar-event-line'],
+            'en_camino' => ['label' => 'En camino', 'class' => 'info', 'icon' => 'ri-truck-line'],
+            'en_atencion' => ['label' => 'En atencion', 'class' => 'warning', 'icon' => 'ri-tools-line'],
+            'completada' => ['label' => 'Completada', 'class' => 'success', 'icon' => 'ri-checkbox-circle-line'],
+            'cancelada' => ['label' => 'Cancelada', 'class' => 'danger', 'icon' => 'ri-close-circle-line'],
+            'no_asistio' => ['label' => 'No asistio', 'class' => 'danger', 'icon' => 'ri-user-unfollow-line'],
+        ];
+    }
+
+    public function citasVistaCliente($citas, array $estadoCitaMeta)
+    {
+        return $citas->getCollection()
+            ->map(function (Cita $cita) use ($estadoCitaMeta) {
+                $solicitud = $cita->solicitud;
+
+                return [
+                    'titulo' => $solicitud?->titulo ?? 'Solicitud sin titulo',
+                    'rubro' => $solicitud?->especialidad?->rubroTipoServicio?->rubro?->nombre ?? 'Sin rubro',
+                    'especialidad' => $solicitud?->especialidad?->nombre ?? 'Sin especialidad',
+                    'proveedor' => $solicitud?->perfilProveedor?->nombre_publico ?? 'Sin proveedor',
+                    'fecha' => $cita->fecha_cita?->format('d/m/Y') ?? 'Sin fecha',
+                    'hora_inicio' => $cita->hora_inicio?->format('H:i') ?? '--:--',
+                    'hora_fin' => $cita->hora_fin?->format('H:i') ?? '--:--',
+                    'observaciones' => $cita->observaciones ?: 'Sin observaciones',
+                    'meta' => $estadoCitaMeta[$cita->estado] ?? [
+                        'label' => ucfirst(str_replace('_', ' ', $cita->estado)),
+                        'class' => 'secondary',
+                        'icon' => 'ri-information-line',
+                    ],
+                ];
+            });
     }
 
     public function crearDesdeProveedor(Solicitud $solicitud, array $data): Cita

@@ -117,7 +117,10 @@
                 <div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                         <i class='bx bx-bell fs-22'></i>
-                        <span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">2<span class="visually-hidden">notificaciones</span></span>
+                        <span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger d-none js-notificaciones-contador">
+                            0
+                            <span class="visually-hidden">notificaciones</span>
+                        </span>
                     </button>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
                         <div class="dropdown-head bg-primary bg-pattern rounded-top">
@@ -127,52 +130,27 @@
                                         <h6 class="m-0 fs-16 fw-semibold text-white"> Notificaciones </h6>
                                     </div>
                                     <div class="col-auto dropdown-tabs">
-                                        <span class="badge bg-light-subtle text-body fs-13">2 nuevas</span>
+                                        <span class="badge bg-light-subtle text-body fs-13 js-notificaciones-resumen">0 nuevas</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div data-simplebar style="max-height: 300px;" class="pe-2">
-                            <div class="text-reset notification-item d-block dropdown-item position-relative">
-                                <div class="d-flex">
-                                    <div class="avatar-xs me-3 flex-shrink-0">
-                                        <span class="avatar-title bg-info-subtle text-info rounded-circle fs-16">
-                                            <i class="bx bx-badge-check"></i>
-                                        </span>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <a href="#!" class="stretched-link">
-                                            <h6 class="mt-0 mb-2 fs-13 lh-base">Bienvenido al panel base</h6>
-                                        </a>
-                                        <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                            <span><i class="mdi mdi-clock-outline"></i> Hace unos segundos</span>
-                                        </p>
-                                    </div>
+                        <div data-simplebar style="max-height: 300px;" class="pe-2 js-notificaciones-lista">
+                            <div class="text-center py-4 js-notificaciones-vacio">
+                                <div class="avatar-md mx-auto mb-3">
+                                    <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
+                                        <i class="bx bx-bell-off fs-24"></i>
+                                    </span>
                                 </div>
-                            </div>
-                            <div class="text-reset notification-item d-block dropdown-item position-relative">
-                                <div class="d-flex">
-                                    <div class="avatar-xs me-3 flex-shrink-0">
-                                        <span class="avatar-title bg-warning-subtle text-warning rounded-circle fs-16">
-                                            <i class="bx bx-info-circle"></i>
-                                        </span>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <a href="#!" class="stretched-link">
-                                            <h6 class="mt-0 mb-2 fs-13 lh-base">Recuerda agregar logout y perfil despues</h6>
-                                        </a>
-                                        <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                            <span><i class="mdi mdi-clock-outline"></i> Pendiente</span>
-                                        </p>
-                                    </div>
-                                </div>
+                                <h6 class="mb-1">Sin notificaciones</h6>
+                                <p class="text-muted mb-0 fs-12">Aqui veras los avisos importantes del sistema.</p>
                             </div>
                         </div>
                         <div class="p-2 border-top border-top-dashed">
                             <div class="d-grid">
-                                <a class="btn btn-soft-success btn-sm" href="javascript:void(0)">
-                                    Ver todas
-                                </a>
+                                <button type="button" class="btn btn-soft-success btn-sm js-notificaciones-leer-todas">
+                                    Marcar todas como leidas
+                                </button>
                             </div>
                         </div>
                     </div>

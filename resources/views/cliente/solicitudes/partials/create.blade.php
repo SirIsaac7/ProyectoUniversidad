@@ -19,7 +19,7 @@
                     <select name="perfil_proveedor_id" class="form-select js-perfil-proveedor-select @error('perfil_proveedor_id') is-invalid @enderror" required>
                         <option value="">Selecciona un proveedor</option>
                         @foreach ($perfilesProveedores as $perfilProveedor)
-                            <option value="{{ $perfilProveedor->id }}" @selected(old('perfil_proveedor_id') == $perfilProveedor->id)>
+                            <option value="{{ $perfilProveedor->id }}" @selected(old('perfil_proveedor_id', $proveedorSeleccionadoId ?? null) == $perfilProveedor->id)>
                                 {{ $perfilProveedor->nombre_publico }} - {{ $perfilProveedor->user?->email }}
                             </option>
                         @endforeach
@@ -33,10 +33,10 @@
 
                 <div class="mb-3">
                     <label class="form-label">Especialidad <span class="text-danger">*</span></label>
-                    <select name="especialidad_id" class="form-select js-especialidad-select @error('especialidad_id') is-invalid @enderror" data-selected-value="{{ old('especialidad_id') }}" required>
+                    <select name="especialidad_id" class="form-select js-especialidad-select @error('especialidad_id') is-invalid @enderror" data-selected-value="{{ old('especialidad_id', $especialidadSeleccionadaId ?? null) }}" required>
                         <option value="">Selecciona una especialidad</option>
                         @foreach ($especialidades as $especialidad)
-                            <option value="{{ $especialidad['id'] }}" data-perfiles="{{ implode(',', $especialidad['perfiles']) }}" @selected(old('especialidad_id') == $especialidad['id'])>
+                            <option value="{{ $especialidad['id'] }}" data-perfiles="{{ implode(',', $especialidad['perfiles']) }}" @selected(old('especialidad_id', $especialidadSeleccionadaId ?? null) == $especialidad['id'])>
                                 {{ $especialidad['nombre'] }}
                             </option>
                         @endforeach

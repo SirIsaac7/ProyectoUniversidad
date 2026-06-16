@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\TipoDocumentoProveedorController;
 use App\Http\Controllers\Admin\TipoServicioController;
 use App\Http\Controllers\Admin\UbicacionProveedorController;
 use App\Http\Controllers\Admin\UsuarioController;
+use App\Http\Controllers\Cliente\BusquedaServicioController as ClienteBusquedaServicioController;
 use App\Http\Controllers\Cliente\CitaController as ClienteCitaController;
 use App\Http\Controllers\Cliente\HistorialSolicitudController as ClienteHistorialSolicitudController;
 use App\Http\Controllers\Cliente\SolicitudController as ClienteSolicitudController;
@@ -31,6 +32,7 @@ use App\Http\Controllers\Proveedor\PerfilController as MiPerfilController;
 use App\Http\Controllers\Proveedor\PortafolioController as MiPortafolioProveedorController;
 use App\Http\Controllers\Proveedor\SolicitudController as ProveedorSolicitudController;
 use App\Http\Controllers\Proveedor\UbicacionController as MiUbicacionProveedorController;
+use App\Http\Controllers\NotificacionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -43,6 +45,13 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil.index');
     Route::get('/perfil/contrasena-local', [PerfilController::class, 'editLocalPassword'])->name('perfil.password-local.edit');
     Route::put('/perfil/contrasena-local', [PerfilController::class, 'updateLocalPassword'])->name('perfil.password-local.update');
+    // Notificaciones
+    Route::get('/notificaciones/recientes', [NotificacionController::class, 'recientes'])
+    ->name('notificaciones.recientes');
+    Route::patch('/notificaciones/{id}/leer', [NotificacionController::class, 'marcarLeida'])
+        ->name('notificaciones.leer');
+    Route::patch('/notificaciones/leer-todas', [NotificacionController::class, 'marcarTodasLeidas'])
+        ->name('notificaciones.leer-todas');
 
     // Perfil del proveedor autenticado
     Route::prefix('mi-perfil-proveedor')
@@ -81,6 +90,7 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::prefix('cliente')
         ->name('cliente.')
         ->group(function () {
+            Route::get('/buscar-servicios', [ClienteBusquedaServicioController::class, 'index'])->name('buscar-servicios.index');
             Route::get('/solicitudes', [ClienteSolicitudController::class, 'index'])->name('solicitudes.index');
             Route::post('/solicitudes', [ClienteSolicitudController::class, 'store'])->name('solicitudes.store');
             Route::put('/solicitudes/{solicitud}', [ClienteSolicitudController::class, 'update'])->name('solicitudes.update');
