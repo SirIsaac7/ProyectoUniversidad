@@ -14,7 +14,7 @@ class SolicitudPolicy
     {
         return $user->can('ver solicitudes')
             || $user->can('ver mis solicitudes')
-            || $user->can('ver solicitudes proveedor');
+            || $user->can('ver mis solicitudes proveedor');
     }
 
     /**
@@ -43,9 +43,7 @@ class SolicitudPolicy
      */
     public function update(User $user, Solicitud $solicitud): bool
     {
-        return $user->can('editar mis solicitudes')
-            && (int) $solicitud->cliente_user_id === (int) $user->id
-            && $solicitud->estado === 'pendiente';
+        return false;
     }
 
     /**
@@ -80,9 +78,8 @@ class SolicitudPolicy
 
     public function gestionarProveedor(User $user, Solicitud $solicitud): bool
     {
-        return $user->can('gestionar solicitudes proveedor')
-            && $user->perfilProveedor
+        return $user->perfilProveedor
             && (int) $solicitud->perfil_proveedor_id === (int) $user->perfilProveedor->id
-            && in_array($solicitud->estado, ['pendiente', 'aceptada', 'en_proceso'], true);
+            && $solicitud->estado === 'pendiente';
     }
 }

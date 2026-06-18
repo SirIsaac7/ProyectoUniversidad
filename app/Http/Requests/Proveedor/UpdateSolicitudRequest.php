@@ -15,7 +15,7 @@ class UpdateSolicitudRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'estado' => ['required', Rule::in(['aceptada', 'rechazada', 'en_proceso', 'finalizada'])],
+            'estado' => ['required', Rule::in(['rechazada'])],
             'comentario' => ['nullable', 'required_if:estado,rechazada', 'string', 'max:1000'],
         ];
     }

@@ -85,6 +85,7 @@ function initProveedorBusquedaDelegatedEvents() {
         if (requestOpenButton) {
             const modalContent = requestOpenButton.closest('[data-proveedor-profile-modal]');
             toggleProveedorRequestView(modalContent, true);
+            prepararSolicitudModal(modalContent);
         }
 
         const requestBackButton = event.target.closest('[data-proveedor-request-back]');
@@ -107,6 +108,14 @@ function initProveedorBusquedaDelegatedEvents() {
         }
 
         toggleProveedorRequestView(event.target.querySelector('[data-proveedor-profile-modal]'), false);
+    });
+
+    document.addEventListener('shown.bs.modal', function (event) {
+        if (!event.target?.classList?.contains('proveedor-busqueda-modal')) {
+            return;
+        }
+
+        prepararSolicitudModal(event.target.querySelector('[data-proveedor-profile-modal]'));
     });
 }
 
@@ -148,9 +157,20 @@ function toggleProveedorRequestView(modalContent, shouldShowRequest) {
 
 function initSolicitudWizards() {
     document.querySelectorAll('[data-solicitud-wizard]').forEach(function (form) {
-        if (form.dataset.wizardInicializado === 'true') {
-            return;
-        }
+        inicializarSolicitudWizard(form);
+    });
+}
+
+function inicializarSolicitudWizard(form) {
+    if (!form) {
+        return;
+    }
+
+    if (form.dataset.wizardInicializado === 'true') {
+        actualizarAyudaTipoAtencion(form);
+        actualizarTituloSolicitud(form);
+        return;
+    }
 
         form.dataset.wizardInicializado = 'true';
 
@@ -213,7 +233,18 @@ function initSolicitudWizards() {
         if (!mostrarPrimerPasoConErrorSolicitud(form, state)) {
             mostrarPasoSolicitud(form, state, 0);
         }
+}
+
+function prepararSolicitudModal(modalContent) {
+    if (!modalContent) {
+        return;
+    }
+
+    modalContent.querySelectorAll('[data-solicitud-wizard]').forEach(function (form) {
+        inicializarSolicitudWizard(form);
     });
+
+    cargarZonasSolicitudLaPaz(modalContent);
 }
 
 function mostrarPasoSolicitud(form, state, nextStep) {
@@ -350,8 +381,8 @@ function actualizarAyudaTipoAtencion(form) {
     help.innerHTML = '<i class="ri-information-line"></i><span>' + (mensajes[select.value] || mensajes.mixto) + '</span>';
 }
 
-function cargarZonasSolicitudLaPaz() {
-    const selects = document.querySelectorAll('[data-zonas-lapaz-select]');
+function cargarZonasSolicitudLaPaz(scope = document) {
+    const selects = scope.querySelectorAll('[data-zonas-lapaz-select]');
 
     if (!selects.length) {
         return;
@@ -402,6 +433,12 @@ function poblarSelectZonaSolicitud(select, zonas) {
     const selected = select.dataset.selected || select.value || '';
     const opciones = ['<option value="">Selecciona una zona</option>'];
 
+    if (select.zonaSolicitudChoices) {
+        select.zonaSolicitudChoices.destroy();
+        select.zonaSolicitudChoices = null;
+        delete select.dataset.choicesInicializado;
+    }
+
     zonas.forEach(function (zona) {
         opciones.push('<option value="' + escaparHtmlSolicitud(zona) + '"' + (zona === selected ? ' selected' : '') + '>' + escaparHtmlSolicitud(zona) + '</option>');
     });
@@ -411,10 +448,11 @@ function poblarSelectZonaSolicitud(select, zonas) {
     }
 
     select.innerHTML = opciones.join('');
+    select.value = selected;
 
     if (typeof Choices !== 'undefined' && select.dataset.choicesInicializado !== 'true') {
         select.dataset.choicesInicializado = 'true';
-        new Choices(select, {
+        select.zonaSolicitudChoices = new Choices(select, {
             searchEnabled: true,
             shouldSort: false,
             itemSelectText: '',

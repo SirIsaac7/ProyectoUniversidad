@@ -49,4 +49,26 @@ class NotificacionService
             url: $url
         );
     }
+
+    public function citaProgramadaParaCliente(User $cliente, string $fecha, string $hora, ?string $url = null): void
+    {
+        $this->enviar(
+            usuario: $cliente,
+            titulo: 'Cita programada',
+            mensaje: 'Tu cita fue programada para el ' . $fecha . ' a las ' . $hora . '.',
+            tipo: 'success',
+            url: $url
+        );
+    }
+
+    public function citaActualizadaParaCliente(User $cliente, string $estado, ?string $url = null): void
+    {
+        $this->enviar(
+            usuario: $cliente,
+            titulo: 'Cita actualizada',
+            mensaje: 'Tu cita fue actualizada al estado: ' . ucfirst(str_replace('_', ' ', $estado)) . '.',
+            tipo: 'info',
+            url: $url
+        );
+    }
 }

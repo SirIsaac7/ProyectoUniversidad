@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Cliente;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cliente\StoreSolicitudRequest;
-use App\Http\Requests\Cliente\UpdateSolicitudRequest;
 use App\Models\Solicitud;
 use App\Services\CitaService;
 use App\Services\HistorialSolicitudService;
@@ -19,7 +18,6 @@ class SolicitudController extends Controller
     ) {
         $this->middleware('permission:ver mis solicitudes')->only('index');
         $this->middleware('permission:crear mis solicitudes')->only('store');
-        $this->middleware('permission:editar mis solicitudes')->only('update');
         $this->middleware('permission:cancelar mis solicitudes')->only('destroy');
     }
 
@@ -38,7 +36,6 @@ class SolicitudController extends Controller
         return view('cliente.solicitudes.index', $this->solicitudService->datosFormularioCliente() + [
             'tabActivo' => request('tab', 'solicitudes'),
             'solicitudes' => $solicitudes,
-            'solicitudesColeccion' => $solicitudes->getCollection(),
             'solicitudesVista' => $this->solicitudService->solicitudesVistaCliente($solicitudes, $estadoMeta),
             'solicitudInicial' => $solicitudInicial,
             'solicitudInicialDetalle' => $this->solicitudService->detalleVistaCliente($solicitudInicial, $estadoMeta),
@@ -70,17 +67,6 @@ class SolicitudController extends Controller
         return redirect()
             ->route('cliente.solicitudes.index')
             ->with('success', 'Solicitud creada correctamente.');
-    }
-
-    public function update(UpdateSolicitudRequest $request, Solicitud $solicitud)
-    {
-        $this->authorize('update', $solicitud);
-
-        $this->solicitudService->updateDesdeCliente($solicitud, $request->validated());
-
-        return redirect()
-            ->route('cliente.solicitudes.index')
-            ->with('success', 'Solicitud actualizada correctamente.');
     }
 
     public function destroy(Solicitud $solicitud)

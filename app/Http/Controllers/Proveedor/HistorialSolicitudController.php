@@ -11,18 +11,12 @@ class HistorialSolicitudController extends Controller
     public function __construct(
         protected HistorialSolicitudService $historialSolicitudService
     ) {
-        $this->middleware('permission:ver solicitudes proveedor');
+        $this->middleware('permission:ver mis solicitudes proveedor');
     }
 
     public function index()
     {
-        $perfilProveedor = auth()->user()->perfilProveedor;
-
-        return response()->json(
-            $perfilProveedor
-                ? $this->historialSolicitudService->historialProveedor($perfilProveedor)
-                : collect()
-        );
+        return redirect()->route('proveedor.solicitudes.index', ['tab' => 'historial']);
     }
 
     public function show(Solicitud $solicitud)

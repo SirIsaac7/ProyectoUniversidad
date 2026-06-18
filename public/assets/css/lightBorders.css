@@ -45,3 +45,20 @@ html[data-bs-theme="light"] .choices__inner,
 html[data-bs-theme="light"] .input-group-text {
     border-color: #cbd2e2 !important;
 }
+
+.topbar-notificaciones-dropdown {
+    z-index: 2055;
+}
+
+.topbar-notificaciones-lista {
+    max-height: 210px;
+    overflow-y: auto;
+}
+
+.topbar-notificaciones-lista .notification-item {
+    min-height: 82px;
+}
+
+.topbar-notificaciones-lista .simplebar-content {
+    max-height: 210px;
+}

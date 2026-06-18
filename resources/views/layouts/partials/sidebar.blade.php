@@ -350,29 +350,11 @@
                     </li>
                 @endif
 
-                @if ($usuarioActual->hasRole('PROVEEDOR') && $usuarioActual->can('ver solicitudes proveedor'))
+                @if ($usuarioActual->hasRole('PROVEEDOR') && $usuarioActual->can('ver mis solicitudes proveedor'))
                     <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('proveedor.solicitudes.*') ? 'active' : '' }}" href="{{ route('proveedor.solicitudes.index') }}">
+                        <a class="nav-link menu-link {{ request()->routeIs('proveedor.solicitudes.*') || request()->routeIs('proveedor.citas.*') || request()->routeIs('proveedor.historial-solicitudes.*') ? 'active' : '' }}" href="{{ route('proveedor.solicitudes.index') }}">
                             <i class="ri-inbox-archive-line"></i>
-                            <span>Solicitudes recibidas</span>
-                        </a>
-                    </li>
-                @endif
-
-                @if ($usuarioActual->hasRole('PROVEEDOR') && $usuarioActual->can('ver mis citas'))
-                    <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('proveedor.citas.*') ? 'active' : '' }}" href="{{ route('proveedor.citas.index') }}">
-                            <i class="ri-calendar-todo-line"></i>
-                            <span>Citas recibidas</span>
-                        </a>
-                    </li>
-                @endif
-
-                @if ($usuarioActual->hasRole('PROVEEDOR') && $usuarioActual->can('ver solicitudes proveedor'))
-                    <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('proveedor.historial-solicitudes.*') ? 'active' : '' }}" href="{{ route('proveedor.historial-solicitudes.index') }}">
-                            <i class="ri-history-line"></i>
-                            <span>Historial recibido</span>
+                            <span>Mis solicitudes</span>
                         </a>
                     </li>
                 @endif

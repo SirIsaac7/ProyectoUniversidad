@@ -122,7 +122,7 @@
                             <span class="visually-hidden">notificaciones</span>
                         </span>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0 topbar-notificaciones-dropdown" aria-labelledby="page-header-notifications-dropdown">
                         <div class="dropdown-head bg-primary bg-pattern rounded-top">
                             <div class="p-3">
                                 <div class="row align-items-center">
@@ -135,7 +135,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div data-simplebar style="max-height: 300px;" class="pe-2 js-notificaciones-lista">
+                        <div data-simplebar class="pe-2 js-notificaciones-lista topbar-notificaciones-lista">
                             <div class="text-center py-4 js-notificaciones-vacio">
                                 <div class="avatar-md mx-auto mb-3">
                                     <span class="avatar-title rounded-circle bg-primary-subtle text-primary">

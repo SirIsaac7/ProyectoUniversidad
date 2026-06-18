@@ -25,27 +25,27 @@ class CitaPolicy
 
     public function create(User $user): bool
     {
-        return $user->can('gestionar citas proveedor');
+        return $user->can('crear mis citas proveedor');
     }
 
     public function update(User $user, Cita $cita): bool
     {
-        return $user->can('gestionar citas proveedor')
+        return $user->can('editar mis citas proveedor')
             && $user->perfilProveedor
             && (int) $cita->solicitud?->perfil_proveedor_id === (int) $user->perfilProveedor->id
-            && ! in_array($cita->estado, ['completada', 'cancelada', 'no_asistio'], true);
+            && ! in_array($cita->estado, ['completada', 'cancelada', 'no_asistio', 'vencida'], true);
     }
 
     public function delete(User $user, Cita $cita): bool
     {
         if ($user->can('eliminar citas')) {
-            return ! in_array($cita->estado, ['completada', 'cancelada'], true);
+            return ! in_array($cita->estado, ['completada', 'cancelada', 'vencida'], true);
         }
 
-        return $user->can('gestionar citas proveedor')
+        return $user->can('cancelar mis citas proveedor')
             && $user->perfilProveedor
             && (int) $cita->solicitud?->perfil_proveedor_id === (int) $user->perfilProveedor->id
-            && ! in_array($cita->estado, ['completada', 'cancelada'], true);
+            && ! in_array($cita->estado, ['completada', 'cancelada', 'vencida'], true);
     }
 
     public function restore(User $user, Cita $cita): bool

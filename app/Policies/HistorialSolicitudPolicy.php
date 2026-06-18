@@ -11,7 +11,7 @@ class HistorialSolicitudPolicy
     {
         return $user->can('ver solicitudes')
             || $user->can('ver mis solicitudes')
-            || $user->can('ver solicitudes proveedor');
+            || $user->can('ver mis solicitudes proveedor');
     }
 
     public function view(User $user, HistorialSolicitud $historialSolicitud): bool

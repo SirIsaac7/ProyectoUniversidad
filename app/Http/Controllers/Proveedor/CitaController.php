@@ -15,18 +15,14 @@ class CitaController extends Controller
         protected CitaService $citaService
     ) {
         $this->middleware('permission:ver mis citas')->only('index');
-        $this->middleware('permission:gestionar citas proveedor')->only(['store', 'update', 'cambiarEstado', 'destroy']);
+        $this->middleware('permission:crear mis citas proveedor')->only('store');
+        $this->middleware('permission:editar mis citas proveedor')->only(['update', 'cambiarEstado']);
+        $this->middleware('permission:cancelar mis citas proveedor')->only('destroy');
     }
 
     public function index()
     {
-        $perfilProveedor = auth()->user()->perfilProveedor;
-
-        return response()->json(
-            $perfilProveedor
-                ? $this->citaService->citasProveedor($perfilProveedor)
-                : collect()
-        );
+        return redirect()->route('proveedor.solicitudes.index', ['tab' => 'citas']);
     }
 
     public function store(StoreCitaRequest $request)

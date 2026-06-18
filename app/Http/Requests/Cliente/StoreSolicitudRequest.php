@@ -32,7 +32,7 @@ class StoreSolicitudRequest extends FormRequest
             'descripcion' => ['required', 'string', 'max:3000'],
             'tipo_atencion' => ['required', Rule::in(['mixto', 'domicilio', 'local', 'remoto'])],
             'direccion' => ['nullable', 'string', 'max:255'],
-            'zona' => ['nullable', 'string', 'max:255'],
+            'zona' => ['required_if:tipo_atencion,domicilio', 'nullable', 'string', 'max:255'],
             'latitud' => ['nullable', 'numeric', 'between:-90,90'],
             'longitud' => ['nullable', 'numeric', 'between:-180,180'],
             'fecha_solicitada' => ['nullable', 'date', 'after_or_equal:today'],

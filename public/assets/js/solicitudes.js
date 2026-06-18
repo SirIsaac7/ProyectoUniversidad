@@ -356,8 +356,8 @@ document.addEventListener('click', function (event) {
         panel.querySelector('.js-detail-category').textContent = `${detailButton.dataset.rubro || '-'} - ${detailButton.dataset.tipoServicio || '-'}`;
         panel.querySelector('.js-detail-specialty').textContent = detailButton.dataset.especialidad || '-';
         panel.querySelector('.js-detail-provider').textContent = detailButton.dataset.proveedor || '-';
-        panel.querySelector('.js-detail-date').textContent = `${detailButton.dataset.fecha || 'Sin fecha'} · ${detailButton.dataset.hora || 'Sin hora'}`;
-        panel.querySelector('.js-detail-location').textContent = `${detailButton.dataset.zona || 'Sin zona'} · ${detailButton.dataset.direccion || 'Sin direccion'}`;
+        panel.querySelector('.js-detail-date').textContent = `${detailButton.dataset.fecha || 'Sin fecha'} - ${detailButton.dataset.hora || 'Sin hora'}`;
+        panel.querySelector('.js-detail-location').textContent = `${detailButton.dataset.zona || 'Sin zona'} - ${detailButton.dataset.direccion || 'Sin direccion'}`;
         panel.querySelector('.js-detail-attention').textContent = detailButton.dataset.tipoAtencion || '-';
 
         if (status) {

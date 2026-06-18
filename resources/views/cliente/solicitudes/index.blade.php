@@ -164,48 +164,42 @@
                                                     {{ $solicitudVista['meta']['label'] }}
                                                 </span>
 
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-sm btn-soft-info js-solicitud-detail-button"
-                                                    title="Ver detalle"
-                                                    data-id="{{ $solicitudVista['id'] }}"
-                                                    data-titulo="{{ e($solicitudVista['titulo']) }}"
-                                                    data-estado="{{ $solicitudVista['meta']['label'] }}"
-                                                    data-estado-class="{{ $solicitudVista['meta']['class'] }}"
-                                                    data-estado-icon="{{ $solicitudVista['meta']['icon'] }}"
-                                                    data-descripcion="{{ e($solicitudVista['descripcion']) }}"
-                                                    data-proveedor="{{ e($solicitudVista['proveedor']) }}"
-                                                    data-especialidad="{{ e($solicitudVista['especialidad']) }}"
-                                                    data-rubro="{{ e($solicitudVista['rubro']) }}"
-                                                    data-tipo-servicio="{{ e($solicitudVista['tipo_servicio']) }}"
-                                                    data-tipo-atencion="{{ e($solicitudVista['tipo_atencion']) }}"
-                                                    data-fecha="{{ e($solicitudVista['fecha_texto']) }}"
-                                                    data-hora="{{ e($solicitudVista['hora_texto']) }}"
-                                                    data-zona="{{ e($solicitudVista['zona']) }}"
-                                                    data-direccion="{{ e($solicitudVista['direccion']) }}"
-                                                >
-                                                    <i class="ri-eye-line align-bottom"></i>
-                                                </button>
+                                                <div class="solicitud-actions-buttons">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm btn-soft-info js-solicitud-detail-button"
+                                                        title="Ver detalle"
+                                                        data-id="{{ $solicitudVista['id'] }}"
+                                                        data-titulo="{{ e($solicitudVista['titulo']) }}"
+                                                        data-estado="{{ $solicitudVista['meta']['label'] }}"
+                                                        data-estado-class="{{ $solicitudVista['meta']['class'] }}"
+                                                        data-estado-icon="{{ $solicitudVista['meta']['icon'] }}"
+                                                        data-descripcion="{{ e($solicitudVista['descripcion']) }}"
+                                                        data-proveedor="{{ e($solicitudVista['proveedor']) }}"
+                                                        data-especialidad="{{ e($solicitudVista['especialidad']) }}"
+                                                        data-rubro="{{ e($solicitudVista['rubro']) }}"
+                                                        data-tipo-servicio="{{ e($solicitudVista['tipo_servicio']) }}"
+                                                        data-tipo-atencion="{{ e($solicitudVista['tipo_atencion']) }}"
+                                                        data-fecha="{{ e($solicitudVista['fecha_texto']) }}"
+                                                        data-hora="{{ e($solicitudVista['hora_texto']) }}"
+                                                        data-zona="{{ e($solicitudVista['zona']) }}"
+                                                        data-direccion="{{ e($solicitudVista['direccion']) }}"
+                                                    >
+                                                        <i class="ri-eye-line align-bottom"></i>
+                                                    </button>
 
-                                                @can('editar mis solicitudes')
-                                                    @if ($solicitudVista['puede_editar'])
-                                                        <button type="button" class="btn btn-sm btn-soft-warning js-solicitud-panel-toggle" data-panel-target="solicitudEditPanel{{ $solicitudVista['id'] }}" title="Editar">
-                                                            <i class="ri-pencil-fill align-bottom"></i>
-                                                        </button>
-                                                    @endif
-                                                @endcan
-
-                                                @can('cancelar mis solicitudes')
-                                                    @if ($solicitudVista['puede_cancelar'])
-                                                        <form method="POST" action="{{ route('cliente.solicitudes.destroy', $solicitudVista['id']) }}" class="d-inline js-confirm-submit" data-confirm-title="Cancelar solicitud" data-confirm-text="Se cancelara esta solicitud.">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-sm btn-soft-danger" title="Cancelar">
-                                                                <i class="ri-close-circle-line align-bottom"></i>
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                @endcan
+                                                    @can('cancelar mis solicitudes')
+                                                        @if ($solicitudVista['puede_cancelar'])
+                                                            <form method="POST" action="{{ route('cliente.solicitudes.destroy', $solicitudVista['id']) }}" class="d-inline js-confirm-submit" data-confirm-title="Cancelar solicitud" data-confirm-text="Se cancelara esta solicitud.">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-sm btn-soft-danger" title="Cancelar">
+                                                                    <i class="ri-close-circle-line align-bottom"></i>
+                                                                </button>
+                                                            </form>
+                                                        @endif
+                                                    @endcan
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -239,10 +233,6 @@
 
                 <div class="col-xl-4">
                     @include('cliente.solicitudes.partials.create')
-
-                    @foreach ($solicitudesColeccion as $solicitud)
-                        @include('cliente.solicitudes.partials.edit')
-                    @endforeach
 
                     <div class="card solicitud-detail-panel sticky-xl-top solicitud-side-panel" id="solicitudDetailPanel">
                         <div class="card-body">

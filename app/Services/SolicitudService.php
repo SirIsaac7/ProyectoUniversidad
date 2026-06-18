@@ -53,7 +53,6 @@ class SolicitudService
                 'aceptada' => 'Aceptada',
                 'rechazada' => 'Rechazada',
                 'cancelada' => 'Cancelada',
-                'en_proceso' => 'En proceso',
                 'finalizada' => 'Finalizada',
             ],
         ];
@@ -94,26 +93,6 @@ class SolicitudService
                 url: route('proveedor.solicitudes.index')
             );
         }
-
-        return $solicitud;
-    }
-
-    public function updateDesdeCliente(Solicitud $solicitud, array $data): Solicitud
-    {
-        $solicitud->update([
-            'perfil_proveedor_id' => $data['perfil_proveedor_id'],
-            'especialidad_id' => $data['especialidad_id'],
-            'titulo' => $data['titulo'],
-            'descripcion' => $data['descripcion'],
-            'tipo_atencion' => $data['tipo_atencion'],
-            'direccion' => $data['direccion'] ?? null,
-            'zona' => $data['zona'] ?? null,
-            'latitud' => $data['latitud'] ?? null,
-            'longitud' => $data['longitud'] ?? null,
-            'fecha_solicitada' => $data['fecha_solicitada'] ?? null,
-            'hora_solicitada' => $data['hora_solicitada'] ?? null,
-            'observaciones' => $data['observaciones'] ?? null,
-        ]);
 
         return $solicitud;
     }
@@ -203,7 +182,7 @@ class SolicitudService
         return [
             'pendientes' => (clone $query)->where('estado', 'pendiente')->count(),
             'aceptadas' => (clone $query)->where('estado', 'aceptada')->count(),
-            'enProceso' => (clone $query)->where('estado', 'en_proceso')->count(),
+            'rechazadas' => (clone $query)->where('estado', 'rechazada')->count(),
             'completadas' => (clone $query)->where('estado', 'finalizada')->count(),
         ];
     }
@@ -215,7 +194,6 @@ class SolicitudService
             'aceptada' => ['label' => 'Aceptada', 'class' => 'success', 'icon' => 'ri-checkbox-circle-line'],
             'rechazada' => ['label' => 'Rechazada', 'class' => 'danger', 'icon' => 'ri-close-circle-line'],
             'cancelada' => ['label' => 'Cancelada', 'class' => 'danger', 'icon' => 'ri-close-circle-line'],
-            'en_proceso' => ['label' => 'En proceso', 'class' => 'info', 'icon' => 'ri-loader-2-line'],
             'finalizada' => ['label' => 'Completada', 'class' => 'primary', 'icon' => 'ri-flag-line'],
         ];
     }
@@ -238,11 +216,11 @@ class SolicitudService
                 'color' => 'info',
             ],
             [
-                'titulo' => 'En proceso',
-                'valor' => $resumenSolicitudes['enProceso'],
-                'texto' => 'Servicio en curso',
-                'icono' => 'ri-tools-line',
-                'color' => 'success',
+                'titulo' => 'Rechazadas',
+                'valor' => $resumenSolicitudes['rechazadas'],
+                'texto' => 'No aceptadas',
+                'icono' => 'ri-close-circle-line',
+                'color' => 'danger',
             ],
             [
                 'titulo' => 'Completadas',
@@ -298,7 +276,6 @@ class SolicitudService
                     'zona' => $zona,
                     'direccion' => $direccion,
                     'tipo_atencion' => ucfirst(str_replace('_', ' ', $solicitud->tipo_atencion)),
-                    'puede_editar' => $solicitud->estado === 'pendiente',
                     'puede_cancelar' => ! in_array($solicitud->estado, ['cancelada', 'finalizada'], true),
                 ];
             });
@@ -330,19 +307,6 @@ class SolicitudService
             'ubicacion' => ($solicitud->zona ?: 'Sin zona') . ' - ' . ($solicitud->direccion ?: 'Sin direccion'),
             'tipo_atencion' => ucfirst(str_replace('_', ' ', $solicitud->tipo_atencion)),
         ];
-    }
-
-    public function solicitudesProveedor(PerfilProveedor $perfilProveedor)
-    {
-        return Solicitud::query()
-            ->with([
-                'cliente',
-                'especialidad.rubroTipoServicio.rubro',
-                'especialidad.rubroTipoServicio.tipoServicio',
-            ])
-            ->where('perfil_proveedor_id', $perfilProveedor->id)
-            ->latest()
-            ->paginate(10);
     }
 
     protected function especialidadesFormulario($proveedorEspecialidades)

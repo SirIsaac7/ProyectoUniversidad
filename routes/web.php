@@ -93,7 +93,6 @@ Route::middleware('auth', 'verified')->group(function () {
             Route::get('/buscar-servicios', [ClienteBusquedaServicioController::class, 'index'])->name('buscar-servicios.index');
             Route::get('/solicitudes', [ClienteSolicitudController::class, 'index'])->name('solicitudes.index');
             Route::post('/solicitudes', [ClienteSolicitudController::class, 'store'])->name('solicitudes.store');
-            Route::put('/solicitudes/{solicitud}', [ClienteSolicitudController::class, 'update'])->name('solicitudes.update');
             Route::delete('/solicitudes/{solicitud}', [ClienteSolicitudController::class, 'destroy'])->name('solicitudes.destroy');
 
             Route::get('/citas', [ClienteCitaController::class, 'index'])->name('citas.index');
