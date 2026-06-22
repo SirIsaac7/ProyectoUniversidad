@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\AspectoCalificacionController;
+use App\Http\Controllers\Admin\CalificacionController;
 use App\Http\Controllers\Admin\CitaController;
 use App\Http\Controllers\Admin\DocumentoProveedorController;
 use App\Http\Controllers\Admin\EspecialidadController;
@@ -18,6 +20,7 @@ use App\Http\Controllers\Admin\TipoServicioController;
 use App\Http\Controllers\Admin\UbicacionProveedorController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Cliente\BusquedaServicioController as ClienteBusquedaServicioController;
+use App\Http\Controllers\Cliente\CalificacionController as ClienteCalificacionController;
 use App\Http\Controllers\Cliente\CitaController as ClienteCitaController;
 use App\Http\Controllers\Cliente\HistorialSolicitudController as ClienteHistorialSolicitudController;
 use App\Http\Controllers\Cliente\SolicitudController as ClienteSolicitudController;
@@ -25,6 +28,7 @@ use App\Http\Controllers\InicioController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\Proveedor\DocumentoController as MiDocumentoProveedorController;
 use App\Http\Controllers\Proveedor\EspecialidadController as MiEspecialidadProveedorController;
+use App\Http\Controllers\Proveedor\CalificacionController as ProveedorCalificacionController;
 use App\Http\Controllers\Proveedor\CitaController as ProveedorCitaController;
 use App\Http\Controllers\Proveedor\HistorialSolicitudController as ProveedorHistorialSolicitudController;
 use App\Http\Controllers\Proveedor\HorarioController as MiHorarioProveedorController;
@@ -33,6 +37,7 @@ use App\Http\Controllers\Proveedor\PortafolioController as MiPortafolioProveedor
 use App\Http\Controllers\Proveedor\SolicitudController as ProveedorSolicitudController;
 use App\Http\Controllers\Proveedor\UbicacionController as MiUbicacionProveedorController;
 use App\Http\Controllers\NotificacionController;
+use App\Services\EvolutionApiService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -98,6 +103,8 @@ Route::middleware('auth', 'verified')->group(function () {
             Route::get('/citas', [ClienteCitaController::class, 'index'])->name('citas.index');
             Route::get('/historial-solicitudes', [ClienteHistorialSolicitudController::class, 'index'])->name('historial-solicitudes.index');
             Route::get('/solicitudes/{solicitud}/historial', [ClienteHistorialSolicitudController::class, 'show'])->name('solicitudes.historial');
+            Route::get('/calificaciones', [ClienteCalificacionController::class, 'index'])->name('calificaciones.index');
+            Route::post('/calificaciones', [ClienteCalificacionController::class, 'store'])->name('calificaciones.store');
         });
 
     // Proveedor
@@ -115,6 +122,9 @@ Route::middleware('auth', 'verified')->group(function () {
 
             Route::get('/historial-solicitudes', [ProveedorHistorialSolicitudController::class, 'index'])->name('historial-solicitudes.index');
             Route::get('/solicitudes/{solicitud}/historial', [ProveedorHistorialSolicitudController::class, 'show'])->name('solicitudes.historial');
+            Route::get('/calificaciones', [ProveedorCalificacionController::class, 'index'])->name('calificaciones.index');
+            Route::post('/calificaciones/respuestas', [ProveedorCalificacionController::class, 'storeRespuesta'])->name('calificaciones.respuestas.store');
+            Route::put('/calificaciones/respuestas/{respuestaCalificacion}', [ProveedorCalificacionController::class, 'updateRespuesta'])->name('calificaciones.respuestas.update');
         });
 
     // Administracion
@@ -143,5 +153,20 @@ Route::middleware('auth', 'verified')->group(function () {
         Route::delete('citas/{cita}', [CitaController::class, 'destroy'])->name('citas.destroy');
         Route::get('historial-solicitudes', [HistorialSolicitudController::class, 'index'])->name('historial-solicitudes.index');
         Route::get('solicitudes/{solicitud}/historial', [HistorialSolicitudController::class, 'show'])->name('solicitudes.historial');
+
+        Route::resource('aspectos-calificacion', AspectoCalificacionController::class)
+            ->parameters(['aspectos-calificacion' => 'aspecto_calificacion'])
+            ->except('show');
+        Route::resource('calificaciones', CalificacionController::class)
+            ->parameters(['calificaciones' => 'calificacion'])
+            ->only(['index', 'update', 'destroy']);
+    });
+
+    //Prueba de Evolution API
+    Route::get('/test-whatsapp', function (EvolutionApiService $evolutionApiService) {
+        return $evolutionApiService->enviarMensaje(
+            '67024115',
+            'Hola desde Laravel con Evolution API'
+        ) ? 'Enviado' : 'No enviado';
     });
 });

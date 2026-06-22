@@ -71,4 +71,26 @@ class NotificacionService
             url: $url
         );
     }
+
+    public function calificacionRecibidaParaProveedor(User $proveedor, string $cliente, ?string $url = null): void
+    {
+        $this->enviar(
+            usuario: $proveedor,
+            titulo: 'Nueva calificacion recibida',
+            mensaje: $cliente . ' califico uno de tus servicios.',
+            tipo: 'success',
+            url: $url
+        );
+    }
+
+    public function respuestaCalificacionParaCliente(User $cliente, string $proveedor, ?string $url = null): void
+    {
+        $this->enviar(
+            usuario: $cliente,
+            titulo: 'Respuesta a tu calificacion',
+            mensaje: $proveedor . ' respondio tu resena.',
+            tipo: 'info',
+            url: $url
+        );
+    }
 }

@@ -2,19 +2,19 @@
     <div class="navbar-brand-box">
         <a href="{{ url('/') }}" class="logo logo-dark">
             <span class="logo-sm">
-                <img src="{{ asset('assets/images/logo-sm.png') }}" alt="Logo" height="22">
+                <img src="{{ asset('assets/images/logo-sm1.png') }}" alt="Logo" height="22">
             </span>
             <span class="logo-lg">
-                <img src="{{ asset('assets/images/logo-dark.png') }}" alt="Logo" height="17">
+                <img src="{{ asset('assets/images/LogoTecnoConexion.png') }}" alt="Logo" height="50">
             </span>
         </a>
 
         <a href="{{ url('/') }}" class="logo logo-light">
             <span class="logo-sm">
-                <img src="{{ asset('assets/images/logo-sm.png') }}" alt="Logo" height="22">
+                <img src="{{ asset('assets/images/logo-sm1.png') }}" alt="Logo" height="22">
             </span>
             <span class="logo-lg">
-                <img src="{{ asset('assets/images/logo-light.png') }}" alt="Logo" height="17">
+                <img src="{{ asset('assets/images/LogoTecnoConexion.png') }}" alt="Logo" height="50">
             </span>
         </a>
         <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
@@ -327,6 +327,48 @@
                                         </a>
                                     </li>
                                 @endcan
+
+                            </ul>
+                        </div>
+                    </li>
+                @endif
+
+                @if ($usuarioActual->can('ver calificaciones') || $usuarioActual->can('ver aspectos calificacion'))
+                    <li class="nav-item">
+                        <a
+                            class="nav-link menu-link {{ request()->routeIs('calificaciones.*') || request()->routeIs('aspectos-calificacion.*') ? 'active' : '' }}"
+                            href="#sidebarCalificaciones"
+                            data-bs-toggle="collapse"
+                            role="button"
+                            aria-expanded="{{ request()->routeIs('calificaciones.*') || request()->routeIs('aspectos-calificacion.*') ? 'true' : 'false' }}"
+                            aria-controls="sidebarCalificaciones"
+                        >
+                            <i class="ri-star-smile-line"></i>
+                            <span>Calificaciones</span>
+                        </a>
+
+                        <div
+                            class="collapse menu-dropdown {{ request()->routeIs('calificaciones.*') || request()->routeIs('aspectos-calificacion.*') ? 'show' : '' }}"
+                            id="sidebarCalificaciones"
+                        >
+                            <ul class="nav nav-sm flex-column">
+                                @can('ver calificaciones')
+                                    <li class="nav-item">
+                                        <a href="{{ route('calificaciones.index') }}" class="nav-link {{ request()->routeIs('calificaciones.*') ? 'active' : '' }}">
+                                            <i class="ri-message-3-line me-1"></i>
+                                            Reseñas
+                                        </a>
+                                    </li>
+                                @endcan
+
+                                @can('ver aspectos calificacion')
+                                    <li class="nav-item">
+                                        <a href="{{ route('aspectos-calificacion.index') }}" class="nav-link {{ request()->routeIs('aspectos-calificacion.*') ? 'active' : '' }}">
+                                            <i class="ri-list-check-3 me-1"></i>
+                                            Aspectos
+                                        </a>
+                                    </li>
+                                @endcan
                             </ul>
                         </div>
                     </li>
@@ -350,11 +392,29 @@
                     </li>
                 @endif
 
+                @if ($usuarioActual->hasRole('CLIENTE') && $usuarioActual->can('ver mis calificaciones'))
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('cliente.calificaciones.*') ? 'active' : '' }}" href="{{ route('cliente.calificaciones.index') }}">
+                            <i class="ri-star-smile-line"></i>
+                            <span>Mis calificaciones</span>
+                        </a>
+                    </li>
+                @endif
+
                 @if ($usuarioActual->hasRole('PROVEEDOR') && $usuarioActual->can('ver mis solicitudes proveedor'))
                     <li class="nav-item">
                         <a class="nav-link menu-link {{ request()->routeIs('proveedor.solicitudes.*') || request()->routeIs('proveedor.citas.*') || request()->routeIs('proveedor.historial-solicitudes.*') ? 'active' : '' }}" href="{{ route('proveedor.solicitudes.index') }}">
                             <i class="ri-inbox-archive-line"></i>
                             <span>Mis solicitudes</span>
+                        </a>
+                    </li>
+                @endif
+
+                @if ($usuarioActual->hasRole('PROVEEDOR') && $usuarioActual->can('ver mis calificaciones proveedor'))
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('proveedor.calificaciones.*') ? 'active' : '' }}" href="{{ route('proveedor.calificaciones.index') }}">
+                            <i class="ri-star-smile-line"></i>
+                            <span>Mis calificaciones</span>
                         </a>
                     </li>
                 @endif

@@ -24,6 +24,10 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
+        'celular',
+        'celular_verificado_at',
+        'recibe_notificaciones_whatsapp',
+        'fecha_nacimiento',
         'password',
         'google_id',
         'avatar',
@@ -52,6 +56,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'celular_verificado_at' => 'datetime',
+            'recibe_notificaciones_whatsapp' => 'boolean',
+            'fecha_nacimiento' => 'date',
             'password' => 'hashed',
             'estado' => 'boolean',
             'two_factor_confirmed_at' => 'datetime',
@@ -62,7 +69,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return LogOptions::defaults()
             ->useLogName('usuarios')
-            ->logOnly(['name', 'email', 'estado', 'google_id', 'avatar', 'email_verified_at'])
+            ->logOnly(['name', 'email','celular', 'celular_verificado_at', 'recibe_notificaciones_whatsapp', 'fecha_nacimiento', 'estado', 'google_id', 'avatar', 'email_verified_at'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
@@ -80,5 +87,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function historialSolicitudes()
     {
         return $this->hasMany(HistorialSolicitud::class);
+    }
+
+    public function respuestasCalificacion()
+    {
+        return $this->hasMany(RespuestaCalificacion::class);
     }
 }

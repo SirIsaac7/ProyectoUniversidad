@@ -35,6 +35,11 @@ class Cita extends Model
         return $this->belongsTo(Solicitud::class);
     }
 
+    public function calificacion()
+    {
+        return $this->hasOne(Calificacion::class);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
