@@ -7,6 +7,11 @@ use App\Notifications\NotificacionSistema;
 
 class NotificacionService
 {
+    public function __construct(
+        protected EvolutionApiService $evolutionApiService
+    ) {
+    }
+
     public function enviar(
         User $usuario,
         string $titulo,
@@ -26,6 +31,23 @@ class NotificacionService
             url: $url,
             extra: $extra
         ));
+
+        $this->enviarWhatsApp($usuario, $titulo, $mensaje, $url);
+    }
+
+    protected function enviarWhatsApp(User $usuario, string $titulo, string $mensaje, ?string $url = null): void
+    {
+        if (! $usuario->recibe_notificaciones_whatsapp || blank($usuario->celular) || blank($usuario->celular_verificado_at)) {
+            return;
+        }
+
+        $texto = $titulo . PHP_EOL . $mensaje;
+
+        if ($url) {
+            $texto .= PHP_EOL . (str_starts_with($url, 'http') ? $url : url($url));
+        }
+
+        $this->evolutionApiService->enviarMensaje($usuario->celular, $texto);
     }
 
     public function nuevaSolicitudParaProveedor(User $proveedor, string $cliente, ?string $url = null): void

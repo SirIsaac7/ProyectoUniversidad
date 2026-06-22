@@ -68,6 +68,67 @@
                         @enderror
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="celular" class="form-label">Celular</label>
+                                <input
+                                    type="text"
+                                    class="form-control @error('celular') is-invalid @enderror"
+                                    id="celular"
+                                    name="celular"
+                                    value="{{ old('celular', $usuario->celular) }}"
+                                    placeholder="Ej: 67024115"
+                                    inputmode="numeric"
+                                    maxlength="8"
+                                    pattern="[0-9]{8}"
+                                >
+                                @error('celular')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @else
+                                    <div class="form-text">Debe tener exactamente 8 numeros. Si cambia, debera verificarse otra vez.</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="fecha_nacimiento" class="form-label">Fecha de nacimiento</label>
+                                <input
+                                    type="date"
+                                    class="form-control @error('fecha_nacimiento') is-invalid @enderror"
+                                    id="fecha_nacimiento"
+                                    name="fecha_nacimiento"
+                                    value="{{ old('fecha_nacimiento', optional($usuario->fecha_nacimiento)->format('Y-m-d')) }}"
+                                    max="{{ now()->subYears(18)->format('Y-m-d') }}"
+                                >
+                                @error('fecha_nacimiento')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        <input
+                            class="form-check-input @error('recibe_notificaciones_whatsapp') is-invalid @enderror"
+                            type="checkbox"
+                            role="switch"
+                            id="recibe_notificaciones_whatsapp"
+                            name="recibe_notificaciones_whatsapp"
+                            value="1"
+                            @checked(old('recibe_notificaciones_whatsapp', $usuario->recibe_notificaciones_whatsapp))
+                        >
+                        <label class="form-check-label" for="recibe_notificaciones_whatsapp">
+                            Recibir notificaciones por WhatsApp
+                        </label>
+                        @error('recibe_notificaciones_whatsapp')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @else
+                            <div class="form-text">Solo se enviaran mensajes si el usuario tiene celular registrado.</div>
+                        @enderror
+                    </div>
+
                     <div class="d-flex justify-content-end gap-2">
                         <a href="{{ route('usuarios.index') }}" class="btn btn-light">Cancelar</a>
                         <button type="submit" class="btn btn-primary">

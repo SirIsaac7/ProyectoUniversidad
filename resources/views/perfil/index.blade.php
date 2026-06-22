@@ -21,12 +21,22 @@
         'two-factor-authentication-confirmed' => 'La autenticacion en dos pasos fue confirmada correctamente.',
         'two-factor-authentication-disabled' => 'La autenticacion en dos pasos fue desactivada correctamente.',
         'recovery-codes-generated' => 'Los codigos de recuperacion se regeneraron correctamente.',
+        'cell-code-sent' => 'Te enviamos un codigo de verificacion por WhatsApp.',
+        'cell-verified' => 'Tu celular fue verificado correctamente.',
         'local-password-updated' => 'La contraseña local fue definida correctamente. Ya puedes confirmar acciones sensibles y activar 2FA.',
+    ];
+    $perfilErrorMessages = [
+        'cell-code-failed' => 'No se pudo enviar el codigo. Revisa Evolution API o tu numero de celular.',
+        'cell-code-invalid' => 'El codigo ingresado no es valido o ya vencio.',
     ];
 @endphp
 
 @if (session('status') && isset($perfilStatusMessages[session('status')]))
     <div class="d-none" id="perfil-success-message" data-message="{{ $perfilStatusMessages[session('status')] }}"></div>
+@endif
+
+@if (session('status') && isset($perfilErrorMessages[session('status')]))
+    <div class="d-none" id="perfil-error-message" data-message="{{ $perfilErrorMessages[session('status')] }}"></div>
 @endif
 
 <div class="row">
@@ -168,6 +178,28 @@
                                             <h6 class="mb-0">{{ $rolActual }}</h6>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-6">
+                                        <div class="border rounded p-3 h-100">
+                                            <p class="text-muted mb-1">Celular</p>
+                                            <h6 class="mb-0">{{ $usuario->celular ?: 'Sin registrar' }}</h6>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="border rounded p-3 h-100">
+                                            <p class="text-muted mb-1">WhatsApp</p>
+                                            @if ($usuario->recibe_notificaciones_whatsapp && $usuario->celular && $usuario->celular_verificado_at)
+                                                <h6 class="mb-0 text-success">Notificaciones activas</h6>
+                                            @elseif ($usuario->recibe_notificaciones_whatsapp && $usuario->celular)
+                                                <h6 class="mb-0 text-warning">Celular sin verificar</h6>
+                                            @elseif ($usuario->recibe_notificaciones_whatsapp)
+                                                <h6 class="mb-0 text-warning">Pendiente de celular</h6>
+                                            @else
+                                                <h6 class="mb-0 text-muted">Desactivado</h6>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -270,6 +302,63 @@
                                             @enderror
                                         </div>
 
+                                        <div class="col-lg-6">
+                                            <label for="celular" class="form-label">Celular</label>
+                                            <input
+                                                type="text"
+                                                class="form-control @error('celular', 'updateProfileInformation') is-invalid @enderror"
+                                                id="celular"
+                                                name="celular"
+                                                value="{{ old('celular', $usuario->celular) }}"
+                                                placeholder="Ej: 67024115"
+                                                inputmode="numeric"
+                                                maxlength="8"
+                                                pattern="[0-9]{8}"
+                                            >
+                                            @error('celular', 'updateProfileInformation')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @else
+                                                <div class="form-text">Debe tener exactamente 8 numeros. Si lo cambias, deberas verificarlo otra vez.</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="col-lg-6">
+                                            <label for="fecha_nacimiento" class="form-label">Fecha de nacimiento</label>
+                                            <input
+                                                type="date"
+                                                class="form-control @error('fecha_nacimiento', 'updateProfileInformation') is-invalid @enderror"
+                                                id="fecha_nacimiento"
+                                                name="fecha_nacimiento"
+                                                value="{{ old('fecha_nacimiento', optional($usuario->fecha_nacimiento)->format('Y-m-d')) }}"
+                                                max="{{ now()->subYears(18)->format('Y-m-d') }}"
+                                            >
+                                            @error('fecha_nacimiento', 'updateProfileInformation')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="col-12">
+                                            <div class="form-check form-switch">
+                                                <input
+                                                    class="form-check-input @error('recibe_notificaciones_whatsapp', 'updateProfileInformation') is-invalid @enderror"
+                                                    type="checkbox"
+                                                    role="switch"
+                                                    id="recibe_notificaciones_whatsapp"
+                                                    name="recibe_notificaciones_whatsapp"
+                                                    value="1"
+                                                    @checked(old('recibe_notificaciones_whatsapp', $usuario->recibe_notificaciones_whatsapp))
+                                                >
+                                                <label class="form-check-label" for="recibe_notificaciones_whatsapp">
+                                                    Recibir notificaciones por WhatsApp
+                                                </label>
+                                                @error('recibe_notificaciones_whatsapp', 'updateProfileInformation')
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @else
+                                                    <div class="form-text">Puedes desactivar esta opcion cuando quieras.</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
                                         <div class="col-12">
                                             <div class="text-end">
                                                 <button type="submit" class="btn btn-primary">
@@ -280,6 +369,76 @@
                                         </div>
                                     </div>
                                 </form>
+                            </div>
+                        </div>
+
+                        <div class="card border">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <h5 class="card-title mb-0">Verificacion de celular</h5>
+
+                                @if ($usuario->celular_verificado_at)
+                                    <span class="badge bg-success-subtle text-success">Verificado</span>
+                                @elseif ($usuario->celular)
+                                    <span class="badge bg-warning-subtle text-warning">Pendiente</span>
+                                @else
+                                    <span class="badge bg-secondary-subtle text-secondary">Sin celular</span>
+                                @endif
+                            </div>
+
+                            <div class="card-body">
+                                @if (! $usuario->celular)
+                                    <p class="text-muted mb-0">
+                                        Primero registra un celular de 8 digitos y guarda los cambios para poder verificarlo.
+                                    </p>
+                                @elseif ($usuario->celular_verificado_at)
+                                    <div class="alert alert-success mb-0">
+                                        Tu celular {{ $usuario->celular }} fue verificado el
+                                        {{ optional($usuario->celular_verificado_at)->format('d/m/Y H:i') }}.
+                                    </div>
+                                @else
+                                    <div class="alert alert-warning">
+                                        Para recibir notificaciones por WhatsApp debes verificar el celular {{ $usuario->celular }}.
+                                    </div>
+
+                                    <div class="row g-3 align-items-end">
+                                        <div class="col-lg-5">
+                                            <form method="POST" action="{{ route('perfil.celular.enviar-codigo') }}">
+                                                @csrf
+                                                <button type="submit" class="btn btn-soft-primary w-100">
+                                                    <i class="ri-whatsapp-line align-bottom me-1"></i>
+                                                    Enviar codigo
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <div class="col-lg-7">
+                                            <form class="needs-validation" novalidate method="POST" action="{{ route('perfil.celular.verificar') }}">
+                                                @csrf
+
+                                                <div class="input-group">
+                                                    <input
+                                                        type="text"
+                                                        name="codigo"
+                                                        class="form-control @error('codigo') is-invalid @enderror"
+                                                        inputmode="numeric"
+                                                        maxlength="6"
+                                                        pattern="[0-9]{6}"
+                                                        placeholder="Codigo de 6 digitos"
+                                                        required
+                                                    >
+                                                    <button type="submit" class="btn btn-success">
+                                                        Verificar
+                                                    </button>
+                                                    @error('codigo')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @else
+                                                        <div class="invalid-feedback">Ingresa el codigo de 6 digitos.</div>
+                                                    @enderror
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
 

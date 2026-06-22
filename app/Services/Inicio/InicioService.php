@@ -2,12 +2,20 @@
 
 namespace App\Services\Inicio;
 
+use App\Models\Cita;
 use App\Models\PerfilProveedor;
+use App\Services\CalificacionService;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Activitylog\Models\Activity;
 
 class InicioService
 {
+    public function __construct(
+        protected CalificacionService $calificacionService
+    ) {
+    }
+
     public function getData(): array
     {
         $user = auth()->user();
@@ -83,7 +91,75 @@ class InicioService
             'documentosPendientes' => $documentosPendientes,
             'documentosRechazados' => $documentosRechazados,
             'tieneUbicacion' => (bool) $perfilProveedor->ubicacion,
+            'resumenCitas' => $this->getResumenCitas($perfilProveedor),
+            'resumenCalificaciones' => $this->calificacionService->resumenProveedor($perfilProveedor->user),
             'actividadReciente' => $this->getActividadReciente(),
+        ];
+    }
+
+    private function getResumenCitas(PerfilProveedor $perfilProveedor): array
+    {
+        $inicioAnio = now()->startOfYear()->toDateString();
+        $finAnio = now()->endOfYear()->toDateString();
+
+        $query = Cita::query()
+            ->whereHas('solicitud', function ($query) use ($perfilProveedor) {
+                $query->where('perfil_proveedor_id', $perfilProveedor->id);
+            });
+
+        $queryAnio = (clone $query)->whereBetween('fecha_cita', [$inicioAnio, $finAnio]);
+
+        $mensuales = (clone $queryAnio)
+            ->selectRaw('MONTH(fecha_cita) as mes')
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw("SUM(CASE WHEN estado = 'completada' THEN 1 ELSE 0 END) as completadas")
+            ->selectRaw("SUM(CASE WHEN estado IN ('cancelada', 'no_asistio', 'vencida') THEN 1 ELSE 0 END) as incidencias")
+            ->groupBy('mes')
+            ->get()
+            ->keyBy('mes');
+
+        $meses = [
+            1 => 'Ene',
+            2 => 'Feb',
+            3 => 'Mar',
+            4 => 'Abr',
+            5 => 'May',
+            6 => 'Jun',
+            7 => 'Jul',
+            8 => 'Ago',
+            9 => 'Sep',
+            10 => 'Oct',
+            11 => 'Nov',
+            12 => 'Dic',
+        ];
+
+        $labels = [];
+        $totales = [];
+        $completadas = [];
+        $incidencias = [];
+
+        foreach ($meses as $numeroMes => $label) {
+            $registro = $mensuales->get($numeroMes);
+
+            $labels[] = $label;
+            $totales[] = (int) ($registro->total ?? 0);
+            $completadas[] = (int) ($registro->completadas ?? 0);
+            $incidencias[] = (int) ($registro->incidencias ?? 0);
+        }
+
+        return [
+            'anio' => Carbon::parse($inicioAnio)->year,
+            'totalAnio' => (clone $queryAnio)->count(),
+            'programadas' => (clone $queryAnio)->where('estado', 'programada')->count(),
+            'enAtencion' => (clone $queryAnio)->where('estado', 'en_atencion')->count(),
+            'completadas' => (clone $queryAnio)->where('estado', 'completada')->count(),
+            'incidencias' => (clone $queryAnio)->whereIn('estado', ['cancelada', 'no_asistio', 'vencida'])->count(),
+            'labels' => $labels,
+            'series' => [
+                'totales' => $totales,
+                'completadas' => $completadas,
+                'incidencias' => $incidencias,
+            ],
         ];
     }
 

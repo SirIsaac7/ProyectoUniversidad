@@ -29,4 +29,15 @@
 
 @push('styles')
 <link href="{{ asset('assets/css/inicio.css') }}" rel="stylesheet" type="text/css" />
+@if ($tipoInicio === 'proveedor')
+    <link href="{{ asset('assets/css/calificaciones.css') }}" rel="stylesheet" type="text/css" />
+@endif
 @endpush
+
+@if ($tipoInicio === 'proveedor')
+    @push('scripts')
+    <script src="{{ asset('assets/libs/apexcharts/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/inicio.js') }}"></script>
+    <script src="{{ asset('assets/js/calificaciones.js') }}"></script>
+    @endpush
+@endif

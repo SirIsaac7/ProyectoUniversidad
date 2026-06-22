@@ -32,6 +32,9 @@ class UpdateUsuarioRequest extends FormRequest
                 'max:255',
                 Rule::unique('users', 'email')->ignore($usuario),
             ],
+            'celular' => ['nullable', 'digits:8'],
+            'fecha_nacimiento' => ['nullable', 'date', 'before_or_equal:' . now()->subYears(18)->format('Y-m-d')],
+            'recibe_notificaciones_whatsapp' => ['nullable', 'boolean'],
         ];
     }
 }

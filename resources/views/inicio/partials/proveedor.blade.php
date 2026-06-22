@@ -231,6 +231,20 @@
         </div>
     </div>
 
+    @if (! empty($data['resumenCitas']))
+        @include('inicio.partials.proveedor-citas-grafica', [
+            'resumenCitas' => $data['resumenCitas'],
+        ])
+    @endif
+
+    @if (! empty($data['resumenCalificaciones']))
+        <div class="inicio-calificaciones-graficas mt-3">
+            @include('proveedor.calificaciones.partials.graficas', [
+                'resumenCalificaciones' => $data['resumenCalificaciones'],
+            ])
+        </div>
+    @endif
+
     <div class="card inicio-reminder-card mt-3">
         <div class="card-body">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">

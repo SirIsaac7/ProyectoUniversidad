@@ -37,7 +37,6 @@ use App\Http\Controllers\Proveedor\PortafolioController as MiPortafolioProveedor
 use App\Http\Controllers\Proveedor\SolicitudController as ProveedorSolicitudController;
 use App\Http\Controllers\Proveedor\UbicacionController as MiUbicacionProveedorController;
 use App\Http\Controllers\NotificacionController;
-use App\Services\EvolutionApiService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -50,6 +49,8 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil.index');
     Route::get('/perfil/contrasena-local', [PerfilController::class, 'editLocalPassword'])->name('perfil.password-local.edit');
     Route::put('/perfil/contrasena-local', [PerfilController::class, 'updateLocalPassword'])->name('perfil.password-local.update');
+    Route::post('/perfil/celular/enviar-codigo', [PerfilController::class, 'enviarCodigoCelular'])->name('perfil.celular.enviar-codigo');
+    Route::post('/perfil/celular/verificar', [PerfilController::class, 'verificarCelular'])->name('perfil.celular.verificar');
     // Notificaciones
     Route::get('/notificaciones/recientes', [NotificacionController::class, 'recientes'])
     ->name('notificaciones.recientes');
@@ -162,11 +163,4 @@ Route::middleware('auth', 'verified')->group(function () {
             ->only(['index', 'update', 'destroy']);
     });
 
-    //Prueba de Evolution API
-    Route::get('/test-whatsapp', function (EvolutionApiService $evolutionApiService) {
-        return $evolutionApiService->enviarMensaje(
-            '67024115',
-            'Hola desde Laravel con Evolution API'
-        ) ? 'Enviado' : 'No enviado';
-    });
 });

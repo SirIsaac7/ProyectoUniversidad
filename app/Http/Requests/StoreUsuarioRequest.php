@@ -25,6 +25,9 @@ class StoreUsuarioRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'celular' => ['nullable', 'digits:8'],
+            'fecha_nacimiento' => ['nullable', 'date', 'before_or_equal:' . now()->subYears(18)->format('Y-m-d')],
+            'recibe_notificaciones_whatsapp' => ['nullable', 'boolean'],
             'password' => ['required', 'confirmed', Password::min(8)],
             'estado' => ['required', 'boolean'],
         ];
