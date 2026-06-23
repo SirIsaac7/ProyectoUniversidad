@@ -232,8 +232,10 @@
     </div>
 
     @if (! empty($data['resumenCitas']))
-        @include('inicio.partials.proveedor-citas-grafica', [
+        @include('inicio.partials.citas-grafica', [
             'resumenCitas' => $data['resumenCitas'],
+            'titulo' => 'Resumen de citas',
+            'descripcion' => 'Movimiento general de tus citas durante ' . $data['resumenCitas']['anio'] . '.',
         ])
     @endif
 

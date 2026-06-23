@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\PerfilProveedorController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\PortafolioProveedorController;
 use App\Http\Controllers\Admin\ProveedorEspecialidadController;
+use App\Http\Controllers\Admin\ReporteController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\RubroController;
 use App\Http\Controllers\Admin\SolicitudController;
@@ -37,6 +38,7 @@ use App\Http\Controllers\Proveedor\PortafolioController as MiPortafolioProveedor
 use App\Http\Controllers\Proveedor\SolicitudController as ProveedorSolicitudController;
 use App\Http\Controllers\Proveedor\UbicacionController as MiUbicacionProveedorController;
 use App\Http\Controllers\NotificacionController;
+use App\Http\Controllers\Admin\BackupController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -161,6 +163,15 @@ Route::middleware('auth', 'verified')->group(function () {
         Route::resource('calificaciones', CalificacionController::class)
             ->parameters(['calificaciones' => 'calificacion'])
             ->only(['index', 'update', 'destroy']);
+
+        Route::get('backups', [BackupController::class, 'index'])->name('backups.index');
+        Route::put('backups', [BackupController::class, 'update'])->name('backups.update');
+        Route::post('backups/run', [BackupController::class, 'run'])->name('backups.run');
+
+        Route::get('reportes/configuracion', [ReporteController::class, 'configuracion'])->name('reportes.configuracion');
+        Route::put('reportes/configuracion', [ReporteController::class, 'actualizarConfiguracion'])->name('reportes.configuracion.update');
+        Route::get('reportes/{reporte}/pdf', [ReporteController::class, 'pdf'])->name('reportes.pdf');
+        Route::resource('reportes', ReporteController::class)->except('show');
     });
 
 });

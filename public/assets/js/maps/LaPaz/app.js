@@ -44,13 +44,15 @@ function iniciarMapasLaPaz() {
       mapElement.dataset.mapaInicializado = 'true';
 
       const zonaProveedor = normalizarZonaMapaLaPaz(mapElement.dataset.zona || '');
+      const mapaEstatico = mapElement.dataset.mapaEstatico === 'true';
 
       const mapa = new jsVectorMap({
         selector: '#' + mapElement.id,
         map: 'municipio_lapaz',
         backgroundColor: 'transparent',
-        zoomButtons: true,
+        zoomButtons: !mapaEstatico,
         zoomOnScroll: false,
+        draggable: !mapaEstatico,
         regionsSelectable: false,
         regionsSelectableOne: false,
 
@@ -99,6 +101,12 @@ function iniciarMapasLaPaz() {
 
       registrarTitulosMapaLaPaz(mapElement, mapa, zonasPorNombre);
       aplicarResaltadoMapaLaPaz(mapElement, mapa, selectedRegions);
+
+      window.dispatchEvent(new CustomEvent('mapa-lapaz:inicializado', {
+        detail: {
+          id: mapElement.id
+        }
+      }));
     });
   });
 }

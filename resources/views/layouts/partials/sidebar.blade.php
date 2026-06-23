@@ -71,6 +71,24 @@
                     </li>
                 @endcan
 
+                @can('ver backups')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('backups.*') ? 'active' : '' }}" href="{{ route('backups.index') }}">
+                            <i class="ri-database-2-line"></i>
+                            <span>Backups</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('ver reportes')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('reportes.*') ? 'active' : '' }}" href="{{ route('reportes.index') }}">
+                            <i class="ri-file-chart-line"></i>
+                            <span>Reportes</span>
+                        </a>
+                    </li>
+                @endcan
+
                 @if (
                     auth()->user()->can('ver rubros') ||
                     auth()->user()->can('ver tipos servicio') ||

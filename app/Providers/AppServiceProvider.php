@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Policies\InicioPolicy;
+use App\Support\Backup\BackupTemporaryDirectory;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Event;
@@ -16,7 +17,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind('backup-temporary-project', function () {
+            return new BackupTemporaryDirectory(
+                config('backup.backup.temporary_directory') ?? storage_path('app/backup-temp')
+            );
+        });
     }
 
     /**

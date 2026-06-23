@@ -29,15 +29,26 @@
 
 @push('styles')
 <link href="{{ asset('assets/css/inicio.css') }}" rel="stylesheet" type="text/css" />
-@if ($tipoInicio === 'proveedor')
+@if ($tipoInicio === 'admin')
+    <link href="{{ asset('assets/libs/jsvectormap/jsvectormap.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/mapaLaPaz.css') }}" rel="stylesheet" type="text/css" />
+@endif
+@if (in_array($tipoInicio, ['admin', 'proveedor'], true))
     <link href="{{ asset('assets/css/calificaciones.css') }}" rel="stylesheet" type="text/css" />
 @endif
 @endpush
 
-@if ($tipoInicio === 'proveedor')
+@if (in_array($tipoInicio, ['admin', 'proveedor', 'cliente'], true))
     @push('scripts')
     <script src="{{ asset('assets/libs/apexcharts/apexcharts.min.js') }}"></script>
+    @if ($tipoInicio === 'admin')
+    <script src="{{ asset('assets/libs/jsvectormap/jsvectormap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/maps/LaPaz/datos-lapaz.js') }}"></script>
+    <script src="{{ asset('assets/js/maps/LaPaz/app.js') }}"></script>
+    @endif
     <script src="{{ asset('assets/js/inicio.js') }}"></script>
+    @if ($tipoInicio === 'proveedor')
     <script src="{{ asset('assets/js/calificaciones.js') }}"></script>
+    @endif
     @endpush
 @endif

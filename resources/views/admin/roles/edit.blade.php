@@ -115,6 +115,12 @@
                                     'keywords' => ['rubros', 'tipos de servicio', 'tipo servicio', 'especialidades'],
                                     'items' => collect(),
                                 ],
+                                'Reportes' => [
+                                    'icon' => 'ri-file-chart-line',
+                                    'color' => 'primary',
+                                    'keywords' => ['reportes'],
+                                    'items' => collect(),
+                                ],
                                 'Otros permisos' => [
                                     'icon' => 'ri-more-2-line',
                                     'color' => 'secondary',

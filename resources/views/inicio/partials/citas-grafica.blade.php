@@ -1,4 +1,6 @@
 @php
+    $titulo = $titulo ?? 'Resumen de citas';
+    $descripcion = $descripcion ?? 'Movimiento general de tus citas durante ' . ($resumenCitas['anio'] ?? now()->year) . '.';
     $chartData = [
         'labels' => $resumenCitas['labels'] ?? [],
         'series' => $resumenCitas['series'] ?? [
@@ -12,8 +14,8 @@
 <div class="card inicio-citas-overview-card mt-3">
     <div class="card-header align-items-center d-flex flex-wrap gap-2">
         <div class="flex-grow-1">
-            <h5 class="card-title mb-1">Resumen de citas</h5>
-            <p class="text-muted mb-0">Movimiento general de tus citas durante {{ $resumenCitas['anio'] }}.</p>
+            <h5 class="card-title mb-1">{{ $titulo }}</h5>
+            <p class="text-muted mb-0">{{ $descripcion }}</p>
         </div>
         <span class="badge bg-primary-subtle text-primary">
             Año actual
@@ -72,8 +74,8 @@
         </div>
 
         <div
-            id="proveedorCitasOverviewChart"
             class="inicio-citas-chart"
+            data-inicio-citas-chart
             data-chart='@json($chartData)'
         ></div>
     </div>
