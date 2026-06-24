@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AspectoCalificacionController;
 use App\Http\Controllers\Admin\CalificacionController;
@@ -41,9 +42,11 @@ use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\Admin\BackupController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return redirect('inicio');
-});
+// Route::get('/', function () {
+//     return redirect('inicio');
+// });
+
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 Route::middleware('auth', 'verified')->group(function () {
     // Inicio y perfil de usuario
