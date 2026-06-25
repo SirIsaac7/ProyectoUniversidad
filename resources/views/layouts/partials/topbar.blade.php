@@ -33,74 +33,6 @@
             </div>
 
             <div class="d-flex align-items-center">
-                <div class="dropdown topbar-head-dropdown ms-1 header-item">
-                    <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class='bx bx-category-alt fs-22'></i>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-lg p-0 dropdown-menu-end">
-                        <div class="p-3 border-top-0 border-start-0 border-end-0 border-dashed border">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                    <h6 class="m-0 fw-semibold fs-15"> Accesos rapidos </h6>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-2">
-                            <div class="row g-0">
-                                <div class="col">
-                                    <a class="dropdown-icon-item" href="{{ route('inicio') }}">
-                                        <img src="{{ asset('assets/images/brands/github.png') }}" alt="Inicio">
-                                        <span>Inicio</span>
-                                    </a>
-                                </div>
-                                <div class="col">
-                                    <a class="dropdown-icon-item" href="{{ route('login') }}">
-                                        <img src="{{ asset('assets/images/brands/bitbucket.png') }}" alt="Login">
-                                        <span>Login</span>
-                                    </a>
-                                </div>
-                                <div class="col">
-                                    <a class="dropdown-icon-item" href="{{ route('register') }}">
-                                        <img src="{{ asset('assets/images/brands/dribbble.png') }}" alt="Registro">
-                                        <span>Registro</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dropdown topbar-head-dropdown ms-1 header-item">
-                    <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-cart-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
-                        <i class='bx bx-shopping-bag fs-22'></i>
-                        <span class="position-absolute topbar-badge cartitem-badge fs-10 translate-middle badge rounded-pill bg-info">3</span>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-xl dropdown-menu-end p-0 dropdown-menu-cart" aria-labelledby="page-header-cart-dropdown">
-                        <div class="p-3 border-top-0 border-start-0 border-end-0 border-dashed border">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                    <h6 class="m-0 fs-16 fw-semibold"> Atajos</h6>
-                                </div>
-                                <div class="col-auto">
-                                    <span class="badge bg-warning-subtle text-warning fs-13">Demo</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div data-simplebar style="max-height: 300px;">
-                            <div class="p-2">
-                                <div class="text-center empty-cart">
-                                    <div class="avatar-md mx-auto my-3">
-                                        <div class="avatar-title bg-info-subtle text-info fs-36 rounded-circle">
-                                            <i class='bx bx-layout'></i>
-                                        </div>
-                                    </div>
-                                    <h5 class="mb-3">Topbar de Velzon adaptado</h5>
-                                    <p class="text-muted mb-0">Este bloque conserva dropdowns y componentes visuales del template.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="ms-1 header-item d-none d-sm-flex">
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-toggle="fullscreen">
@@ -159,10 +91,27 @@
                 <div class="dropdown ms-sm-3 header-item topbar-user">
                     <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="d-flex align-items-center">
-                            <img class="rounded-circle header-profile-user" src="{{ asset('assets/images/users/avatar-1.jpg') }}" alt="Header Avatar">
-                            <span class="text-start ms-xl-2">
-                                <span class="d-none d-xl-inline-block ms-1 fw-semibold user-name-text">{{ auth()->user()->name ?? 'Usuario' }}</span>
-                                <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">Cuenta activa</span>
+                            @if (auth()->user()?->avatar_url)
+                                <img
+                                    class="rounded-circle flex-shrink-0"
+                                    src="{{ auth()->user()->avatar_url }}"
+                                    alt="Avatar"
+                                    width="32"
+                                    height="32"
+                                    referrerpolicy="no-referrer"
+                                    style="object-fit: cover;"
+                                >
+                            @else
+                                <span
+                                    class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center flex-shrink-0 fw-semibold"
+                                    style="width: 32px; height: 32px; min-width: 32px;"
+                                >
+                                    {{ auth()->user()?->inicial ?? 'U' }}
+                                </span>
+                            @endif
+                            <span class="text-start ms-2 lh-sm">
+                                <span class="d-block fw-semibold user-name-text">{{ auth()->user()->name ?? 'Usuario' }}</span>
+                                <span class="d-block fs-12 user-name-sub-text">Cuenta activa</span>
                             </span>
                         </span>
                     </button>

@@ -79,6 +79,24 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(PerfilProveedor::class);
     }
 
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (! $this->avatar) {
+            return null;
+        }
+
+        if (str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://')) {
+            return $this->avatar;
+        }
+
+        return asset($this->avatar);
+    }
+
+    public function getInicialAttribute(): string
+    {
+        return mb_strtoupper(mb_substr($this->name ?: 'U', 0, 1));
+    }
+
     public function solicitudes()
     {
         return $this->hasMany(Solicitud::class, 'cliente_user_id');

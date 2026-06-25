@@ -52,6 +52,7 @@ Route::middleware('auth', 'verified')->group(function () {
     // Inicio y perfil de usuario
     Route::get('/inicio', [InicioController::class, 'index'])->name('inicio');
     Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil.index');
+    Route::patch('/perfil/avatar', [PerfilController::class, 'updateAvatar'])->name('perfil.avatar.update');
     Route::get('/perfil/contrasena-local', [PerfilController::class, 'editLocalPassword'])->name('perfil.password-local.edit');
     Route::put('/perfil/contrasena-local', [PerfilController::class, 'updateLocalPassword'])->name('perfil.password-local.update');
     Route::post('/perfil/celular/enviar-codigo', [PerfilController::class, 'enviarCodigoCelular'])->name('perfil.celular.enviar-codigo');
@@ -102,6 +103,7 @@ Route::middleware('auth', 'verified')->group(function () {
         ->name('cliente.')
         ->group(function () {
             Route::get('/buscar-servicios', [ClienteBusquedaServicioController::class, 'index'])->name('buscar-servicios.index');
+            Route::post('/buscar-servicios/inteligente', [ClienteBusquedaServicioController::class, 'inteligente'])->name('buscar-servicios.inteligente');
             Route::get('/solicitudes', [ClienteSolicitudController::class, 'index'])->name('solicitudes.index');
             Route::post('/solicitudes', [ClienteSolicitudController::class, 'store'])->name('solicitudes.store');
             Route::delete('/solicitudes/{solicitud}', [ClienteSolicitudController::class, 'destroy'])->name('solicitudes.destroy');

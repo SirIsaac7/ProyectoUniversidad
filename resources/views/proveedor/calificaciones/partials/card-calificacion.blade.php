@@ -5,11 +5,11 @@
         data-target="proveedorCalificacionDetalle{{ $calificacion->id }}"
     >
         <span class="avatar-md flex-shrink-0">
-            @if ($calificacion->cita?->solicitud?->cliente?->avatar)
-                <img src="{{ asset($calificacion->cita->solicitud->cliente->avatar) }}" alt="Cliente" class="rounded-circle img-fluid">
+            @if ($calificacion->cita?->solicitud?->cliente?->avatar_url)
+                <img src="{{ $calificacion->cita->solicitud->cliente->avatar_url }}" alt="Cliente" class="rounded-circle img-fluid" referrerpolicy="no-referrer">
             @else
                 <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
-                    <i class="ri-user-line fs-22"></i>
+                    {{ $calificacion->cita?->solicitud?->cliente?->inicial ?? 'C' }}
                 </span>
             @endif
         </span>

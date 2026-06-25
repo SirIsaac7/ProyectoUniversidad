@@ -25,7 +25,18 @@
                                     <div class="row g-3">
                                         <div class="col-sm-6">
                                             <small class="text-muted d-block">Proveedor</small>
-                                            <span class="fw-semibold">{{ $citaVista['proveedor'] }}</span>
+                                            <span class="d-flex align-items-center gap-2 fw-semibold">
+                                                <span class="avatar-xs">
+                                                    @if ($citaVista['proveedor_avatar'])
+                                                        <img src="{{ $citaVista['proveedor_avatar'] }}" alt="{{ $citaVista['proveedor'] }}" class="rounded-circle img-fluid">
+                                                    @else
+                                                        <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
+                                                            {{ $citaVista['proveedor_inicial'] }}
+                                                        </span>
+                                                    @endif
+                                                </span>
+                                                {{ $citaVista['proveedor'] }}
+                                            </span>
                                         </div>
                                         <div class="col-sm-6">
                                             <small class="text-muted d-block">Fecha</small>

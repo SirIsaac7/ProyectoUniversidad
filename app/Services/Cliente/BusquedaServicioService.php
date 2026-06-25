@@ -6,7 +6,11 @@ use App\Models\Especialidad;
 use App\Models\PerfilProveedor;
 use App\Models\Rubro;
 use App\Models\RubroTipoServicio;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class BusquedaServicioService
@@ -23,6 +27,64 @@ class BusquedaServicioService
             'filtrosBase' => $this->filtrosBase($filtros),
             'proveedores' => $this->proveedores($filtros),
             'tiposAtencion' => $this->tiposAtencion(),
+        ];
+    }
+
+    public function busquedaInteligente(array $data): array
+    {
+        $respuestaIa = $this->consultarApiBusquedaInteligente($data);
+        $terminos = $this->terminosBusquedaInteligente($respuestaIa, $data['texto_problema']);
+        $nombresExternos = collect($respuestaIa['tecnicos'] ?? [])
+            ->pluck('nombre')
+            ->filter()
+            ->map(fn ($nombre) => $this->normalizarTexto($nombre))
+            ->values();
+
+        $proveedores = PerfilProveedor::query()
+            ->with([
+                'user:id,name,email,avatar',
+                'ubicacion',
+                'horarios' => fn ($query) => $query->where('estado', true)->orderBy('dia_semana')->orderBy('hora_inicio'),
+                'portafolio' => fn ($query) => $query->where('estado', true)->latest()->take(6),
+                'portafolio.imagenes' => fn ($query) => $query->where('estado', true),
+                'documentos' => fn ($query) => $query->where('estado', true)->where('estado_revision', 'aprobado'),
+                'documentos.tipoDocumentoProveedor:id,nombre,descripcion,obligatorio',
+                'proveedorEspecialidades.especialidad.rubroTipoServicio.rubro',
+                'proveedorEspecialidades.especialidad.rubroTipoServicio.tipoServicio',
+                'solicitudes.cita.calificacion',
+            ])
+            ->where('estado', true)
+            ->where('estado_verificacion', 'aprobado')
+            ->whereHas('user', fn ($query) => $query->where('estado', true))
+            ->whereHas('proveedorEspecialidades', function ($query) {
+                $query->where('estado', true)
+                    ->whereHas('especialidad', fn ($especialidadQuery) => $especialidadQuery->where('estado', true));
+            })
+            ->get()
+            ->map(function (PerfilProveedor $perfilProveedor) use ($terminos, $nombresExternos, $data) {
+                $score = $this->scoreProveedorInteligente($perfilProveedor, $terminos, $nombresExternos, $data);
+
+                if ($score['total'] <= 0) {
+                    return null;
+                }
+
+                return array_merge($this->mapearProveedor($perfilProveedor), [
+                    'score_ia' => $score['total'],
+                    'razones_ia' => $score['razones'],
+                    'distancia_ia' => $score['distancia'],
+                    'rating_ia' => $this->promedioCalificacionProveedor($perfilProveedor),
+                ]);
+            })
+            ->filter()
+            ->sortByDesc('score_ia')
+            ->take(10)
+            ->values();
+
+        return [
+            'api' => $respuestaIa,
+            'terminos' => $terminos,
+            'proveedores' => $proveedores,
+            'total' => $proveedores->count(),
         ];
     }
 
@@ -162,6 +224,196 @@ class BusquedaServicioService
             ->through(fn (PerfilProveedor $perfilProveedor) => $this->mapearProveedor($perfilProveedor));
     }
 
+    protected function consultarApiBusquedaInteligente(array $data): array
+    {
+        $archivo = $data['imagen'];
+        $url = (string) config('services.busqueda_inteligente.url');
+
+        if (! $archivo instanceof UploadedFile) {
+            return [];
+        }
+
+        if (blank($url)) {
+            throw new \RuntimeException('No se configuro la URL de la busqueda inteligente.');
+        }
+
+        try {
+            $response = Http::timeout((int) config('services.busqueda_inteligente.timeout', 30))
+                ->acceptJson()
+                ->attach(
+                    'file',
+                    file_get_contents($archivo->getRealPath()),
+                    $archivo->getClientOriginalName()
+                )
+                ->post($url, array_filter([
+                    'texto_problema' => $data['texto_problema'],
+                    'usar_ubicacion' => (bool) ($data['usar_ubicacion'] ?? false) ? '1' : '0',
+                    'modo_clasificacion' => $data['modo_clasificacion'] ?? 'cnn',
+                    'lat_cliente' => $data['lat_cliente'] ?? null,
+                    'lon_cliente' => $data['lon_cliente'] ?? null,
+                ], static fn ($value) => $value !== null && $value !== ''));
+        } catch (ConnectionException $exception) {
+            Log::error('No se pudo contactar con la API de busqueda inteligente.', [
+                'url' => $url,
+                'message' => $exception->getMessage(),
+            ]);
+
+            throw new \RuntimeException('No se pudo conectar con la API de busqueda inteligente.');
+        }
+
+        if (! $response->successful()) {
+            Log::warning('La API de busqueda inteligente respondio con error.', [
+                'url' => $url,
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+
+            $json = $response->json();
+
+            throw new \RuntimeException(
+                is_array($json)
+                    ? ($json['detalle'] ?? $json['error'] ?? 'No se pudo consultar la busqueda inteligente.')
+                    : 'No se pudo consultar la busqueda inteligente.'
+            );
+        }
+
+        $json = $response->json();
+
+        if (! is_array($json) || isset($json['error'])) {
+            throw new \RuntimeException($json['detalle'] ?? $json['error'] ?? 'La API de busqueda inteligente devolvio una respuesta invalida.');
+        }
+
+        return $json;
+    }
+
+    protected function terminosBusquedaInteligente(array $respuestaIa, string $textoProblema): array
+    {
+        $palabrasClave = $respuestaIa['palabras_clave'] ?? [];
+        $terminos = collect([
+            $respuestaIa['tipo_dispositivo'] ?? null,
+            $respuestaIa['marca'] ?? null,
+        ]);
+
+        foreach (['problemas', 'componentes'] as $clave) {
+            $terminos = $terminos->merge($palabrasClave[$clave] ?? []);
+        }
+
+        $terminos = $terminos
+            ->merge(Str::of($textoProblema)->lower()->explode(' '))
+            ->map(fn ($termino) => $this->normalizarTexto($termino))
+            ->filter(fn ($termino) => mb_strlen($termino) >= 3)
+            ->unique()
+            ->values()
+            ->all();
+
+        return $terminos;
+    }
+
+    protected function scoreProveedorInteligente(PerfilProveedor $perfilProveedor, array $terminos, $nombresExternos, array $data): array
+    {
+        $textoProveedor = $this->normalizarTexto(collect([
+            $perfilProveedor->nombre_publico,
+            $perfilProveedor->descripcion,
+            $perfilProveedor->user?->name,
+            $perfilProveedor->ubicacion?->zona,
+            $perfilProveedor->ubicacion?->direccion,
+        ])
+            ->merge($perfilProveedor->proveedorEspecialidades->map(function ($proveedorEspecialidad) {
+                $especialidad = $proveedorEspecialidad->especialidad;
+
+                return implode(' ', [
+                    $especialidad?->nombre,
+                    $especialidad?->descripcion,
+                    $especialidad?->rubroTipoServicio?->rubro?->nombre,
+                    $especialidad?->rubroTipoServicio?->tipoServicio?->nombre,
+                ]);
+            }))
+            ->filter()
+            ->implode(' '));
+
+        $coincidencias = collect($terminos)
+            ->filter(fn ($termino) => Str::contains($textoProveedor, $termino))
+            ->values();
+
+        $score = min(55, $coincidencias->count() * 9);
+        $razones = $coincidencias
+            ->take(4)
+            ->map(fn ($termino) => 'Coincide con "' . $termino . '"')
+            ->all();
+
+        $nombreNormalizado = $this->normalizarTexto($perfilProveedor->user?->name . ' ' . $perfilProveedor->nombre_publico);
+
+        if ($nombresExternos->contains(fn ($nombre) => Str::contains($nombreNormalizado, $nombre) || Str::contains($nombre, $nombreNormalizado))) {
+            $score += 25;
+            $razones[] = 'Coincide con el ranking externo';
+        }
+
+        $rating = $this->promedioCalificacionProveedor($perfilProveedor);
+        $score += $rating > 0 ? min(10, $rating * 2) : 3;
+
+        $distancia = null;
+        if (
+            (bool) ($data['usar_ubicacion'] ?? false)
+            && is_numeric($data['lat_cliente'] ?? null)
+            && is_numeric($data['lon_cliente'] ?? null)
+            && $perfilProveedor->ubicacion?->latitud
+            && $perfilProveedor->ubicacion?->longitud
+        ) {
+            $distancia = $this->calcularDistanciaKm(
+                (float) $data['lat_cliente'],
+                (float) $data['lon_cliente'],
+                (float) $perfilProveedor->ubicacion->latitud,
+                (float) $perfilProveedor->ubicacion->longitud
+            );
+
+            if ($distancia <= (int) ($perfilProveedor->ubicacion->radio_cobertura_km ?? 1)) {
+                $score += 10;
+                $razones[] = 'Esta dentro de su radio de cobertura';
+            } elseif ($distancia <= 5) {
+                $score += 5;
+                $razones[] = 'Esta cerca de tu ubicacion';
+            }
+        }
+
+        return [
+            'total' => round($score, 2),
+            'razones' => array_values(array_unique($razones)),
+            'distancia' => $distancia,
+        ];
+    }
+
+    protected function promedioCalificacionProveedor(PerfilProveedor $perfilProveedor): float
+    {
+        $calificaciones = $perfilProveedor->solicitudes
+            ->map(fn ($solicitud) => $solicitud->cita?->calificacion?->puntuacion)
+            ->filter();
+
+        return $calificaciones->isEmpty()
+            ? 0.0
+            : round($calificaciones->avg(), 1);
+    }
+
+    protected function calcularDistanciaKm(float $lat1, float $lon1, float $lat2, float $lon2): float
+    {
+        $radioTierra = 6371;
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+
+        $a = sin($dLat / 2) ** 2
+            + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) ** 2;
+
+        return round($radioTierra * (2 * atan2(sqrt($a), sqrt(1 - $a))), 2);
+    }
+
+    protected function normalizarTexto(?string $texto): string
+    {
+        return Str::of($texto ?? '')
+            ->ascii()
+            ->lower()
+            ->squish()
+            ->toString();
+    }
+
     protected function tieneFiltroUbicacionActual(array $filtros): bool
     {
         return $filtros['usar_ubicacion_actual']
@@ -186,7 +438,7 @@ class BusquedaServicioService
         return [
             'id' => $perfilProveedor->id,
             'nombre_persona' => $perfilProveedor->user?->name ?? 'Proveedor',
-            'foto_personal' => $perfilProveedor->user?->avatar,
+            'foto_personal' => $perfilProveedor->user?->avatar_url,
             'nombre_publico' => $perfilProveedor->nombre_publico,
             'descripcion' => $perfilProveedor->descripcion ?: 'Proveedor de servicios disponible para atender solicitudes.',
             'foto_portada' => $perfilProveedor->foto_portada,
@@ -270,7 +522,7 @@ class BusquedaServicioService
         ];
     }
 
-    protected function tiposAtencion(): array
+    public function tiposAtencion(): array
     {
         return [
             'mixto' => 'Mixto',

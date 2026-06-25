@@ -143,9 +143,13 @@ new class extends Component
             <span class="badge bg-primary-subtle text-primary">{{ $proveedores->total() }} resultados</span>
         </div>
 
-        <div class="proveedores-resultados-grid" wire:loading.class="opacity-50">
+        <div class="proveedores-resultados-grid proveedores-resultados-grid--cards" wire:loading.class="opacity-50">
             @forelse ($proveedores as $proveedor)
-                <div class="card proveedor-search-card proveedor-search-card-horizontal" wire:key="proveedor-busqueda-{{ $proveedor['id'] }}">
+                <div
+                    class="card proveedor-search-card proveedor-search-card-horizontal proveedor-search-card--reveal"
+                    wire:key="proveedor-busqueda-{{ $proveedor['id'] }}"
+                    style="--card-delay: {{ $loop->index * 70 }}ms;"
+                >
                     <div class="proveedor-search-personal-photo">
                         @if ($proveedor['foto_personal'])
                             <img src="{{ $proveedor['foto_personal'] }}" alt="{{ $proveedor['nombre_persona'] }}">

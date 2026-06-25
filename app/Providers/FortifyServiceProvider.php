@@ -16,6 +16,8 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
+use Laravel\Fortify\Contracts\LogoutResponse;
+use Illuminate\Http\RedirectResponse;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -98,5 +100,15 @@ class FortifyServiceProvider extends ServiceProvider
                 ($credentialId ?: $request->session()->getId()).'|'.$request->ip()
             );
         });
+
+        $this->app->singleton(LogoutResponse::class, function () {
+            return new class implements LogoutResponse {
+                public function toResponse($request): RedirectResponse
+                {
+                    return redirect()->route('login');
+                }
+            };
+        });
+
     }
 }

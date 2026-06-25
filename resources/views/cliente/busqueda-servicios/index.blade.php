@@ -74,6 +74,68 @@
                 </div>
             </div>
 
+            <div class="card busqueda-ia-panel mb-4">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-3">
+                        <div>
+                            <span class="badge bg-primary-subtle text-primary mb-2">
+                                <i class="ri-sparkling-2-line align-bottom me-1"></i>
+                                Modo IA
+                            </span>
+                            <h5 class="mb-1">Busqueda inteligente por imagen y descripcion</h5>
+                            <p class="text-muted mb-0">Sube una foto del equipo o problema y explica que sucede. La IA sugerira proveedores compatibles.</p>
+                        </div>
+                        <span class="avatar-md">
+                            <span class="avatar-title rounded bg-primary-subtle text-primary">
+                                <i class="ri-brain-line fs-24"></i>
+                            </span>
+                        </span>
+                    </div>
+
+                    <form id="busquedaInteligenteForm" data-url="{{ route('cliente.buscar-servicios.inteligente') }}" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-lg-5">
+                                <label for="imagenIA" class="form-label">Imagen del problema <span class="text-danger">*</span></label>
+                                <input type="file" class="form-control" id="imagenIA" name="imagen" accept=".jpg,.jpeg,.png,.webp" required>
+                                <div class="form-text">Formatos permitidos: JPG, PNG o WEBP. Maximo 8MB.</div>
+                            </div>
+
+                            <div class="col-lg-7">
+                                <label for="descripcionProblemaIA" class="form-label">Descripcion del problema <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="descripcionProblemaIA" name="texto_problema" rows="3" minlength="10" maxlength="1000" required placeholder="Ej: Mi laptop enciende, pero despues de unos minutos se apaga y hace ruido el ventilador."></textarea>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="modoClasificacionIA" class="form-label">Modo de clasificacion</label>
+                                <select class="form-select" id="modoClasificacionIA" name="modo_clasificacion">
+                                    <option value="cnn">CNN</option>
+                                    <option value="gemini">PRO</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label d-block">Ubicacion</label>
+                                <div class="form-check form-switch busqueda-location-switch mb-0">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="usarUbicacionIA" name="usar_ubicacion" value="1">
+                                    <label class="form-check-label" for="usarUbicacionIA">Usar mi ubicacion actual</label>
+                                </div>
+                                <input type="hidden" id="latClienteIA" name="lat_cliente">
+                                <input type="hidden" id="lonClienteIA" name="lon_cliente">
+                            </div>
+
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100" id="btnBusquedaInteligente">
+                                    <i class="ri-search-eye-line align-bottom me-1"></i>
+                                    Buscar con IA
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="busquedaInteligenteResultado" class="mb-4"></div>
+
             <livewire:cliente.busqueda-servicios.bloque-busqueda :filtros="$filtros" />
         </div>
 

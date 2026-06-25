@@ -240,6 +240,7 @@ class SolicitudService
                 $tipoServicio = $solicitud->especialidad?->rubroTipoServicio?->tipoServicio?->nombre ?? 'Sin tipo';
                 $especialidad = $solicitud->especialidad?->nombre ?? 'Sin especialidad';
                 $proveedor = $solicitud->perfilProveedor?->nombre_publico ?? 'Sin proveedor';
+                $proveedorUsuario = $solicitud->perfilProveedor?->user;
                 $fechaTexto = $solicitud->fecha_solicitada ? $solicitud->fecha_solicitada->format('d/m/Y') : 'Sin fecha';
                 $horaTexto = $solicitud->hora_solicitada?->format('H:i') ?: 'Sin hora';
                 $zona = $solicitud->zona ?: 'Sin zona';
@@ -273,6 +274,8 @@ class SolicitudService
                     'tipo_servicio' => $tipoServicio,
                     'especialidad' => $especialidad,
                     'proveedor' => $proveedor,
+                    'proveedor_avatar' => $proveedorUsuario?->avatar_url,
+                    'proveedor_inicial' => $proveedorUsuario?->inicial ?? mb_strtoupper(mb_substr($proveedor, 0, 1)),
                     'zona' => $zona,
                     'direccion' => $direccion,
                     'tipo_atencion' => ucfirst(str_replace('_', ' ', $solicitud->tipo_atencion)),
@@ -302,6 +305,7 @@ class SolicitudService
                 . ' - ' . ($solicitud->especialidad?->rubroTipoServicio?->tipoServicio?->nombre ?? 'Sin tipo'),
             'especialidad' => $solicitud->especialidad?->nombre ?? 'Sin especialidad',
             'proveedor' => $solicitud->perfilProveedor?->nombre_publico ?? 'Sin proveedor',
+            'proveedor_avatar' => $solicitud->perfilProveedor?->user?->avatar_url,
             'fecha' => ($solicitud->fecha_solicitada?->format('d/m/Y') ?: 'Sin fecha')
                 . ' - ' . ($solicitud->hora_solicitada?->format('H:i') ?: 'Sin hora'),
             'ubicacion' => ($solicitud->zona ?: 'Sin zona') . ' - ' . ($solicitud->direccion ?: 'Sin direccion'),

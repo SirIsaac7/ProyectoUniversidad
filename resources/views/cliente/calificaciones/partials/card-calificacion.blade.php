@@ -5,9 +5,13 @@
         data-target="clienteCalificacionDetalle{{ $calificacion->id }}"
     >
         <span class="avatar-md flex-shrink-0">
-            <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
-                <i class="ri-user-star-line fs-22"></i>
-            </span>
+            @if ($calificacion->cita?->solicitud?->perfilProveedor?->user?->avatar_url)
+                <img src="{{ $calificacion->cita->solicitud->perfilProveedor->user->avatar_url }}" alt="Proveedor" class="rounded-circle img-fluid" referrerpolicy="no-referrer">
+            @else
+                <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
+                    {{ $calificacion->cita?->solicitud?->perfilProveedor?->user?->inicial ?? 'P' }}
+                </span>
+            @endif
         </span>
 
         <span class="flex-grow-1 text-start">

@@ -214,6 +214,26 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <div class="d-flex align-items-start gap-3">
+                        <span class="inicio-admin-backup-icon bg-{{ $data['busquedaInteligente']['clase'] }}-subtle text-{{ $data['busquedaInteligente']['clase'] }}">
+                            <i class="ri-brain-line"></i>
+                        </span>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+                                <h5 class="mb-0">Busqueda Inteligente</h5>
+                                <span class="badge bg-{{ $data['busquedaInteligente']['clase'] }}-subtle text-{{ $data['busquedaInteligente']['clase'] }} text-capitalize">
+                                    {{ $data['busquedaInteligente']['estado'] }}
+                                </span>
+                            </div>
+                            <p class="text-muted mb-1">{{ $data['busquedaInteligente']['mensaje'] }}</p>
+                            <small class="text-muted">{{ $data['busquedaInteligente']['detalle'] }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -2,6 +2,8 @@ let busquedaServiciosMap = null;
 let busquedaServiciosMarker = null;
 let busquedaServiciosCircle = null;
 let busquedaServiciosLocationButton = null;
+let zonasSolicitudLaPazCache = null;
+let zonasSolicitudLaPazPromise = null;
 
 const busquedaServiciosMapStyle = [
     { featureType: 'poi', stylers: [{ visibility: 'off' }] },
@@ -24,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     initSolicitudWizards();
     initBusquedaScrollButtons();
+    initBusquedaInteligente();
     cargarZonasSolicitudLaPaz();
 
     if (window.busquedaSolicitudModalProveedorId && typeof bootstrap !== 'undefined') {
@@ -144,6 +147,150 @@ function initBusquedaScrollButtons() {
                 behavior: 'smooth'
             });
         }
+    });
+}
+
+function initBusquedaInteligente() {
+    const form = document.getElementById('busquedaInteligenteForm');
+
+    if (!form || form.dataset.inicializado === 'true') {
+        return;
+    }
+
+    form.dataset.inicializado = 'true';
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            form.reportValidity();
+            return;
+        }
+
+        const imagen = form.querySelector('input[name="imagen"]')?.files?.[0];
+
+        if (imagen && imagen.size > 8 * 1024 * 1024) {
+            mostrarAlertaBusquedaInteligente('Imagen demasiado grande', 'La imagen no debe superar los 8MB.', 'error');
+            return;
+        }
+
+        const usarUbicacion = form.querySelector('input[name="usar_ubicacion"]')?.checked;
+
+        if (usarUbicacion && navigator.geolocation) {
+            setEstadoBusquedaInteligente(true);
+
+            navigator.geolocation.getCurrentPosition(function (position) {
+                form.querySelector('#latClienteIA').value = position.coords.latitude;
+                form.querySelector('#lonClienteIA').value = position.coords.longitude;
+                enviarBusquedaInteligente(form);
+            }, function () {
+                form.querySelector('#latClienteIA').value = '';
+                form.querySelector('#lonClienteIA').value = '';
+                mostrarAlertaBusquedaInteligente('Ubicacion no disponible', 'Se realizara la busqueda sin coordenadas.', 'info');
+                enviarBusquedaInteligente(form);
+            }, {
+                enableHighAccuracy: true,
+                timeout: 8000,
+                maximumAge: 60000
+            });
+
+            return;
+        }
+
+        enviarBusquedaInteligente(form);
+    });
+}
+
+function enviarBusquedaInteligente(form) {
+    const resultContainer = document.getElementById('busquedaInteligenteResultado');
+    const formData = new FormData(form);
+    const token = document.querySelector('meta[name="csrf-token"]')?.content;
+
+    setEstadoBusquedaInteligente(true);
+
+    if (resultContainer) {
+        resultContainer.innerHTML = `
+            <div class="card busqueda-ia-loading">
+                <div class="card-body text-center py-5">
+                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                    <h5 class="mb-1">Analizando tu solicitud</h5>
+                    <p class="text-muted mb-0">Clasificando la imagen y buscando proveedores compatibles...</p>
+                </div>
+            </div>
+        `;
+    }
+
+    fetch(form.dataset.url, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': token || '',
+            'Accept': 'application/json'
+        },
+        body: formData
+    })
+        .then(async function (response) {
+            const data = await response.json().catch(function () {
+                return {};
+            });
+
+            if (!response.ok || !data.ok) {
+                throw new Error(data.mensaje || 'No se pudo completar la busqueda inteligente.');
+            }
+
+            return data;
+        })
+        .then(function (data) {
+            if (resultContainer) {
+                resultContainer.innerHTML = data.html || '';
+            }
+
+            initSolicitudWizards();
+            cargarZonasSolicitudLaPaz(resultContainer || document);
+
+            if (typeof window.iniciarMapasLaPaz === 'function') {
+                window.iniciarMapasLaPaz();
+            }
+
+            resultContainer?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        })
+        .catch(function (error) {
+            if (resultContainer) {
+                resultContainer.innerHTML = '';
+            }
+
+            mostrarAlertaBusquedaInteligente('Busqueda no disponible', error.message, 'error');
+        })
+        .finally(function () {
+            setEstadoBusquedaInteligente(false);
+        });
+}
+
+function setEstadoBusquedaInteligente(isLoading) {
+    const button = document.getElementById('btnBusquedaInteligente');
+
+    if (!button) {
+        return;
+    }
+
+    button.disabled = isLoading;
+    button.innerHTML = isLoading
+        ? '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Buscando...'
+        : '<i class="ri-search-eye-line align-bottom me-1"></i> Buscar con IA';
+}
+
+function mostrarAlertaBusquedaInteligente(title, text, icon) {
+    if (typeof Swal === 'undefined') {
+        alert(text);
+        return;
+    }
+
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: icon,
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: icon === 'error' ? '#f06548' : '#405189'
     });
 }
 
@@ -382,23 +529,17 @@ function actualizarAyudaTipoAtencion(form) {
 }
 
 function cargarZonasSolicitudLaPaz(scope = document) {
-    const selects = scope.querySelectorAll('[data-zonas-lapaz-select]');
+    const selects = Array.from(scope.querySelectorAll('[data-zonas-lapaz-select]'))
+        .filter(function (select) {
+            return select.dataset.zonasSolicitudCargadas !== 'true';
+        });
 
     if (!selects.length) {
         return;
     }
 
-    fetch('/assets/js/maps/LaPaz/zonasGAMPL.geojson')
-        .then(function (response) {
-            if (!response.ok) {
-                throw new Error('No se pudo cargar las zonas.');
-            }
-
-            return response.json();
-        })
-        .then(function (geojson) {
-            const zonas = extraerZonasSolicitudLaPaz(geojson);
-
+    obtenerZonasSolicitudLaPaz()
+        .then(function (zonas) {
             selects.forEach(function (select) {
                 poblarSelectZonaSolicitud(select, zonas);
             });
@@ -408,6 +549,33 @@ function cargarZonasSolicitudLaPaz(scope = document) {
                 poblarSelectZonaSolicitud(select, []);
             });
         });
+}
+
+function obtenerZonasSolicitudLaPaz() {
+    if (zonasSolicitudLaPazCache) {
+        return Promise.resolve(zonasSolicitudLaPazCache);
+    }
+
+    if (!zonasSolicitudLaPazPromise) {
+        zonasSolicitudLaPazPromise = fetch('/assets/js/maps/LaPaz/zonasGAMPL.geojson')
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('No se pudo cargar las zonas.');
+                }
+
+                return response.json();
+            })
+            .then(function (geojson) {
+                zonasSolicitudLaPazCache = extraerZonasSolicitudLaPaz(geojson);
+                return zonasSolicitudLaPazCache;
+            })
+            .catch(function () {
+                zonasSolicitudLaPazCache = [];
+                return zonasSolicitudLaPazCache;
+            });
+    }
+
+    return zonasSolicitudLaPazPromise;
 }
 
 function extraerZonasSolicitudLaPaz(geojson) {
@@ -449,6 +617,7 @@ function poblarSelectZonaSolicitud(select, zonas) {
 
     select.innerHTML = opciones.join('');
     select.value = selected;
+    select.dataset.zonasSolicitudCargadas = 'true';
 
     if (typeof Choices !== 'undefined' && select.dataset.choicesInicializado !== 'true') {
         select.dataset.choicesInicializado = 'true';

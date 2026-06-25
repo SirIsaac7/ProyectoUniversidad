@@ -31,12 +31,16 @@ class BackupService
 
             File::deleteDirectory($directorioTemporal . DIRECTORY_SEPARATOR . 'temp');
             File::deleteDirectory($directorioTemporal);
+            $phpBinary = '"' . PHP_BINARY . '"';
+            $artisan = '"' . base_path('artisan') . '"';
+            $comando = $phpBinary . ' ' . $artisan . ' backup:run --disable-notifications 2>&1';
 
-            $codigoSalida = Artisan::call('backup:run', [
-                '--disable-notifications' => true,
-            ]);
+            $salida = [];
+            $codigoSalida = 1;
 
-            $mensaje = trim(Artisan::output()) ?: 'Backup ejecutado correctamente.';
+            exec($comando, $salida, $codigoSalida);
+
+            $mensaje = trim(implode(PHP_EOL, $salida)) ?: 'Backup ejecutado correctamente.';
 
             if ($codigoSalida !== 0) {
                 $configuracion->update([

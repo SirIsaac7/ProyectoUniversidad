@@ -79,6 +79,9 @@ class CitaService
                     'rubro' => $solicitud?->especialidad?->rubroTipoServicio?->rubro?->nombre ?? 'Sin rubro',
                     'especialidad' => $solicitud?->especialidad?->nombre ?? 'Sin especialidad',
                     'proveedor' => $solicitud?->perfilProveedor?->nombre_publico ?? 'Sin proveedor',
+                    'proveedor_avatar' => $solicitud?->perfilProveedor?->user?->avatar_url,
+                    'proveedor_inicial' => $solicitud?->perfilProveedor?->user?->inicial
+                        ?? mb_strtoupper(mb_substr($solicitud?->perfilProveedor?->nombre_publico ?? 'P', 0, 1)),
                     'fecha' => $cita->fecha_cita?->format('d/m/Y') ?? 'Sin fecha',
                     'hora_inicio' => $cita->hora_inicio?->format('H:i') ?? '--:--',
                     'hora_fin' => $cita->hora_fin?->format('H:i') ?? '--:--',
@@ -104,6 +107,8 @@ class CitaService
                     'rubro' => $solicitud?->especialidad?->rubroTipoServicio?->rubro?->nombre ?? 'Sin rubro',
                     'especialidad' => $solicitud?->especialidad?->nombre ?? 'Sin especialidad',
                     'cliente' => $solicitud?->cliente?->name ?? 'Sin cliente',
+                    'cliente_avatar' => $solicitud?->cliente?->avatar_url,
+                    'cliente_inicial' => $solicitud?->cliente?->inicial ?? 'C',
                     'fecha' => $cita->fecha_cita?->format('d/m/Y') ?? 'Sin fecha',
                     'hora_inicio' => $cita->hora_inicio?->format('H:i') ?? '--:--',
                     'hora_fin' => $cita->hora_fin?->format('H:i') ?? '--:--',

@@ -25,7 +25,18 @@
                                     <div class="row g-3">
                                         <div class="col-sm-6">
                                             <small class="text-muted d-block">Cliente</small>
-                                            <span class="fw-semibold">{{ $citaVista['cliente'] }}</span>
+                                            <span class="d-flex align-items-center gap-2 fw-semibold">
+                                                <span class="avatar-xs">
+                                                    @if ($citaVista['cliente_avatar'])
+                                                        <img src="{{ $citaVista['cliente_avatar'] }}" alt="{{ $citaVista['cliente'] }}" class="rounded-circle img-fluid">
+                                                    @else
+                                                        <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
+                                                            {{ $citaVista['cliente_inicial'] }}
+                                                        </span>
+                                                    @endif
+                                                </span>
+                                                {{ $citaVista['cliente'] }}
+                                            </span>
                                         </div>
                                         <div class="col-sm-6">
                                             <small class="text-muted d-block">Fecha</small>

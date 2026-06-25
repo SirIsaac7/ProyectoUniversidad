@@ -28,6 +28,7 @@ class StoreUsuarioRequest extends FormRequest
             'celular' => ['nullable', 'digits:8'],
             'fecha_nacimiento' => ['nullable', 'date', 'before_or_equal:' . now()->subYears(18)->format('Y-m-d')],
             'recibe_notificaciones_whatsapp' => ['nullable', 'boolean'],
+            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
             'password' => ['required', 'confirmed', Password::min(8)],
             'estado' => ['required', 'boolean'],
         ];

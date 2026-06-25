@@ -45,7 +45,11 @@
                     </div>
 
                     <div class="mi-perfil-avatar">
-                        <span>{{ strtoupper(substr($perfilProveedor->nombre_publico, 0, 1)) }}</span>
+                        @if ($perfilProveedor->user?->avatar_url)
+                            <img src="{{ $perfilProveedor->user->avatar_url }}" alt="{{ $perfilProveedor->user->name }}" class="mi-perfil-avatar-image" referrerpolicy="no-referrer">
+                        @else
+                            <span>{{ $perfilProveedor->user?->inicial ?? mb_strtoupper(mb_substr($perfilProveedor->nombre_publico, 0, 1)) }}</span>
+                        @endif
                     </div>
 
                     <div class="text-center mt-4">

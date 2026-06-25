@@ -26,7 +26,7 @@
             </div>
 
             <div class="card-body">
-                <form class="needs-validation" novalidate method="POST" action="{{ route('usuarios.update', $usuario->id) }}">
+                <form class="needs-validation" novalidate method="POST" action="{{ route('usuarios.update', $usuario->id) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -66,6 +66,41 @@
                         @else
                             <div class="invalid-feedback">Por favor ingresa un correo electronico valido.</div>
                         @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="avatar" class="form-label">Foto de perfil</label>
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <div class="avatar-lg">
+                                @if ($usuario->avatar_url)
+                                    <img
+                                        src="{{ $usuario->avatar_url }}"
+                                        alt="{{ $usuario->name }}"
+                                        class="rounded-circle img-thumbnail js-usuario-avatar-preview"
+                                        referrerpolicy="no-referrer"
+                                        style="width: 4.5rem; height: 4.5rem; object-fit: cover;"
+                                    >
+                                @else
+                                    <div class="avatar-title rounded-circle bg-primary-subtle text-primary fs-3 js-usuario-avatar-preview">
+                                        {{ $usuario->inicial }}
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="flex-grow-1">
+                                <input
+                                    type="file"
+                                    class="form-control @error('avatar') is-invalid @enderror js-usuario-avatar-input"
+                                    id="avatar"
+                                    name="avatar"
+                                    accept=".jpg,.jpeg,.png,.webp"
+                                >
+                                @error('avatar')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @else
+                                    <div class="form-text">Si subes una nueva foto, reemplazara la actual. Formatos: JPG, PNG o WEBP. Maximo: 8MB.</div>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row">

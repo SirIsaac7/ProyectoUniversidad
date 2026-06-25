@@ -50,8 +50,12 @@
                 </ul>
 
                 <div class="d-flex gap-2 ms-lg-4 mt-3 mt-lg-0">
-                    <a href="{{ route('login') }}" class="btn btn-ghost">Ingresar</a>
-                    <a href="{{ route('register') }}" class="btn btn-neon">Registrarse</a>
+                    @auth
+                        <a href="{{ route('inicio') }}" class="btn btn-neon">Ir al panel</a>
+                    @else
+                        <a href="{{ route('login') }}" class="btn btn-ghost">Ingresar</a>
+                        <a href="{{ route('register') }}" class="btn btn-neon">Registrarse</a>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -325,8 +329,12 @@
                     <h2>Convierte la busqueda de servicios en una experiencia ordenada, medible y confiable.</h2>
                     <p>Registrate para solicitar ayuda o para ofrecer tus servicios profesionales en La Paz.</p>
                     <div class="d-flex flex-wrap gap-3 justify-content-center">
-                        <a href="{{ route('register') }}" class="btn btn-neon btn-lg">Crear cuenta</a>
-                        <a href="{{ route('login') }}" class="btn btn-glass btn-lg">Ya tengo cuenta</a>
+                        @auth
+                            <a href="{{ route('inicio') }}" class="btn btn-neon">Ir al panel</a>
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-ghost">Ingresar</a>
+                            <a href="{{ route('register') }}" class="btn btn-neon">Registrarse</a>
+                        @endauth
                     </div>
                 </div>
             </div>

@@ -198,6 +198,16 @@
     gap: 12px;
 }
 
+.proveedores-resultados-grid--cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    max-height: calc((270px * 3) + 24px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
+    scrollbar-width: thin;
+}
+
 .proveedores-resultados-empty {
     grid-column: 1 / -1;
 }
@@ -208,6 +218,14 @@
     gap: 16px;
     min-height: 138px;
     padding: 16px;
+}
+
+.proveedores-resultados-grid--cards .proveedor-search-card-horizontal {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    min-height: 270px;
+    padding: 18px;
 }
 
 .proveedor-search-personal-photo {
@@ -241,6 +259,27 @@
 .proveedor-search-card-horizontal .card-body {
     min-width: 0;
     padding: 0;
+}
+
+.proveedores-resultados-grid--cards .proveedor-search-personal-photo {
+    margin: 0 auto;
+}
+
+.proveedores-resultados-grid--cards .proveedor-search-card-horizontal .card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.proveedores-resultados-grid--cards .proveedor-search-card-horizontal .btn {
+    margin-top: auto;
+}
+
+.proveedor-search-card--reveal {
+    opacity: 0;
+    transform: translateY(20px) scale(.98);
+    animation: proveedorCardReveal .45s ease forwards;
+    animation-delay: var(--card-delay, 0ms);
 }
 
 .proveedor-search-stars {
@@ -1391,6 +1430,11 @@
 }
 
 @media (max-width: 991.98px) {
+    .proveedores-resultados-grid--cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-height: calc((270px * 3) + 24px);
+    }
+
     .proveedor-profile-hero-content {
         align-items: flex-start;
         flex-direction: column;
@@ -1433,8 +1477,19 @@
 }
 
 @media (max-width: 767.98px) {
+    .proveedores-resultados-grid--cards {
+        grid-template-columns: 1fr;
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
+    }
+
     .proveedor-search-card-horizontal {
         align-items: flex-start;
+    }
+
+    .proveedores-resultados-grid--cards .proveedor-search-card-horizontal {
+        min-height: 220px;
     }
 
     .proveedor-profile-hero-content {
@@ -1636,4 +1691,92 @@
 
 [data-bs-theme="dark"] .proveedor-ubicacion-map-legend {
     background: rgba(5, 20, 34, .88);
+}
+
+.busqueda-ia-panel {
+    position: relative;
+    overflow: hidden;
+    border-color: rgba(var(--vz-primary-rgb), .22);
+    background:
+        radial-gradient(circle at top right, rgba(var(--vz-primary-rgb), .14), transparent 34%),
+        var(--vz-card-bg);
+}
+
+.busqueda-ia-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, .12) 45%, transparent 70%);
+    transform: translateX(-120%);
+    animation: busquedaIaShine 5s ease-in-out infinite;
+}
+
+.busqueda-ia-summary {
+    border-color: rgba(var(--vz-primary-rgb), .18);
+    background:
+        linear-gradient(135deg, rgba(var(--vz-primary-rgb), .08), transparent 48%),
+        var(--vz-card-bg);
+}
+
+.busqueda-ia-loading {
+    border-style: dashed;
+    border-color: rgba(var(--vz-primary-rgb), .35);
+}
+
+.busqueda-ia-card {
+    border-color: rgba(10, 179, 156, .30);
+}
+
+.busqueda-ia-reasons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.busqueda-ia-reasons span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(var(--vz-primary-rgb), .09);
+    color: var(--vz-primary);
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+@keyframes busquedaIaShine {
+    0%, 58% {
+        transform: translateX(-120%);
+    }
+
+    100% {
+        transform: translateX(120%);
+    }
+}
+
+@keyframes proveedorCardReveal {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+[data-bs-theme="dark"] .busqueda-ia-panel,
+[data-bs-theme="dark"] .busqueda-ia-summary {
+    background:
+        radial-gradient(circle at top right, rgba(111, 92, 255, .20), transparent 34%),
+        rgba(5, 20, 34, .82);
+}
+
+[data-bs-theme="dark"] .busqueda-ia-reasons span {
+    background: rgba(111, 92, 255, .18);
+    color: #b7a7ff;
 }

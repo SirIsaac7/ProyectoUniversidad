@@ -125,9 +125,13 @@
                                                     <p class="text-muted mb-2 text-truncate">{{ $solicitudVista['especialidad'] }}</p>
                                                     <div class="d-flex align-items-center gap-2">
                                                         <span class="avatar-xs">
-                                                            <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
-                                                                <i class="ri-user-star-line"></i>
-                                                            </span>
+                                                            @if ($solicitudVista['proveedor_avatar'])
+                                                                <img src="{{ $solicitudVista['proveedor_avatar'] }}" alt="{{ $solicitudVista['proveedor'] }}" class="rounded-circle img-fluid">
+                                                            @else
+                                                                <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
+                                                                    {{ $solicitudVista['proveedor_inicial'] }}
+                                                                </span>
+                                                            @endif
                                                         </span>
                                                         <small class="text-muted text-truncate">Proveedor: {{ $solicitudVista['proveedor'] }}</small>
                                                     </div>

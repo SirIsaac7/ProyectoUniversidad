@@ -130,6 +130,7 @@ class InicioService
             'proveedoresMapa' => $this->getProveedoresMapaAdmin(),
             'backup' => $this->getBackupAdmin(),
             'evolutionApi' => $this->getEvolutionApiAdmin(),
+            'busquedaInteligente' => $this->getBusquedaInteligenteAdmin(),
             'actividadReciente' => $this->getActividadRecienteAdmin(),
         ];
     }
@@ -378,6 +379,50 @@ class InicioService
         }
     }
 
+    private function getBusquedaInteligenteAdmin(): array
+    {
+        $config = config('services.busqueda_inteligente');
+        $url = (string) ($config['url'] ?? '');
+
+        if (blank($url)) {
+            return [
+                'estado' => 'incompleto',
+                'mensaje' => 'No se configuro la URL de la busqueda inteligente.',
+                'detalle' => 'Revisa BUSQUEDA_INTELIGENTE_URL.',
+                'clase' => 'warning',
+            ];
+        }
+
+        try {
+            $response = Http::timeout((int) ($config['timeout'] ?? 30))
+                ->acceptJson()
+                ->get($url);
+
+            if (in_array($response->status(), [200, 405, 422], true)) {
+                return [
+                    'estado' => 'activo',
+                    'mensaje' => 'La API de busqueda inteligente esta disponible.',
+                    'detalle' => 'Endpoint: ' . $url,
+                    'clase' => 'success',
+                ];
+            }
+
+            return [
+                'estado' => 'error',
+                'mensaje' => 'La API de busqueda inteligente respondio con error.',
+                'detalle' => 'HTTP ' . $response->status(),
+                'clase' => 'danger',
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'estado' => 'sin conexion',
+                'mensaje' => 'No se pudo contactar con la busqueda inteligente.',
+                'detalle' => $e->getMessage(),
+                'clase' => 'danger',
+            ];
+        }
+    }
+
     private function formatearBytes(int $bytes): string
     {
         if ($bytes < 1024) {
@@ -482,7 +527,7 @@ class InicioService
                 return [
                     'nombre' => $perfilProveedor->nombre_publico,
                     'usuario' => $perfilProveedor->user?->name ?? 'Proveedor',
-                    'avatar' => $perfilProveedor->user?->avatar,
+                    'avatar' => $perfilProveedor->user?->avatar_url,
                     'inicial' => strtoupper(substr($perfilProveedor->nombre_publico ?: 'P', 0, 1)),
                     'promedio' => $promedio,
                     'totalCalificaciones' => $totalCalificaciones,

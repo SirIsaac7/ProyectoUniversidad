@@ -19,6 +19,7 @@ class GoogleAuthController extends Controller
     public function callback()
     {
         $googleUser = Socialite::driver('google')->stateless()->user();
+        $googleAvatar = $googleUser->getAvatar() ?: ($googleUser->avatar_original ?? $googleUser->avatar);
 
         if (! $googleUser->email) {
             return redirect()
@@ -45,7 +46,7 @@ class GoogleAuthController extends Controller
 
             $user->update([
                 'google_id' => $googleUser->id,
-                'avatar' => $googleUser->avatar,
+                'avatar' => $googleAvatar ?: $user->avatar,
                 'email_verified_at' => $user->email_verified_at ?? now(),
             ]);
         } else {
@@ -53,7 +54,7 @@ class GoogleAuthController extends Controller
                 'name' => $googleUser->name ?? 'Usuario Google',
                 'email' => $googleUser->email,
                 'google_id' => $googleUser->id,
-                'avatar' => $googleUser->avatar,
+                'avatar' => $googleAvatar,
                 'password' => Hash::make(Str::random(24)),
                 'estado' => true,
                 'email_verified_at' => now(),

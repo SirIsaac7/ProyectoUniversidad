@@ -24,6 +24,7 @@
         'cell-code-sent' => 'Te enviamos un codigo de verificacion por WhatsApp.',
         'cell-verified' => 'Tu celular fue verificado correctamente.',
         'local-password-updated' => 'La contraseña local fue definida correctamente. Ya puedes confirmar acciones sensibles y activar 2FA.',
+        'avatar-updated' => 'Tu foto de perfil fue actualizada correctamente.',
     ];
     $perfilErrorMessages = [
         'cell-code-failed' => 'No se pudo enviar el codigo. Revisa Evolution API o tu numero de celular.',
@@ -37,6 +38,8 @@
 
 @if (session('status') && isset($perfilErrorMessages[session('status')]))
     <div class="d-none" id="perfil-error-message" data-message="{{ $perfilErrorMessages[session('status')] }}"></div>
+@elseif ($errors->has('avatar'))
+    <div class="d-none" id="perfil-error-message" data-message="No se pudo actualizar la foto de perfil. {{ $errors->first('avatar') }}"></div>
 @endif
 
 <div class="row">
@@ -52,16 +55,17 @@
         <div class="perfil-header-content">
             <div class="d-flex align-items-end perfil-avatar-wrap">
                 <div class="flex-shrink-0 me-3">
-                    @if ($usuario->avatar)
+                    @if ($usuario->avatar_url)
                         <img
-                            src="{{ $usuario->avatar }}"
+                            src="{{ $usuario->avatar_url }}"
                             class="rounded-circle avatar-xxl img-thumbnail perfil-avatar-image"
                             alt="Avatar"
+                            referrerpolicy="no-referrer"
                         >
                     @else
                         <div class="avatar-xxl">
                             <div class="avatar-title rounded-circle perfil-avatar-ring fs-1 img-thumbnail border-0">
-                                {{ strtoupper(substr($usuario->name, 0, 1)) }}
+                                {{ $usuario->inicial }}
                             </div>
                         </div>
                     @endif
@@ -253,6 +257,57 @@
             <div class="tab-pane" id="perfil-ajustes" role="tabpanel">
                 <div class="row">
                     <div class="col-xxl-8">
+                        <div class="card border">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Foto de perfil</h5>
+                            </div>
+
+                            <div class="card-body">
+                                <form class="needs-validation" novalidate method="POST" action="{{ route('perfil.avatar.update') }}" enctype="multipart/form-data">
+                                    @csrf
+                                    @method('PATCH')
+
+                                    <div class="d-flex flex-column flex-md-row align-items-md-center gap-3">
+                                        <div class="flex-shrink-0">
+                                            @if ($usuario->avatar_url)
+                                                <img src="{{ $usuario->avatar_url }}" alt="Avatar actual" class="rounded-circle perfil-avatar-upload-preview" referrerpolicy="no-referrer">
+                                            @else
+                                                <div class="perfil-avatar-upload-preview perfil-avatar-upload-initial rounded-circle">
+                                                    {{ $usuario->inicial }}
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        <div class="flex-grow-1">
+                                            <label for="avatar" class="form-label">
+                                                Nueva foto <span class="text-danger">*</span>
+                                            </label>
+                                            <input
+                                                type="file"
+                                                class="form-control @error('avatar') is-invalid @enderror"
+                                                id="avatar"
+                                                name="avatar"
+                                                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                                required
+                                            >
+                                            @error('avatar')
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                            @else
+                                                <div class="form-text">Formatos permitidos: JPG, PNG o WEBP. Tamaño maximo: 8MB.</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="flex-shrink-0">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="ri-image-edit-line align-bottom me-1"></i>
+                                                Actualizar foto
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
                         <div class="card border">
                             <div class="card-header">
                                 <h5 class="card-title mb-0">Informacion del perfil</h5>

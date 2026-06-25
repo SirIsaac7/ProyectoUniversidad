@@ -1,8 +1,9 @@
 @php
     $tieneErrorSolicitud = $errors->any() && (string) old('perfil_proveedor_id') === (string) $proveedor['id'];
+    $modalKey = $proveedor['id'] . ($modalSufijo ?? '');
 @endphp
 
-<div class="modal fade proveedor-busqueda-modal" id="proveedorPerfilModal{{ $proveedor['id'] }}" data-proveedor-id="{{ $proveedor['id'] }}" tabindex="-1" aria-labelledby="proveedorPerfilModalLabel{{ $proveedor['id'] }}" aria-hidden="true">
+<div class="modal fade proveedor-busqueda-modal" id="proveedorPerfilModal{{ $modalKey }}" data-proveedor-id="{{ $proveedor['id'] }}" tabindex="-1" aria-labelledby="proveedorPerfilModalLabel{{ $modalKey }}" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content proveedor-profile-modal {{ $tieneErrorSolicitud ? 'is-requesting' : '' }}" data-proveedor-profile-modal>
             <div class="proveedor-profile-view" data-proveedor-profile-view>
@@ -31,7 +32,7 @@
                                 <i class="ri-checkbox-blank-circle-fill me-1"></i>
                                 Disponible
                             </span>
-                            <h3 id="proveedorPerfilModalLabel{{ $proveedor['id'] }}" class="text-white mb-1">
+                            <h3 id="proveedorPerfilModalLabel{{ $modalKey }}" class="text-white mb-1">
                                 {{ $proveedor['nombre_persona'] }}
                                 <i class="ri-verified-badge-fill text-primary fs-20 align-middle"></i>
                             </h3>
@@ -86,27 +87,27 @@
                         <div class="proveedor-profile-main">
                             <ul class="nav proveedor-profile-tabs" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#proveedorInformacion{{ $proveedor['id'] }}" type="button" role="tab">Informacion</button>
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#proveedorInformacion{{ $modalKey }}" type="button" role="tab">Informacion</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#proveedorEspecialidades{{ $proveedor['id'] }}" type="button" role="tab">Especialidades</button>
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#proveedorEspecialidades{{ $modalKey }}" type="button" role="tab">Especialidades</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#proveedorHorarios{{ $proveedor['id'] }}" type="button" role="tab">Horarios</button>
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#proveedorHorarios{{ $modalKey }}" type="button" role="tab">Horarios</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#proveedorUbicacion{{ $proveedor['id'] }}" type="button" role="tab">Ubicacion</button>
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#proveedorUbicacion{{ $modalKey }}" type="button" role="tab">Ubicacion</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#proveedorTrabajos{{ $proveedor['id'] }}" type="button" role="tab">Trabajos realizados</button>
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#proveedorTrabajos{{ $modalKey }}" type="button" role="tab">Trabajos realizados</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#proveedorDocumentos{{ $proveedor['id'] }}" type="button" role="tab">Documentos</button>
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#proveedorDocumentos{{ $modalKey }}" type="button" role="tab">Documentos</button>
                                 </li>
                             </ul>
 
                             <div class="tab-content proveedor-profile-content">
-                                <div class="tab-pane fade show active" id="proveedorInformacion{{ $proveedor['id'] }}" role="tabpanel">
+                                <div class="tab-pane fade show active" id="proveedorInformacion{{ $modalKey }}" role="tabpanel">
                                         <section class="proveedor-profile-section proveedor-profile-section-info">
                                             <span class="proveedor-section-watermark"><i class="ri-user-star-line"></i></span>
                                             <h5>Perfil del proveedor</h5>
@@ -150,7 +151,7 @@
                                     </section>
                                 </div>
 
-                                <div class="tab-pane fade" id="proveedorEspecialidades{{ $proveedor['id'] }}" role="tabpanel">
+                                <div class="tab-pane fade" id="proveedorEspecialidades{{ $modalKey }}" role="tabpanel">
                                         <section class="proveedor-profile-section proveedor-profile-section-specialties">
                                             <span class="proveedor-section-watermark"><i class="ri-tools-line"></i></span>
                                             <h5>Especialidades</h5>
@@ -204,7 +205,7 @@
                                         </section>
                                 </div>
 
-                                <div class="tab-pane fade" id="proveedorHorarios{{ $proveedor['id'] }}" role="tabpanel">
+                                <div class="tab-pane fade" id="proveedorHorarios{{ $modalKey }}" role="tabpanel">
                                         <section class="proveedor-profile-section proveedor-profile-section-schedule">
                                             <span class="proveedor-section-watermark"><i class="ri-calendar-check-line"></i></span>
                                             <h5>Horarios de atencion</h5>
@@ -288,7 +289,7 @@
                                     </section>
                                 </div>
 
-                                <div class="tab-pane fade" id="proveedorUbicacion{{ $proveedor['id'] }}" role="tabpanel">
+                                <div class="tab-pane fade" id="proveedorUbicacion{{ $modalKey }}" role="tabpanel">
                                         <section class="proveedor-profile-section proveedor-profile-section-location">
                                             <span class="proveedor-section-watermark"><i class="ri-map-pin-line"></i></span>
                                             <h5>Ubicacion y cobertura</h5>
@@ -300,7 +301,7 @@
                                                         <p>Se resalta la zona si existe coincidencia con el mapa registrado.</p>
                                                     </div>
                                                     <div
-                                                        id="mapaLaPazProveedor{{ $proveedor['id'] }}"
+                                                        id="mapaLaPazProveedor{{ $modalKey }}"
                                                         class="mapa-lapaz-canvas"
                                                         data-mapa-lapaz
                                                         data-zona="{{ $proveedor['zona'] }}"
@@ -350,7 +351,7 @@
                                     </section>
                                 </div>
 
-                                <div class="tab-pane fade" id="proveedorTrabajos{{ $proveedor['id'] }}" role="tabpanel">
+                                <div class="tab-pane fade" id="proveedorTrabajos{{ $modalKey }}" role="tabpanel">
                                         <section class="proveedor-profile-section proveedor-profile-section-work">
                                             <span class="proveedor-section-watermark"><i class="ri-gallery-line"></i></span>
                                             <h5>Trabajos realizados</h5>
@@ -382,7 +383,7 @@
                                     </section>
                                 </div>
 
-                                <div class="tab-pane fade" id="proveedorDocumentos{{ $proveedor['id'] }}" role="tabpanel">
+                                <div class="tab-pane fade" id="proveedorDocumentos{{ $modalKey }}" role="tabpanel">
                                         <section class="proveedor-profile-section proveedor-profile-section-documents">
                                             <span class="proveedor-section-watermark"><i class="ri-file-shield-line"></i></span>
                                             <h5>Documentos aprobados</h5>

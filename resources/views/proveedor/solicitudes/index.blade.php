@@ -129,9 +129,13 @@
                                                         <p class="text-muted mb-2 text-truncate">{{ $solicitudVista['especialidad'] }}</p>
                                                         <div class="d-flex align-items-center gap-2">
                                                             <span class="avatar-xs">
-                                                                <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
-                                                                    <i class="ri-user-line"></i>
-                                                                </span>
+                                                                @if ($solicitudVista['cliente_avatar'])
+                                                                    <img src="{{ $solicitudVista['cliente_avatar'] }}" alt="{{ $solicitudVista['cliente'] }}" class="rounded-circle img-fluid">
+                                                                @else
+                                                                    <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
+                                                                        {{ $solicitudVista['cliente_inicial'] }}
+                                                                    </span>
+                                                                @endif
                                                             </span>
                                                             <small class="text-muted text-truncate">Cliente: {{ $solicitudVista['cliente'] }}</small>
                                                         </div>

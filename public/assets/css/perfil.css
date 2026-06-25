@@ -51,6 +51,25 @@
     box-shadow: 0 14px 28px rgba(15, 23, 42, 0.18);
 }
 
+.perfil-avatar-upload-preview {
+    width: 86px;
+    height: 86px;
+    object-fit: cover;
+    object-position: center;
+    border: 3px solid rgba(64, 81, 137, 0.18);
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
+}
+
+.perfil-avatar-upload-initial {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(64, 81, 137, 0.12);
+    color: var(--vz-primary);
+    font-size: 2rem;
+    font-weight: 700;
+}
+
 .perfil-meta-card {
     border-radius: 0.85rem;
     padding: 1rem;

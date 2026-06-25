@@ -26,7 +26,7 @@
             </div>
 
             <div class="card-body">
-                <form class="needs-validation" novalidate method="POST" action="{{ route('usuarios.store') }}">
+                <form class="needs-validation" novalidate method="POST" action="{{ route('usuarios.store') }}" enctype="multipart/form-data">
                     @csrf
 
                     <div class="mb-3">
@@ -65,6 +65,31 @@
                         @else
                             <div class="invalid-feedback">Por favor ingresa un correo electronico valido.</div>
                         @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="avatar" class="form-label">Foto de perfil</label>
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <div class="avatar-lg">
+                                <div class="avatar-title rounded-circle bg-primary-subtle text-primary fs-3 js-usuario-avatar-preview">
+                                    <i class="ri-user-line"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <input
+                                    type="file"
+                                    class="form-control @error('avatar') is-invalid @enderror js-usuario-avatar-input"
+                                    id="avatar"
+                                    name="avatar"
+                                    accept=".jpg,.jpeg,.png,.webp"
+                                >
+                                @error('avatar')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @else
+                                    <div class="form-text">Formatos permitidos: JPG, PNG o WEBP. Tamano maximo: 8MB.</div>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row">

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateAvatarRequest;
 use App\Services\CelularVerificacionService;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 
 class PerfilController extends Controller
@@ -35,6 +38,37 @@ class PerfilController extends Controller
         return redirect()
             ->route('perfil.index')
             ->with('status', 'local-password-updated');
+    }
+
+    public function updateAvatar(UpdateAvatarRequest $request)
+    {
+        $usuario = $request->user();
+        $archivo = $request->file('avatar');
+        $carpeta = public_path('uploads/usuarios');
+
+        if (! File::exists($carpeta)) {
+            File::makeDirectory($carpeta, 0755, true);
+        }
+
+        if (
+            $usuario->avatar
+            && ! str_starts_with($usuario->avatar, 'http://')
+            && ! str_starts_with($usuario->avatar, 'https://')
+            && File::exists(public_path($usuario->avatar))
+        ) {
+            File::delete(public_path($usuario->avatar));
+        }
+
+        $nombreArchivo = Str::uuid() . '.' . $archivo->getClientOriginalExtension();
+        $archivo->move($carpeta, $nombreArchivo);
+
+        $usuario->update([
+            'avatar' => 'uploads/usuarios/' . $nombreArchivo,
+        ]);
+
+        return redirect()
+            ->route('perfil.index')
+            ->with('status', 'avatar-updated');
     }
 
     public function enviarCodigoCelular(Request $request, CelularVerificacionService $celularVerificacionService)

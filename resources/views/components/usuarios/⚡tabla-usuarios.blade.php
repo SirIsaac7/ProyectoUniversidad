@@ -167,19 +167,20 @@ new class extends Component
                         <td>{{ $usuario->id }}</td>
 
                         <td>
-                            @if ($usuario->avatar)
+                            @if ($usuario->avatar_url)
                                 <img
-                                    src="{{ $usuario->avatar }}"
+                                    src="{{ $usuario->avatar_url }}"
                                     alt="Avatar"
                                     class="rounded-circle"
                                     width="40"
                                     height="40"
+                                    referrerpolicy="no-referrer"
                                     style="object-fit: cover;"
                                 >
                             @else
                                 <div class="avatar-xs">
                                     <div class="avatar-title bg-light text-primary rounded-circle">
-                                        {{ strtoupper(substr($usuario->name, 0, 1)) }}
+                                        {{ $usuario->inicial }}
                                     </div>
                                 </div>
                             @endif
