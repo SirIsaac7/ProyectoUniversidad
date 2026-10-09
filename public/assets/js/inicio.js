@@ -344,6 +344,99 @@
         chart.render();
     }
 
+    function inicializarGraficaAdminCalidad() {
+        var chartElement = document.querySelector('[data-inicio-admin-calidad-chart]');
+
+        if (!chartElement || typeof ApexCharts === 'undefined') {
+            return;
+        }
+
+        var chartData = JSON.parse(chartElement.dataset.chart || '{}');
+        var series = chartData.series || {};
+
+        var chart = new ApexCharts(chartElement, {
+            series: [
+                {
+                    name: 'Buenas',
+                    data: series.buenas || [],
+                },
+                {
+                    name: 'Malas',
+                    data: series.malas || [],
+                },
+            ],
+            chart: {
+                height: 320,
+                type: 'line',
+                toolbar: {
+                    show: false,
+                },
+                zoom: {
+                    enabled: false,
+                },
+            },
+            colors: [
+                obtenerColor('--vz-success', '#0ab39c'),
+                obtenerColor('--vz-danger', '#f06548'),
+            ],
+            stroke: {
+                curve: 'smooth',
+                width: 4,
+            },
+            markers: {
+                size: 5,
+                strokeWidth: 2,
+                hover: {
+                    size: 7,
+                },
+            },
+            dataLabels: {
+                enabled: false,
+            },
+            xaxis: {
+                categories: chartData.labels || [],
+                axisTicks: {
+                    show: false,
+                },
+                axisBorder: {
+                    show: false,
+                },
+                labels: {
+                    style: {
+                        colors: obtenerColor('--vz-secondary-color', '#878a99'),
+                    },
+                },
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: obtenerColor('--vz-secondary-color', '#878a99'),
+                    },
+                },
+            },
+            grid: {
+                borderColor: 'rgba(135, 138, 153, 0.18)',
+                strokeDashArray: 4,
+            },
+            legend: {
+                position: 'top',
+                horizontalAlign: 'left',
+                labels: {
+                    colors: obtenerColor('--vz-secondary-color', '#878a99'),
+                },
+            },
+            tooltip: {
+                y: {
+                    formatter: function (value) {
+                        return Number(value).toFixed(0) + ' registros';
+                    },
+                },
+            },
+        });
+
+        chart.render();
+    }
+
     function inicializarGraficaDonut(selector, colores) {
         var chartElement = document.querySelector(selector);
 
@@ -409,6 +502,7 @@
     function inicializarGraficasAdmin() {
         inicializarGraficaAdminModulos();
         inicializarGraficaAdminCitasRadial();
+        inicializarGraficaAdminCalidad();
 
         inicializarGraficaDonut('[data-inicio-admin-solicitudes-chart]', [
             obtenerColor('--vz-warning', '#f7b84b'),

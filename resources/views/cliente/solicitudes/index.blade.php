@@ -231,7 +231,7 @@
                     </div>
 
                     <div class="mt-3">
-                        {{ $solicitudes->links() }}
+                        {{ $solicitudes->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
 

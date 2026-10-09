@@ -247,7 +247,7 @@
                         </div>
 
                         <div class="mt-3">
-                            {{ $solicitudes->appends(['tab' => 'solicitudes'])->links() }}
+                            {{ $solicitudes->appends(['tab' => 'solicitudes'])->links('pagination::bootstrap-5') }}
                         </div>
                     </div>
 

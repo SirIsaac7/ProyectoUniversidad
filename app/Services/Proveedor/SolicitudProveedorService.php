@@ -29,6 +29,7 @@ class SolicitudProveedorService
         return [
             'pendientes' => (clone $query)->where('estado', 'pendiente')->count(),
             'aceptadas' => (clone $query)->where('estado', 'aceptada')->count(),
+            'en_proceso' => (clone $query)->where('estado', 'en_proceso')->count(),
             'rechazadas' => (clone $query)->where('estado', 'rechazada')->count(),
             'finalizadas' => (clone $query)->where('estado', 'finalizada')->count(),
         ];
@@ -39,6 +40,7 @@ class SolicitudProveedorService
         return [
             'pendiente' => ['label' => 'Pendiente', 'class' => 'warning', 'icon' => 'ri-time-line'],
             'aceptada' => ['label' => 'Aceptada', 'class' => 'success', 'icon' => 'ri-checkbox-circle-line'],
+            'en_proceso' => ['label' => 'En proceso', 'class' => 'info', 'icon' => 'ri-tools-line'],
             'rechazada' => ['label' => 'Rechazada', 'class' => 'danger', 'icon' => 'ri-close-circle-line'],
             'cancelada' => ['label' => 'Cancelada', 'class' => 'danger', 'icon' => 'ri-close-circle-line'],
             'finalizada' => ['label' => 'Finalizada', 'class' => 'primary', 'icon' => 'ri-flag-line'],
@@ -63,18 +65,18 @@ class SolicitudProveedorService
                 'color' => 'success',
             ],
             [
+                'titulo' => 'En proceso',
+                'valor' => $resumenSolicitudes['en_proceso'] ?? 0,
+                'texto' => 'Atenciones en curso',
+                'icono' => 'ri-tools-line',
+                'color' => 'info',
+            ],
+            [
                 'titulo' => 'Finalizadas',
                 'valor' => $resumenSolicitudes['finalizadas'],
                 'texto' => 'Servicios concluidos',
                 'icono' => 'ri-flag-line',
                 'color' => 'primary',
-            ],
-            [
-                'titulo' => 'Rechazadas',
-                'valor' => $resumenSolicitudes['rechazadas'] ?? 0,
-                'texto' => 'No aceptadas',
-                'icono' => 'ri-close-circle-line',
-                'color' => 'danger',
             ],
         ];
     }

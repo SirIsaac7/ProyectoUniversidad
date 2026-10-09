@@ -53,6 +53,7 @@ class SolicitudService
                 'aceptada' => 'Aceptada',
                 'rechazada' => 'Rechazada',
                 'cancelada' => 'Cancelada',
+                'en_proceso' => 'En proceso',
                 'finalizada' => 'Finalizada',
             ],
         ];
@@ -182,6 +183,7 @@ class SolicitudService
         return [
             'pendientes' => (clone $query)->where('estado', 'pendiente')->count(),
             'aceptadas' => (clone $query)->where('estado', 'aceptada')->count(),
+            'en_proceso' => (clone $query)->where('estado', 'en_proceso')->count(),
             'rechazadas' => (clone $query)->where('estado', 'rechazada')->count(),
             'completadas' => (clone $query)->where('estado', 'finalizada')->count(),
         ];
@@ -192,6 +194,7 @@ class SolicitudService
         return [
             'pendiente' => ['label' => 'Pendiente', 'class' => 'warning', 'icon' => 'ri-time-line'],
             'aceptada' => ['label' => 'Aceptada', 'class' => 'success', 'icon' => 'ri-checkbox-circle-line'],
+            'en_proceso' => ['label' => 'En proceso', 'class' => 'info', 'icon' => 'ri-tools-line'],
             'rechazada' => ['label' => 'Rechazada', 'class' => 'danger', 'icon' => 'ri-close-circle-line'],
             'cancelada' => ['label' => 'Cancelada', 'class' => 'danger', 'icon' => 'ri-close-circle-line'],
             'finalizada' => ['label' => 'Completada', 'class' => 'primary', 'icon' => 'ri-flag-line'],

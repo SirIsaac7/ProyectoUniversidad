@@ -25,7 +25,9 @@ document.addEventListener('DOMContentLoaded', function () {
     initProveedorBusquedaDelegatedEvents();
 
     initSolicitudWizards();
+    initProveedorDetailSelectors();
     initBusquedaScrollButtons();
+    initBusquedaSemantica();
     initBusquedaInteligente();
     cargarZonasSolicitudLaPaz();
 
@@ -56,11 +58,13 @@ document.addEventListener('livewire:init', function () {
     try {
         Livewire.hook('morph.updated', function () {
             initSolicitudWizards();
+            initProveedorDetailSelectors();
             cargarZonasSolicitudLaPaz();
         });
     } catch (error) {
         document.addEventListener('livewire:update', function () {
             initSolicitudWizards();
+            initProveedorDetailSelectors();
             cargarZonasSolicitudLaPaz();
         });
     }
@@ -119,6 +123,7 @@ function initProveedorBusquedaDelegatedEvents() {
         }
 
         prepararSolicitudModal(event.target.querySelector('[data-proveedor-profile-modal]'));
+        initProveedorDetailSelectors(event.target);
     });
 }
 
@@ -150,6 +155,291 @@ function initBusquedaScrollButtons() {
     });
 }
 
+function initBusquedaSemantica() {
+    const form = document.getElementById('busquedaSemanticaForm');
+
+    if (!form || form.dataset.inicializado === 'true') {
+        return;
+    }
+
+    form.dataset.inicializado = 'true';
+
+    const configuracion = obtenerConfiguracionBusquedaSemantica();
+    let seguimientoTimer = null;
+    let cicloActivo = 0;
+    let fallosConsecutivos = 0;
+
+    form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const input = form.querySelector('[name="consulta"]');
+        const error = form.querySelector('[data-busqueda-semantica-error]');
+
+        input?.classList.remove('is-invalid');
+        if (error) {
+            error.textContent = '';
+            error.classList.remove('d-block');
+        }
+
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            form.reportValidity();
+            return;
+        }
+
+        clearTimeout(seguimientoTimer);
+        cicloActivo += 1;
+        fallosConsecutivos = 0;
+        const ciclo = cicloActivo;
+        setEstadoBusquedaSemantica(true);
+        renderProcesamientoBusquedaSemantica({ fase: 'iniciando', historial_fases: [] }, configuracion);
+
+        try {
+            const data = await solicitarBusquedaSemantica(form.dataset.url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                },
+                body: new FormData(form)
+            });
+
+            if (ciclo !== cicloActivo) return;
+            seguirBusquedaSemantica(data.data?.id, ciclo);
+        } catch (requestError) {
+            if (ciclo !== cicloActivo) return;
+            mostrarErrorValidacionBusqueda(requestError, input, error);
+            renderEstadoBusquedaSemantica(
+                'error',
+                'No pudimos consultar el buscador',
+                requestError.message || 'Intenta nuevamente en unos minutos.'
+            );
+            setEstadoBusquedaSemantica(false);
+        }
+    });
+
+    async function seguirBusquedaSemantica(ejecucionId, ciclo) {
+        if (!ejecucionId || ciclo !== cicloActivo) {
+            renderEstadoBusquedaSemantica('error', 'Búsqueda no disponible', 'No se recibió un identificador válido.');
+            setEstadoBusquedaSemantica(false);
+            return;
+        }
+
+        try {
+            const url = form.dataset.estadoUrl.replace('__EJECUCION__', encodeURIComponent(ejecucionId));
+            const respuesta = await solicitarBusquedaSemantica(url);
+
+            if (ciclo !== cicloActivo) return;
+            fallosConsecutivos = 0;
+            const estado = respuesta.data || {};
+            renderProcesamientoBusquedaSemantica(estado, configuracion);
+
+            if (estado.terminal) {
+                if (estado.categoria_estado === 'completado' || estado.categoria_estado === 'sin_resultados') {
+                    await cargarResultadosBusquedaSemantica(ejecucionId, ciclo);
+                } else {
+                    renderEstadoBusquedaSemantica(
+                        'error',
+                        'La búsqueda no pudo completarse',
+                        estado.error || mensajeFaseBusqueda('error', configuracion)
+                    );
+                    setEstadoBusquedaSemantica(false);
+                }
+                return;
+            }
+
+            seguimientoTimer = setTimeout(function () {
+                seguirBusquedaSemantica(ejecucionId, ciclo);
+            }, 650);
+        } catch (requestError) {
+            if (ciclo !== cicloActivo) return;
+            fallosConsecutivos += 1;
+
+            if ([403, 404, 422].includes(requestError.status) || fallosConsecutivos >= 5) {
+                renderEstadoBusquedaSemantica(
+                    'error',
+                    'Se interrumpió el seguimiento',
+                    requestError.message || 'No fue posible recuperar el estado de la búsqueda.'
+                );
+                setEstadoBusquedaSemantica(false);
+                return;
+            }
+
+            renderProcesamientoBusquedaSemantica(
+                { fase: 'error_temporal', detalle: 'Se perdió temporalmente la conexión. Volveremos a intentarlo.', historial_fases: [] },
+                configuracion
+            );
+            seguimientoTimer = setTimeout(function () {
+                seguirBusquedaSemantica(ejecucionId, ciclo);
+            }, 2000);
+        }
+    }
+
+    async function cargarResultadosBusquedaSemantica(ejecucionId, ciclo) {
+        try {
+            const url = form.dataset.resultadosUrl.replace('__EJECUCION__', encodeURIComponent(ejecucionId));
+            const data = await solicitarBusquedaSemantica(url);
+
+            if (ciclo !== cicloActivo) return;
+            const container = document.getElementById('busquedaSemanticaResultado');
+            container.innerHTML = data.html || '';
+            initSolicitudWizards();
+            initProveedorDetailSelectors(container);
+            cargarZonasSolicitudLaPaz();
+        } catch (requestError) {
+            if (ciclo !== cicloActivo) return;
+            renderEstadoBusquedaSemantica(
+                'error',
+                'No pudimos recuperar los resultados',
+                requestError.message || 'Intenta realizar la búsqueda nuevamente.'
+            );
+        } finally {
+            if (ciclo === cicloActivo) setEstadoBusquedaSemantica(false);
+        }
+    }
+}
+
+function setEstadoBusquedaSemantica(cargando) {
+    const button = document.getElementById('btnBusquedaSemantica');
+
+    if (button) {
+        button.disabled = cargando;
+        button.innerHTML = cargando
+            ? '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Buscando'
+            : '<i class="ri-user-search-line align-bottom me-1"></i> Buscar tecnicos';
+    }
+
+}
+
+function obtenerConfiguracionBusquedaSemantica() {
+    const elemento = document.getElementById('busquedaSemanticaConfiguracion');
+
+    try {
+        return JSON.parse(elemento?.textContent || '{}');
+    } catch (error) {
+        return {};
+    }
+}
+
+async function solicitarBusquedaSemantica(url, opciones) {
+    const response = await fetch(url, {
+        ...(opciones || {}),
+        headers: {
+            Accept: 'application/json',
+            ...(opciones?.headers || {})
+        }
+    });
+    const data = await response.json().catch(function () {
+        return {};
+    });
+
+    if (!response.ok || !data.ok) {
+        const validationMessage = data.errors ? Object.values(data.errors).flat()[0] : null;
+        const error = new Error(validationMessage || data.mensaje || 'No se pudo completar la búsqueda.');
+        error.status = response.status;
+        error.payload = data;
+        throw error;
+    }
+
+    return data;
+}
+
+function mostrarErrorValidacionBusqueda(requestError, input, errorContainer) {
+    if (!requestError.payload?.errors?.consulta || !input) {
+        return;
+    }
+
+    input.classList.add('is-invalid');
+    if (errorContainer) {
+        errorContainer.textContent = requestError.payload.errors.consulta[0];
+        errorContainer.classList.add('d-block');
+    }
+}
+
+function renderProcesamientoBusquedaSemantica(estado, configuracion) {
+    const container = document.getElementById('busquedaSemanticaResultado');
+
+    if (!container) return;
+
+    const card = document.createElement('div');
+    const body = document.createElement('div');
+    const main = document.createElement('div');
+    const animation = document.createElement('div');
+    const text = document.createElement('div');
+    const title = document.createElement('h5');
+    const message = document.createElement('p');
+    const fase = estado.fase || 'iniciando';
+
+    card.className = 'card busqueda-semantica-processing';
+    body.className = 'card-body';
+    main.className = 'busqueda-processing-main';
+    animation.className = 'semantic-search-animation is-' + (configuracion.animacion || 'spinner');
+    animation.setAttribute('aria-hidden', 'true');
+    title.className = 'mb-1';
+    title.textContent = fase === 'error_temporal' ? 'Reconectando con el buscador' : 'Analizando tu consulta';
+    message.className = 'text-muted mb-0';
+    message.textContent = fase === 'error_temporal'
+        ? estado.detalle
+        : mensajeFaseBusqueda(fase, configuracion, estado.detalle);
+    text.append(title, message);
+    main.append(animation, text);
+    body.appendChild(main);
+
+    const presentation = configuracion.presentacion_fases || 'actual';
+    const historial = Array.isArray(estado.historial_fases) ? estado.historial_fases : [];
+
+    if (presentation === 'lista' || presentation === 'linea') {
+        const phases = document.createElement('div');
+        phases.className = 'busqueda-real-phases' + (presentation === 'lista' ? ' is-list' : '');
+
+        historial.forEach(function (item, index) {
+            const chip = document.createElement('span');
+            const icon = document.createElement('i');
+            const esActual = item.fase === fase && index === historial.length - 1;
+            chip.className = 'busqueda-real-phase ' + (esActual ? 'is-current' : 'is-complete');
+            icon.className = esActual ? 'ri-loader-4-line' : 'ri-check-line';
+            chip.appendChild(icon);
+            chip.append(document.createTextNode(mensajeFaseBusqueda(item.fase, configuracion, item.detalle)));
+            phases.appendChild(chip);
+        });
+
+        body.appendChild(phases);
+    }
+
+    card.appendChild(body);
+    container.replaceChildren(card);
+}
+
+function mensajeFaseBusqueda(fase, configuracion, detalle) {
+    const personalizado = configuracion.mensajes_fases?.[fase];
+    return personalizado || detalle || 'Procesando tu búsqueda...';
+}
+
+function renderEstadoBusquedaSemantica(tipo, titulo, mensaje) {
+    const container = document.getElementById('busquedaSemanticaResultado');
+
+    if (!container) {
+        return;
+    }
+
+    const card = document.createElement('div');
+    const body = document.createElement('div');
+    const icon = document.createElement('i');
+    const heading = document.createElement('h5');
+    const description = document.createElement('p');
+
+    card.className = 'card busqueda-semantica-status busqueda-semantica-status--' + tipo;
+    body.className = 'card-body text-center py-5';
+    icon.className = tipo === 'error' ? 'ri-error-warning-line fs-32 text-danger' : 'ri-information-line fs-32 text-primary';
+    heading.className = 'mt-3 mb-2';
+    description.className = 'text-muted mb-0';
+    heading.textContent = titulo;
+    description.textContent = mensaje;
+
+    body.append(icon, heading, description);
+    card.appendChild(body);
+    container.replaceChildren(card);
+}
+
 function initBusquedaInteligente() {
     const form = document.getElementById('busquedaInteligenteForm');
 
@@ -158,6 +448,7 @@ function initBusquedaInteligente() {
     }
 
     form.dataset.inicializado = 'true';
+    initDictadoProblemaIA();
 
     form.addEventListener('submit', function (event) {
         event.preventDefault();
@@ -200,6 +491,164 @@ function initBusquedaInteligente() {
 
         enviarBusquedaInteligente(form);
     });
+}
+
+function initDictadoProblemaIA() {
+    const button = document.getElementById('btnDictarProblemaIA');
+    const textarea = document.getElementById('descripcionProblemaIA');
+    const status = document.getElementById('estadoDictadoProblemaIA');
+
+    if (!button || !textarea || button.dataset.inicializado === 'true') {
+        return;
+    }
+
+    button.dataset.inicializado = 'true';
+
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+        button.disabled = true;
+        status.textContent = 'El dictado por voz no esta disponible en este navegador.';
+        return;
+    }
+
+    let recorder = null;
+    let stream = null;
+    let chunks = [];
+    let stopTimer = null;
+
+    button.addEventListener('click', async function () {
+        if (recorder?.state === 'recording') {
+            recorder.stop();
+            return;
+        }
+
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            chunks = [];
+
+            const mimeType = obtenerMimeTypeGrabacion();
+            recorder = mimeType
+                ? new MediaRecorder(stream, { mimeType: mimeType })
+                : new MediaRecorder(stream);
+
+            recorder.addEventListener('dataavailable', function (event) {
+                if (event.data.size > 0) {
+                    chunks.push(event.data);
+                }
+            });
+
+            recorder.addEventListener('stop', async function () {
+                clearTimeout(stopTimer);
+                liberarMicrofono(stream);
+
+                const audioType = recorder.mimeType || chunks[0]?.type || 'audio/webm';
+                const audio = new Blob(chunks, { type: audioType });
+
+                if (audio.size === 0) {
+                    setEstadoDictado(button, status, 'idle', 'No se capturo audio. Intenta nuevamente.');
+                    return;
+                }
+
+                await transcribirAudioWhisper(textarea, button, status, audio);
+            }, { once: true });
+
+            recorder.addEventListener('error', function () {
+                clearTimeout(stopTimer);
+                liberarMicrofono(stream);
+                setEstadoDictado(button, status, 'idle', 'No se pudo completar la grabacion.');
+            }, { once: true });
+
+            recorder.start();
+            setEstadoDictado(button, status, 'recording', 'Escuchando... Pulsa Detener cuando termines.');
+
+            stopTimer = setTimeout(function () {
+                if (recorder?.state === 'recording') {
+                    recorder.stop();
+                }
+            }, 60000);
+        } catch (error) {
+            liberarMicrofono(stream);
+            setEstadoDictado(button, status, 'idle', 'No se pudo acceder al microfono. Revisa el permiso del navegador.');
+        }
+    });
+}
+
+function obtenerMimeTypeGrabacion() {
+    const tipos = [
+        'audio/webm;codecs=opus',
+        'audio/ogg;codecs=opus',
+        'audio/mp4',
+        'audio/webm'
+    ];
+
+    return tipos.find(function (tipo) {
+        return MediaRecorder.isTypeSupported(tipo);
+    }) || '';
+}
+
+function liberarMicrofono(stream) {
+    stream?.getTracks().forEach(function (track) {
+        track.stop();
+    });
+}
+
+async function transcribirAudioWhisper(textarea, button, status, audio) {
+    const formData = new FormData();
+    const token = document.querySelector('meta[name="csrf-token"]')?.content;
+    const extension = audio.type.includes('ogg') ? 'ogg' : (audio.type.includes('mp4') ? 'mp4' : 'webm');
+
+    formData.append('audio', audio, 'descripcion-problema.' + extension);
+    setEstadoDictado(button, status, 'processing', 'Transcribiendo tu voz con Whisper...');
+
+    try {
+        const response = await fetch(button.dataset.url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': token || '',
+                'Accept': 'application/json'
+            },
+            body: formData
+        });
+        const data = await response.json().catch(function () {
+            return {};
+        });
+
+        if (!response.ok || !data.ok) {
+            const validationMessage = data.errors
+                ? Object.values(data.errors).flat()[0]
+                : null;
+
+            throw new Error(validationMessage || data.mensaje || 'No se pudo transcribir el audio.');
+        }
+
+        const textoActual = textarea.value.trim();
+        const textoTranscrito = String(data.texto || '').trim();
+        const textoCompleto = [textoActual, textoTranscrito].filter(Boolean).join(' ').slice(0, 1000);
+
+        textarea.value = textoCompleto;
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        textarea.focus();
+        setEstadoDictado(button, status, 'idle', 'Transcripcion completada. Puedes editar el texto antes de buscar.');
+    } catch (error) {
+        setEstadoDictado(button, status, 'idle', error.message);
+        mostrarAlertaBusquedaInteligente('No se pudo transcribir', error.message, 'error');
+    }
+}
+
+function setEstadoDictado(button, status, state, message) {
+    const isRecording = state === 'recording';
+    const isProcessing = state === 'processing';
+
+    button.disabled = isProcessing;
+    button.classList.toggle('is-recording', isRecording);
+    button.innerHTML = isRecording
+        ? '<i class="ri-stop-circle-line align-bottom me-1"></i> Detener'
+        : (isProcessing
+            ? '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Transcribiendo'
+            : '<i class="ri-mic-line align-bottom me-1"></i> Dictar');
+
+    status.classList.toggle('is-recording', isRecording);
+    status.classList.toggle('is-processing', isProcessing);
+    status.textContent = message;
 }
 
 function enviarBusquedaInteligente(form) {
@@ -305,6 +754,135 @@ function toggleProveedorRequestView(modalContent, shouldShowRequest) {
 function initSolicitudWizards() {
     document.querySelectorAll('[data-solicitud-wizard]').forEach(function (form) {
         inicializarSolicitudWizard(form);
+    });
+}
+
+function initProveedorDetailSelectors(scope = document) {
+    scope.querySelectorAll('.proveedor-detail-option').forEach(function (option) {
+        if (option.dataset.detailInitialized === 'true') {
+            return;
+        }
+
+        option.dataset.detailInitialized = 'true';
+
+        option.addEventListener('click', function () {
+            const group = option.dataset.detailGroup;
+
+            if (!group) {
+                return;
+            }
+
+            const container = option.closest('.tab-pane') || option.closest('.modal') || document;
+            const preview = container.querySelector('[data-detail-preview="' + group + '"]');
+
+            if (!preview) {
+                return;
+            }
+
+            container.querySelectorAll('.proveedor-detail-option[data-detail-group="' + group + '"]').forEach(function (item) {
+                item.classList.toggle('is-active', item === option);
+            });
+
+            const image = preview.querySelector('[data-detail-image]');
+            const empty = preview.querySelector('[data-detail-empty]');
+            const title = preview.querySelector('[data-detail-title]');
+            const description = preview.querySelector('[data-detail-description]');
+            const metaPrimary = preview.querySelector('[data-detail-meta-primary]');
+            const metaSecondary = preview.querySelector('[data-detail-meta-secondary]');
+            const link = preview.querySelector('[data-detail-link]');
+            const galleryPreview = preview.querySelector('[data-detail-gallery-preview]');
+            const imageUrl = option.dataset.detailImage || '';
+            const iconClass = option.dataset.detailIcon || 'ri-file-text-line';
+
+            if (title) {
+                title.textContent = option.dataset.detailTitle || '';
+            }
+
+            if (description) {
+                description.textContent = option.dataset.detailDescription || '';
+            }
+
+            if (metaPrimary) {
+                metaPrimary.textContent = option.dataset.detailMetaPrimary || '';
+            }
+
+            if (metaSecondary) {
+                metaSecondary.textContent = option.dataset.detailMetaSecondary || '';
+            }
+
+            if (image) {
+                if (imageUrl) {
+                    image.src = imageUrl;
+                    image.alt = option.dataset.detailTitle || 'Detalle';
+                    image.classList.remove('d-none');
+                    empty?.classList.add('d-none');
+                } else {
+                    image.src = '';
+                    image.alt = '';
+                    image.classList.add('d-none');
+
+                    if (empty) {
+                        empty.innerHTML = '<i class="' + iconClass + '"></i>';
+                        empty.classList.remove('d-none');
+                    }
+                }
+            }
+
+            if (link) {
+                const href = option.dataset.detailLink || '';
+
+                if (href) {
+                    link.href = href;
+                    link.classList.remove('disabled');
+                    link.removeAttribute('aria-disabled');
+                } else {
+                    link.href = 'javascript:void(0);';
+                    link.classList.add('disabled');
+                    link.setAttribute('aria-disabled', 'true');
+                }
+            }
+
+            if (galleryPreview) {
+                let gallery = [];
+
+                try {
+                    gallery = JSON.parse(option.dataset.detailGallery || '[]');
+                } catch (error) {
+                    gallery = [];
+                }
+
+                galleryPreview.innerHTML = '';
+
+                gallery.forEach(function (item, index) {
+                    if (!item.url) {
+                        return;
+                    }
+
+                    const thumb = document.createElement('button');
+                    thumb.type = 'button';
+                    thumb.className = 'proveedor-detail-gallery-thumb' + (index === 0 ? ' is-active' : '');
+                    thumb.setAttribute('data-gallery-image', item.url);
+                    thumb.innerHTML = '<img src="' + item.url + '" alt="' + (item.titulo || option.dataset.detailTitle || 'Imagen del trabajo') + '">';
+
+                    thumb.addEventListener('click', function () {
+                        galleryPreview.querySelectorAll('.proveedor-detail-gallery-thumb').forEach(function (button) {
+                            button.classList.remove('is-active');
+                        });
+
+                        thumb.classList.add('is-active');
+
+                        if (image) {
+                            image.src = item.url;
+                            image.alt = item.titulo || option.dataset.detailTitle || 'Detalle';
+                            image.classList.remove('d-none');
+                            empty?.classList.add('d-none');
+                        }
+                    });
+
+                    galleryPreview.appendChild(thumb);
+                });
+            }
+        });
     });
 }
 

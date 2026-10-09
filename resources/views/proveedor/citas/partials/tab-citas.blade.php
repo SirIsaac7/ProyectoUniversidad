@@ -105,7 +105,7 @@
                 </div>
 
                 <div class="mt-3">
-                    {{ $citas->appends(['tab' => 'citas'])->links() }}
+                    {{ $citas->appends(['tab' => 'citas'])->links('pagination::bootstrap-5') }}
                 </div>
             @else
                 <div class="text-center py-5">

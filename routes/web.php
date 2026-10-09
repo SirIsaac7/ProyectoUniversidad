@@ -1,14 +1,15 @@
 <?php
 
-use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AspectoCalificacionController;
+use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\CalificacionController;
 use App\Http\Controllers\Admin\CitaController;
 use App\Http\Controllers\Admin\DocumentoProveedorController;
 use App\Http\Controllers\Admin\EspecialidadController;
 use App\Http\Controllers\Admin\HistorialSolicitudController;
 use App\Http\Controllers\Admin\HorarioProveedorController;
+use App\Http\Controllers\Admin\MotorBusquedaController;
 use App\Http\Controllers\Admin\PerfilProveedorController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\PortafolioProveedorController;
@@ -27,19 +28,19 @@ use App\Http\Controllers\Cliente\CitaController as ClienteCitaController;
 use App\Http\Controllers\Cliente\HistorialSolicitudController as ClienteHistorialSolicitudController;
 use App\Http\Controllers\Cliente\SolicitudController as ClienteSolicitudController;
 use App\Http\Controllers\InicioController;
+use App\Http\Controllers\LandingController;
+use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\PerfilController;
-use App\Http\Controllers\Proveedor\DocumentoController as MiDocumentoProveedorController;
-use App\Http\Controllers\Proveedor\EspecialidadController as MiEspecialidadProveedorController;
 use App\Http\Controllers\Proveedor\CalificacionController as ProveedorCalificacionController;
 use App\Http\Controllers\Proveedor\CitaController as ProveedorCitaController;
+use App\Http\Controllers\Proveedor\DocumentoController as MiDocumentoProveedorController;
+use App\Http\Controllers\Proveedor\EspecialidadController as MiEspecialidadProveedorController;
 use App\Http\Controllers\Proveedor\HistorialSolicitudController as ProveedorHistorialSolicitudController;
 use App\Http\Controllers\Proveedor\HorarioController as MiHorarioProveedorController;
 use App\Http\Controllers\Proveedor\PerfilController as MiPerfilController;
 use App\Http\Controllers\Proveedor\PortafolioController as MiPortafolioProveedorController;
 use App\Http\Controllers\Proveedor\SolicitudController as ProveedorSolicitudController;
 use App\Http\Controllers\Proveedor\UbicacionController as MiUbicacionProveedorController;
-use App\Http\Controllers\NotificacionController;
-use App\Http\Controllers\Admin\BackupController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -59,7 +60,7 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::post('/perfil/celular/verificar', [PerfilController::class, 'verificarCelular'])->name('perfil.celular.verificar');
     // Notificaciones
     Route::get('/notificaciones/recientes', [NotificacionController::class, 'recientes'])
-    ->name('notificaciones.recientes');
+        ->name('notificaciones.recientes');
     Route::patch('/notificaciones/{id}/leer', [NotificacionController::class, 'marcarLeida'])
         ->name('notificaciones.leer');
     Route::patch('/notificaciones/leer-todas', [NotificacionController::class, 'marcarTodasLeidas'])
@@ -103,6 +104,16 @@ Route::middleware('auth', 'verified')->group(function () {
         ->name('cliente.')
         ->group(function () {
             Route::get('/buscar-servicios', [ClienteBusquedaServicioController::class, 'index'])->name('buscar-servicios.index');
+            Route::post('/buscar-servicios/semantica', [ClienteBusquedaServicioController::class, 'semantica'])
+                ->middleware('throttle:10,1')
+                ->name('buscar-servicios.semantica');
+            Route::get('/buscar-servicios/semantica/{ejecucion}/estado', [ClienteBusquedaServicioController::class, 'estadoSemantica'])
+                ->middleware('throttle:120,1')
+                ->name('buscar-servicios.semantica.estado');
+            Route::get('/buscar-servicios/semantica/{ejecucion}/resultados', [ClienteBusquedaServicioController::class, 'resultadosSemantica'])
+                ->middleware('throttle:30,1')
+                ->name('buscar-servicios.semantica.resultados');
+            Route::post('/buscar-servicios/transcribir', [ClienteBusquedaServicioController::class, 'transcribir'])->name('buscar-servicios.transcribir');
             Route::post('/buscar-servicios/inteligente', [ClienteBusquedaServicioController::class, 'inteligente'])->name('buscar-servicios.inteligente');
             Route::get('/solicitudes', [ClienteSolicitudController::class, 'index'])->name('solicitudes.index');
             Route::post('/solicitudes', [ClienteSolicitudController::class, 'store'])->name('solicitudes.store');
@@ -172,6 +183,17 @@ Route::middleware('auth', 'verified')->group(function () {
         Route::get('backups', [BackupController::class, 'index'])->name('backups.index');
         Route::put('backups', [BackupController::class, 'update'])->name('backups.update');
         Route::post('backups/run', [BackupController::class, 'run'])->name('backups.run');
+
+        Route::get('motor-busqueda', [MotorBusquedaController::class, 'index'])->name('motor-busqueda.index');
+        Route::get('motor-busqueda/estado', [MotorBusquedaController::class, 'estado'])->name('motor-busqueda.estado');
+        Route::post('motor-busqueda/indexacion', [MotorBusquedaController::class, 'iniciarIndexacion'])->name('motor-busqueda.indexacion.store');
+        Route::get('motor-busqueda/indexacion/{identificador}', [MotorBusquedaController::class, 'consultarIndexacion'])
+            ->where('identificador', '[A-Za-z0-9._:-]+')
+            ->name('motor-busqueda.indexacion.show');
+        Route::put('motor-busqueda/programacion', [MotorBusquedaController::class, 'actualizarProgramacion'])->name('motor-busqueda.programacion.update');
+        Route::get('motor-busqueda/historial/{ejecucion}', [MotorBusquedaController::class, 'detalleHistorial'])->name('motor-busqueda.historial.show');
+        Route::put('motor-busqueda/personalizacion', [MotorBusquedaController::class, 'actualizarPersonalizacion'])->name('motor-busqueda.personalizacion.update');
+        Route::delete('motor-busqueda/personalizacion', [MotorBusquedaController::class, 'restaurarPersonalizacion'])->name('motor-busqueda.personalizacion.reset');
 
         Route::get('reportes/configuracion', [ReporteController::class, 'configuracion'])->name('reportes.configuracion');
         Route::put('reportes/configuracion', [ReporteController::class, 'actualizarConfiguracion'])->name('reportes.configuracion.update');

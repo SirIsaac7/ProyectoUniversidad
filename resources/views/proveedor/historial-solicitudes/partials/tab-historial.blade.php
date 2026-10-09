@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="mt-3">
-                    {{ $historiales->appends(['tab' => 'historial'])->links() }}
+                    {{ $historiales->appends(['tab' => 'historial'])->links('pagination::bootstrap-5') }}
                 </div>
             @else
                 <div class="text-center py-5">

@@ -20,6 +20,324 @@
     pointer-events: none;
 }
 
+.busqueda-semantica-input-group {
+    position: relative;
+    display: flex;
+    gap: 10px;
+}
+
+.busqueda-semantica-input-group > i {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    z-index: 2;
+    transform: translateY(-50%);
+    font-size: 1.1rem;
+}
+
+.busqueda-semantica-input-group .form-control {
+    min-height: 52px;
+    padding-left: 46px;
+}
+
+.busqueda-semantica-input-group .btn {
+    min-width: 164px;
+}
+
+.busqueda-semantica-switch {
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px 8px 42px;
+    border: 1px solid var(--vz-border-color);
+    border-radius: 8px;
+}
+
+.busqueda-semantica-empty,
+.busqueda-semantica-loading,
+.busqueda-semantica-status {
+    border: 1px dashed rgba(var(--vz-primary-rgb), .28);
+    background: linear-gradient(135deg, rgba(var(--vz-primary-rgb), .05), transparent 55%), var(--vz-card-bg);
+}
+
+.busqueda-semantica-loading {
+    border-color: rgba(var(--vz-primary-rgb), .42);
+}
+
+.busqueda-semantica-status--error {
+    border-color: rgba(var(--vz-danger-rgb), .32);
+    background: linear-gradient(135deg, rgba(var(--vz-danger-rgb), .06), transparent 55%), var(--vz-card-bg);
+}
+
+.busqueda-semantica-meta {
+    display: grid;
+    gap: 7px;
+    color: var(--vz-secondary-color);
+    font-size: .86rem;
+}
+
+.busqueda-semantica-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.busqueda-semantica-modalidad {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: rgba(var(--vz-info-rgb), .10);
+    color: var(--vz-info);
+    font-size: .76rem;
+    font-weight: 700;
+}
+
+.busqueda-semantica-scope {
+    font-family: var(--busqueda-font);
+}
+
+.busqueda-semantica-scope .busqueda-semantica-hero,
+.busqueda-semantica-scope .busqueda-semantica-empty,
+.busqueda-semantica-scope .busqueda-semantica-loading,
+.busqueda-semantica-scope .busqueda-semantica-status,
+.busqueda-semantica-scope .busqueda-semantica-processing {
+    border-radius: var(--busqueda-radius);
+    background-color: var(--busqueda-background);
+}
+
+.busqueda-semantica-scope .busqueda-semantica-input-group .btn {
+    border-color: var(--busqueda-button);
+    background: var(--busqueda-button);
+    color: #fff;
+}
+
+.busqueda-semantica-scope h5,
+.busqueda-semantica-scope .form-label {
+    font-weight: var(--busqueda-font-weight);
+}
+
+.busqueda-semantica-scope #busquedaSemanticaResultado > div > div > h5,
+.busqueda-semantica-scope .busqueda-semantica-processing h5 {
+    font-size: var(--busqueda-title-size);
+}
+
+.busqueda-semantica-scope .busqueda-semantica-processing p,
+.busqueda-semantica-scope .busqueda-semantica-status p {
+    font-size: var(--busqueda-message-size);
+}
+
+.busqueda-semantica-processing {
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--busqueda-indicator) 32%, transparent);
+}
+
+.busqueda-semantica-processing .card-body {
+    padding: 28px;
+}
+
+.busqueda-processing-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    text-align: left;
+}
+
+.semantic-search-animation {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border: 4px solid color-mix(in srgb, var(--busqueda-indicator) 18%, transparent);
+    border-top-color: var(--busqueda-indicator);
+    border-radius: 50%;
+    animation: semantic-search-spin .8s linear infinite;
+}
+
+.semantic-search-animation.is-puntos {
+    width: 50px;
+    height: 14px;
+    border: 0;
+    border-radius: 0;
+    background: radial-gradient(circle, var(--busqueda-indicator) 4px, transparent 5px) 0 50% / 16px 14px repeat-x;
+    animation: semantic-search-pulse 1s ease-in-out infinite alternate;
+}
+
+.semantic-search-animation.is-barra {
+    width: 68px;
+    height: 8px;
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, var(--busqueda-indicator), transparent);
+    background-size: 200% 100%;
+    animation: semantic-search-slide 1s linear infinite;
+}
+
+.semantic-search-animation.is-etapas,
+.semantic-search-animation.is-busqueda {
+    display: grid;
+    place-items: center;
+    border: 0;
+    background: color-mix(in srgb, var(--busqueda-indicator) 13%, transparent);
+    color: var(--busqueda-indicator);
+    animation: semantic-search-pulse .9s ease-in-out infinite alternate;
+}
+
+.semantic-search-animation.is-etapas::before {
+    content: "1·2·3";
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.semantic-search-animation.is-busqueda::before {
+    content: "⌕";
+    font-size: 28px;
+}
+
+.busqueda-real-phases {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.busqueda-real-phases.is-list {
+    display: grid;
+    justify-content: stretch;
+    max-width: 620px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.busqueda-real-phase {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--busqueda-indicator) 9%, transparent);
+    color: var(--vz-secondary-color);
+    font-size: 12px;
+}
+
+.busqueda-real-phase.is-complete {
+    color: var(--busqueda-phase-complete);
+}
+
+.busqueda-real-phase.is-current {
+    outline: 2px solid color-mix(in srgb, var(--busqueda-phase-current) 36%, transparent);
+    color: var(--busqueda-phase-current);
+}
+
+.busqueda-semantica-scope .proveedor-search-card {
+    border-color: color-mix(in srgb, var(--busqueda-highlight) 22%, var(--vz-border-color));
+    border-radius: var(--busqueda-radius);
+}
+
+.busqueda-semantica-scope.is-card-compacta .proveedor-search-card .card-body {
+    padding: 14px;
+}
+
+.busqueda-semantica-scope.is-card-destacada .proveedor-search-card {
+    border-top: 3px solid var(--busqueda-highlight);
+    box-shadow: 0 14px 34px color-mix(in srgb, var(--busqueda-highlight) 14%, transparent);
+}
+
+.busqueda-semantica-scope.is-spacing-compacto .busqueda-semantica-grid {
+    gap: 10px;
+}
+
+.busqueda-semantica-scope.is-spacing-amplio .busqueda-semantica-grid {
+    gap: 24px;
+}
+
+.busqueda-semantica-scope.is-distribution-detallada .busqueda-semantica-grid {
+    grid-template-columns: 1fr;
+}
+
+.busqueda-semantica-explicacion {
+    padding: 11px 12px;
+    border-left: 3px solid var(--busqueda-info);
+    border-radius: calc(var(--busqueda-radius) * .55);
+    background: color-mix(in srgb, var(--busqueda-info) 8%, transparent);
+    font-size: .78rem;
+}
+
+.busqueda-semantica-explicacion strong {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--busqueda-info);
+}
+
+.busqueda-semantica-explicacion ul {
+    margin: 7px 0 0;
+    padding-left: 18px;
+}
+
+.busqueda-semantica-scope.is-explanation-texto .busqueda-semantica-explicacion {
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.busqueda-semantica-scope.is-rating-insignia .busqueda-semantica-rating {
+    width: max-content;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--busqueda-highlight) 12%, transparent);
+    color: var(--busqueda-highlight);
+}
+
+.busqueda-semantica-scope.is-rating-texto .busqueda-semantica-rating i {
+    display: none;
+}
+
+.busqueda-semantica-scope .busqueda-semantica-status--error {
+    border-color: color-mix(in srgb, var(--busqueda-error) 38%, transparent);
+}
+
+.busqueda-semantica-scope .busqueda-semantica-status--error i {
+    color: var(--busqueda-error) !important;
+}
+
+@keyframes semantic-search-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes semantic-search-pulse {
+    to { opacity: .35; transform: scale(.92); }
+}
+
+@keyframes semantic-search-slide {
+    to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .semantic-search-animation,
+    .busqueda-semantica-scope .proveedor-search-card {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .busqueda-semantica-input-group {
+        flex-direction: column;
+    }
+
+    .busqueda-semantica-input-group > i {
+        top: 26px;
+    }
+
+    .busqueda-semantica-input-group .btn {
+        width: 100%;
+    }
+}
+
 .busqueda-location-switch {
     display: flex;
     align-items: center;
@@ -749,6 +1067,138 @@
     height: 100%;
     overflow: hidden;
     transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.proveedor-detail-selector {
+    display: grid;
+    gap: 12px;
+}
+
+.proveedor-detail-option {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--vz-border-color);
+    border-radius: 12px;
+    background: var(--vz-card-bg);
+    color: inherit;
+    text-align: left;
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.proveedor-detail-option:hover,
+.proveedor-detail-option.is-active {
+    transform: translateY(-2px);
+    border-color: var(--proveedor-section-color, rgba(var(--vz-primary-rgb), .42));
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .08);
+    background: rgba(var(--vz-primary-rgb), .04);
+}
+
+.proveedor-detail-option-thumb {
+    width: 72px;
+    height: 72px;
+    flex: 0 0 72px;
+    overflow: hidden;
+    border-radius: 12px;
+    background: rgba(var(--vz-primary-rgb), .08);
+    color: var(--vz-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+.proveedor-detail-option-thumb.is-document {
+    background: rgba(10, 179, 156, .12);
+    color: #0ab39c;
+}
+
+.proveedor-detail-option-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.proveedor-detail-option-body {
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+}
+
+.proveedor-detail-option-body strong,
+.proveedor-detail-option-body small {
+    display: block;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.proveedor-detail-option-body small {
+    color: var(--vz-secondary-color);
+}
+
+.proveedor-detail-preview {
+    min-height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--vz-border-color);
+    border-radius: 14px;
+    background: var(--vz-card-bg);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .06);
+}
+
+.proveedor-detail-preview-media {
+    min-height: 260px;
+    background: rgba(var(--vz-primary-rgb), .06);
+}
+
+.proveedor-detail-preview-media img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    display: block;
+}
+
+.proveedor-detail-preview-empty {
+    width: 100%;
+    height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(var(--vz-primary-rgb), .10), rgba(10, 179, 156, .10));
+    color: var(--vz-primary);
+    font-size: 64px;
+}
+
+.proveedor-detail-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.proveedor-detail-gallery-thumb {
+    width: 72px;
+    height: 72px;
+    padding: 0;
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: rgba(var(--vz-primary-rgb), .06);
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.proveedor-detail-gallery-thumb:hover,
+.proveedor-detail-gallery-thumb.is-active {
+    transform: translateY(-2px);
+    border-color: rgba(var(--vz-primary-rgb), .42);
+    box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
+}
+
+.proveedor-detail-gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .proveedor-especialidad-card {
@@ -1700,6 +2150,29 @@
     background:
         radial-gradient(circle at top right, rgba(var(--vz-primary-rgb), .14), transparent 34%),
         var(--vz-card-bg);
+}
+
+.busqueda-voz-button.is-recording {
+    background: var(--vz-danger);
+    border-color: var(--vz-danger);
+    color: #fff;
+    animation: busquedaVozPulse 1.2s ease-in-out infinite;
+}
+
+.busqueda-voz-status.is-recording {
+    color: var(--vz-danger);
+    font-weight: 700;
+}
+
+.busqueda-voz-status.is-processing {
+    color: var(--vz-primary);
+    font-weight: 700;
+}
+
+@keyframes busquedaVozPulse {
+    50% {
+        box-shadow: 0 0 0 6px rgba(var(--vz-danger-rgb), .14);
+    }
 }
 
 .busqueda-ia-panel::before {

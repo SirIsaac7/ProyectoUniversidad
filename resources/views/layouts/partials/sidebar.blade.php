@@ -80,6 +80,15 @@
                     </li>
                 @endcan
 
+                @can('ver panel motor busqueda')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('motor-busqueda.*') ? 'active' : '' }}" href="{{ route('motor-busqueda.index') }}">
+                            <i class="ri-cpu-line"></i>
+                            <span>Motor inteligente</span>
+                        </a>
+                    </li>
+                @endcan
+
                 @can('ver reportes')
                     <li class="nav-item">
                         <a class="nav-link menu-link {{ request()->routeIs('reportes.*') ? 'active' : '' }}" href="{{ route('reportes.index') }}">
@@ -416,6 +425,62 @@
                             <i class="ri-star-smile-line"></i>
                             <span>Mis calificaciones</span>
                         </a>
+                    </li>
+                @endif
+
+                @if ($usuarioActual->hasRole('CLIENTE'))
+                    <li class="nav-item">
+                        <a
+                            class="nav-link menu-link collapsed"
+                            href="#sidebarClienteExtras"
+                            data-bs-toggle="collapse"
+                            role="button"
+                            aria-expanded="false"
+                            aria-controls="sidebarClienteExtras"
+                        >
+                            <i class="ri-layout-grid-line"></i>
+                            <span>Mas modulos</span>
+                        </a>
+
+                        <div class="collapse menu-dropdown" id="sidebarClienteExtras">
+                            <ul class="nav nav-sm flex-column">
+                                <li class="nav-item">
+                                    <a href="javascript:void(0);" class="nav-link">
+                                        <i class="ri-heart-3-line me-1"></i>
+                                        Favoritos
+                                        <span class="badge bg-secondary-subtle text-secondary ms-auto">Pronto</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="javascript:void(0);" class="nav-link">
+                                        <i class="ri-map-2-line me-1"></i>
+                                        Direcciones guardadas
+                                        <span class="badge bg-secondary-subtle text-secondary ms-auto">Pronto</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="javascript:void(0);" class="nav-link">
+                                        <i class="ri-shield-check-line me-1"></i>
+                                        Garantias y soporte
+                                        <span class="badge bg-secondary-subtle text-secondary ms-auto">Pronto</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="javascript:void(0);" class="nav-link">
+                                        <i class="ri-notification-3-line me-1"></i>
+                                        Notificaciones
+                                        <span class="badge bg-secondary-subtle text-secondary ms-auto">Pronto</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="javascript:void(0);" class="nav-link">
+                                        <i class="ri-customer-service-2-line me-1"></i>
+                                        Centro de ayuda
+                                        <span class="badge bg-secondary-subtle text-secondary ms-auto">Pronto</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                 @endif
 

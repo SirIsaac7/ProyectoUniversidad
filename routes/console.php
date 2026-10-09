@@ -1,10 +1,10 @@
 <?php
 
+use App\Models\ConfiguracionBackup;
+use App\Services\BackupService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Process;
-use App\Models\ConfiguracionBackup;
-use App\Services\BackupService;
 use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
@@ -57,3 +57,10 @@ Schedule::call(function () {
             default => false,
         };
     });
+
+Schedule::command('motor:indexaciones-procesar')
+    ->everyMinute()
+    ->name('motor-indexaciones')
+    ->onOneServer()
+    ->withoutOverlapping()
+    ->runInBackground();

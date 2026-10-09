@@ -352,70 +352,160 @@
                                 </div>
 
                                 <div class="tab-pane fade" id="proveedorTrabajos{{ $modalKey }}" role="tabpanel">
-                                        <section class="proveedor-profile-section proveedor-profile-section-work">
-                                            <span class="proveedor-section-watermark"><i class="ri-gallery-line"></i></span>
-                                            <h5>Trabajos realizados</h5>
+                                    @php($trabajoPrincipal = $proveedor['portafolio']->first())
+                                    <section class="proveedor-profile-section proveedor-profile-section-work">
+                                        <span class="proveedor-section-watermark"><i class="ri-gallery-line"></i></span>
+                                        <h5>Trabajos realizados</h5>
                                         <p class="text-muted">Evidencias publicadas por el proveedor en su portafolio.</p>
-                                        <div class="row g-3 mt-1">
-                                            @forelse ($proveedor['portafolio'] as $trabajo)
-                                                <div class="col-md-6 col-xl-4">
-                                                    <div class="proveedor-profile-work-card">
-                                                        <div class="proveedor-modal-work-image">
-                                                            @if ($trabajo['imagen'])
-                                                                <img src="{{ asset($trabajo['imagen']) }}" alt="{{ $trabajo['titulo'] }}">
+                                        @if ($proveedor['portafolio']->isNotEmpty())
+                                            <div class="row g-4 mt-1">
+                                                <div class="col-lg-5">
+                                                    <div class="proveedor-detail-selector">
+                                                        @foreach ($proveedor['portafolio'] as $trabajo)
+                                                            <button
+                                                                type="button"
+                                                                class="proveedor-detail-option {{ $loop->first ? 'is-active' : '' }}"
+                                                                data-detail-group="trabajos-{{ $modalKey }}"
+                                                                data-detail-image="{{ $trabajo['imagen'] ?? '' }}"
+                                                                data-detail-gallery='@json($trabajo["imagenes"] ?? [])'
+                                                                data-detail-title="{{ e($trabajo['titulo']) }}"
+                                                                data-detail-description="{{ e($trabajo['descripcion'] ?: 'Trabajo sin descripcion registrada.') }}"
+                                                                data-detail-meta-primary="{{ e($trabajo['fecha_trabajo'] ?: 'Fecha no registrada') }}"
+                                                                data-detail-meta-secondary="{{ e(($trabajo['total_imagenes'] ?? 0) > 0 ? (($trabajo['total_imagenes'] ?? 0) . ' imagen(es) disponibles') : 'Sin imagenes registradas') }}"
+                                                                data-detail-icon="ri-gallery-line"
+                                                            >
+                                                                <span class="proveedor-detail-option-thumb">
+                                                                    @if ($trabajo['imagen'])
+                                                                        <img src="{{ asset($trabajo['imagen']) }}" alt="{{ $trabajo['titulo'] }}">
+                                                                    @else
+                                                                        <i class="ri-image-line"></i>
+                                                                    @endif
+                                                                </span>
+                                                                <span class="proveedor-detail-option-body">
+                                                                    <strong>{{ $trabajo['titulo'] }}</strong>
+                                                                    <small>{{ $trabajo['fecha_trabajo'] ?? 'Sin fecha registrada' }}</small>
+                                                                </span>
+                                                            </button>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-7">
+                                                    <div class="proveedor-detail-preview" data-detail-preview="trabajos-{{ $modalKey }}">
+                                                        <div class="proveedor-detail-preview-media">
+                                                            @if ($trabajoPrincipal && $trabajoPrincipal['imagen'])
+                                                                <img src="{{ $trabajoPrincipal['imagen'] }}" alt="{{ $trabajoPrincipal['titulo'] }}" data-detail-image>
+                                                                <div class="proveedor-detail-preview-empty d-none" data-detail-empty>
+                                                                    <i class="ri-gallery-line"></i>
+                                                                </div>
                                                             @else
-                                                                <i class="ri-image-line"></i>
+                                                                <div class="proveedor-detail-preview-empty" data-detail-empty>
+                                                                    <i class="ri-gallery-line"></i>
+                                                                </div>
+                                                                <img src="" alt="" class="d-none" data-detail-image>
                                                             @endif
-                                                            <span class="proveedor-cover-badge badge bg-warning-subtle text-warning">{{ $trabajo['fecha_trabajo'] ?? 'Trabajo' }}</span>
                                                         </div>
-                                                        <div class="p-3">
-                                                            <h6 class="mb-1">{{ $trabajo['titulo'] }}</h6>
-                                                            <p class="text-muted small mb-0">{{ $trabajo['descripcion'] }}</p>
+                                                        <div class="p-4">
+                                                            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                                                                <span class="badge bg-warning-subtle text-warning" data-detail-meta-primary>{{ $trabajoPrincipal['fecha_trabajo'] ?? 'Fecha no registrada' }}</span>
+                                                                <span class="badge bg-primary-subtle text-primary" data-detail-meta-secondary>{{ ($trabajoPrincipal['total_imagenes'] ?? 0) > 0 ? (($trabajoPrincipal['total_imagenes'] ?? 0) . ' imagen(es) disponibles') : 'Sin imagenes registradas' }}</span>
+                                                            </div>
+                                                            <h4 class="mb-2" data-detail-title>{{ $trabajoPrincipal['titulo'] ?? 'Trabajo registrado' }}</h4>
+                                                            <p class="text-muted mb-3" data-detail-description>{{ $trabajoPrincipal['descripcion'] ?: 'Trabajo sin descripcion registrada.' }}</p>
+                                                            <div class="proveedor-detail-gallery" data-detail-gallery-preview>
+                                                                @foreach (($trabajoPrincipal['imagenes'] ?? []) as $imagenTrabajo)
+                                                                    <button
+                                                                        type="button"
+                                                                        class="proveedor-detail-gallery-thumb {{ $loop->first ? 'is-active' : '' }}"
+                                                                        data-gallery-image="{{ $imagenTrabajo['url'] }}"
+                                                                    >
+                                                                        <img src="{{ $imagenTrabajo['url'] }}" alt="{{ $imagenTrabajo['titulo'] ?: $trabajoPrincipal['titulo'] }}">
+                                                                    </button>
+                                                                @endforeach
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            @empty
-                                                <div class="col-12">
-                                                    <div class="proveedor-profile-empty">Este proveedor aun no publico trabajos visibles.</div>
-                                                </div>
-                                            @endforelse
-                                        </div>
+                                            </div>
+                                        @else
+                                            <div class="proveedor-profile-empty">Este proveedor aun no publico trabajos visibles.</div>
+                                        @endif
                                     </section>
                                 </div>
 
                                 <div class="tab-pane fade" id="proveedorDocumentos{{ $modalKey }}" role="tabpanel">
-                                        <section class="proveedor-profile-section proveedor-profile-section-documents">
-                                            <span class="proveedor-section-watermark"><i class="ri-file-shield-line"></i></span>
-                                            <h5>Documentos aprobados</h5>
+                                    @php($documentoPrincipal = $proveedor['documentos']->first())
+                                    <section class="proveedor-profile-section proveedor-profile-section-documents">
+                                        <span class="proveedor-section-watermark"><i class="ri-file-shield-line"></i></span>
+                                        <h5>Documentos aprobados</h5>
                                         <p class="text-muted">Documentos visibles para respaldar la confianza del proveedor.</p>
-                                        <div class="row g-3 mt-1">
-                                            @forelse ($proveedor['documentos'] as $documento)
-                                                <div class="col-md-6">
-                                                    <div class="proveedor-profile-detail-card">
-                                                        <span class="proveedor-sector-icon bg-success-subtle text-success">
-                                                            <i class="ri-file-shield-line"></i>
-                                                        </span>
-                                                        <div>
-                                                            <h6 class="mb-1">{{ $documento['nombre'] }}</h6>
-                                                            @if ($documento['descripcion'])
-                                                                <p class="text-muted small mb-2">{{ $documento['descripcion'] }}</p>
+                                        @if ($proveedor['documentos']->isNotEmpty())
+                                            <div class="row g-4 mt-1">
+                                                <div class="col-lg-5">
+                                                    <div class="proveedor-detail-selector">
+                                                        @foreach ($proveedor['documentos'] as $documento)
+                                                            <button
+                                                                type="button"
+                                                                class="proveedor-detail-option {{ $loop->first ? 'is-active' : '' }}"
+                                                                data-detail-group="documentos-{{ $modalKey }}"
+                                                                data-detail-image="{{ $documento['es_imagen'] && $documento['archivo_url'] ? $documento['archivo_url'] : '' }}"
+                                                                data-detail-title="{{ e($documento['nombre']) }}"
+                                                                data-detail-description="{{ e($documento['descripcion'] ?: ($documento['observacion'] ?: 'Documento aprobado del proveedor.')) }}"
+                                                                data-detail-meta-primary="{{ e($documento['fecha_revision'] ? 'Revision: ' . $documento['fecha_revision'] : 'Documento aprobado') }}"
+                                                                data-detail-meta-secondary="{{ e($documento['obligatorio'] ? 'Documento obligatorio' : 'Documento complementario') }}"
+                                                                data-detail-icon="{{ $documento['es_imagen'] ? 'ri-image-line' : 'ri-file-text-line' }}"
+                                                                data-detail-link="{{ $documento['archivo_url'] ?? '' }}"
+                                                            >
+                                                                <span class="proveedor-detail-option-thumb is-document">
+                                                                    <i class="{{ $documento['es_imagen'] ? 'ri-image-line' : 'ri-file-text-line' }}"></i>
+                                                                </span>
+                                                                <span class="proveedor-detail-option-body">
+                                                                    <strong>{{ $documento['nombre'] }}</strong>
+                                                                    <small>{{ $documento['fecha_revision'] ? 'Revision ' . $documento['fecha_revision'] : 'Aprobado' }}</small>
+                                                                </span>
+                                                            </button>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-7">
+                                                    <div class="proveedor-detail-preview proveedor-detail-preview--document" data-detail-preview="documentos-{{ $modalKey }}">
+                                                        <div class="proveedor-detail-preview-media">
+                                                            @if ($documentoPrincipal && $documentoPrincipal['es_imagen'] && $documentoPrincipal['archivo_url'])
+                                                                <img src="{{ $documentoPrincipal['archivo_url'] }}" alt="{{ $documentoPrincipal['nombre'] }}" data-detail-image>
+                                                                <div class="proveedor-detail-preview-empty d-none" data-detail-empty>
+                                                                    <i class="ri-file-text-line"></i>
+                                                                </div>
+                                                            @else
+                                                                <div class="proveedor-detail-preview-empty" data-detail-empty>
+                                                                    <i class="{{ ($documentoPrincipal && $documentoPrincipal['es_imagen']) ? 'ri-image-line' : 'ri-file-text-line' }}"></i>
+                                                                </div>
+                                                                <img src="" alt="" class="d-none" data-detail-image>
                                                             @endif
-                                                            <span class="badge bg-success-subtle text-success">Aprobado</span>
-                                                            @if ($documento['obligatorio'])
-                                                                <span class="badge bg-warning-subtle text-warning">Obligatorio</span>
-                                                            @endif
-                                                            @if ($documento['fecha_revision'])
-                                                                <span class="badge bg-info-subtle text-info">Rev. {{ $documento['fecha_revision'] }}</span>
-                                                            @endif
+                                                        </div>
+                                                        <div class="p-4">
+                                                            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                                                                <span class="badge bg-success-subtle text-success">Aprobado</span>
+                                                                <span class="badge bg-info-subtle text-info" data-detail-meta-primary>{{ $documentoPrincipal && $documentoPrincipal['fecha_revision'] ? 'Revision: ' . $documentoPrincipal['fecha_revision'] : 'Documento aprobado' }}</span>
+                                                                <span class="badge bg-warning-subtle text-warning" data-detail-meta-secondary>{{ $documentoPrincipal && $documentoPrincipal['obligatorio'] ? 'Documento obligatorio' : 'Documento complementario' }}</span>
+                                                            </div>
+                                                            <h4 class="mb-2" data-detail-title>{{ $documentoPrincipal['nombre'] ?? 'Documento' }}</h4>
+                                                            <p class="text-muted mb-3" data-detail-description>{{ $documentoPrincipal['descripcion'] ?: ($documentoPrincipal['observacion'] ?: 'Documento aprobado del proveedor.') }}</p>
+                                                            <a
+                                                                href="{{ $documentoPrincipal['archivo_url'] ?? 'javascript:void(0);' }}"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                class="btn btn-soft-primary {{ $documentoPrincipal && $documentoPrincipal['archivo_url'] ? '' : 'disabled' }}"
+                                                                data-detail-link
+                                                            >
+                                                                <i class="ri-external-link-line align-bottom me-1"></i>
+                                                                Ver archivo
+                                                            </a>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            @empty
-                                                <div class="col-12">
-                                                    <div class="proveedor-profile-empty">Este proveedor aun no tiene documentos aprobados visibles.</div>
-                                                </div>
-                                            @endforelse
-                                        </div>
+                                            </div>
+                                        @else
+                                            <div class="proveedor-profile-empty">Este proveedor aun no tiene documentos aprobados visibles.</div>
+                                        @endif
                                     </section>
                                 </div>
                             </div>

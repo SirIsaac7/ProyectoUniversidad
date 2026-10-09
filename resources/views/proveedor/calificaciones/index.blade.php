@@ -48,7 +48,7 @@
                     @endforelse
 
                     <div class="mt-3">
-                        {{ $calificaciones->links() }}
+                        {{ $calificaciones->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </div>

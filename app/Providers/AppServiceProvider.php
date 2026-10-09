@@ -6,6 +6,7 @@ use App\Policies\InicioPolicy;
 use App\Support\Backup\BackupTemporaryDirectory;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Paginator::useBootstrapFive();
+
         Gate::define('view-inicio', [InicioPolicy::class, 'view']);
 
         Gate::before(function ($user, string $ability) {

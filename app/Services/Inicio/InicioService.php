@@ -123,6 +123,7 @@ class InicioService
             'resumen' => $this->getResumenAdmin(),
             'resumenCitas' => $this->getResumenCitasDesdeQuery(Cita::query()),
             'rendimientoCitas' => $this->getRendimientoCitasAdmin(),
+            'calidadSistema' => $this->getCalidadSistemaAdmin(),
             'modulos' => $this->getResumenModulosAdmin(),
             'solicitudesPorEstado' => $this->getSolicitudesPorEstadoAdmin(),
             'proveedoresPorVerificacion' => $this->getProveedoresPorVerificacionAdmin(),
@@ -211,6 +212,84 @@ class InicioService
                 'total' => $resumen['totalAnio'],
                 'anio' => $resumen['anio'],
             ],
+        ];
+    }
+
+    private function getCalidadSistemaAdmin(): array
+    {
+        $inicioAnio = now()->startOfYear()->toDateString();
+        $finAnio = now()->endOfYear()->toDateString();
+
+        $citas = Cita::query()
+            ->selectRaw('MONTH(fecha_cita) as mes')
+            ->selectRaw("SUM(CASE WHEN estado = 'completada' THEN 1 ELSE 0 END) as exitosas")
+            ->selectRaw("SUM(CASE WHEN estado IN ('cancelada', 'no_asistio', 'vencida') THEN 1 ELSE 0 END) as incidencias")
+            ->whereBetween('fecha_cita', [$inicioAnio, $finAnio])
+            ->groupBy('mes')
+            ->get()
+            ->keyBy('mes');
+
+        $calificaciones = Calificacion::query()
+            ->join('citas', 'citas.id', '=', 'calificaciones.cita_id')
+            ->selectRaw('MONTH(citas.fecha_cita) as mes')
+            ->selectRaw("SUM(CASE WHEN calificaciones.puntuacion >= 4 THEN 1 ELSE 0 END) as positivas")
+            ->selectRaw("SUM(CASE WHEN calificaciones.puntuacion <= 2 THEN 1 ELSE 0 END) as negativas")
+            ->whereBetween('citas.fecha_cita', [$inicioAnio, $finAnio])
+            ->groupBy('mes')
+            ->get()
+            ->keyBy('mes');
+
+        $meses = [
+            1 => 'Ene',
+            2 => 'Feb',
+            3 => 'Mar',
+            4 => 'Abr',
+            5 => 'May',
+            6 => 'Jun',
+            7 => 'Jul',
+            8 => 'Ago',
+            9 => 'Sep',
+            10 => 'Oct',
+            11 => 'Nov',
+            12 => 'Dic',
+        ];
+
+        $labels = [];
+        $seriesBuenas = [];
+        $seriesMalas = [];
+
+        foreach ($meses as $numeroMes => $label) {
+            $labels[] = $label;
+
+            $citasMes = $citas->get($numeroMes);
+            $calificacionesMes = $calificaciones->get($numeroMes);
+
+            $seriesBuenas[] = (int) ($citasMes->exitosas ?? 0) + (int) ($calificacionesMes->positivas ?? 0);
+            $seriesMalas[] = (int) ($citasMes->incidencias ?? 0) + (int) ($calificacionesMes->negativas ?? 0);
+        }
+
+        $totalBuenas = array_sum($seriesBuenas);
+        $totalMalas = array_sum($seriesMalas);
+        $buenasUltimoMes = (int) end($seriesBuenas);
+        $malasUltimoMes = (int) end($seriesMalas);
+        $buenasMesPrevio = (int) ($seriesBuenas[count($seriesBuenas) - 2] ?? 0);
+        $malasMesPrevio = (int) ($seriesMalas[count($seriesMalas) - 2] ?? 0);
+
+        return [
+            'labels' => $labels,
+            'series' => [
+                'buenas' => $seriesBuenas,
+                'malas' => $seriesMalas,
+            ],
+            'totales' => [
+                'buenas' => $totalBuenas,
+                'malas' => $totalMalas,
+            ],
+            'tendencias' => [
+                'buenas' => $buenasUltimoMes >= $buenasMesPrevio ? 'sube' : 'baja',
+                'malas' => $malasUltimoMes > $malasMesPrevio ? 'sube' : 'baja',
+            ],
+            'anio' => Carbon::parse($inicioAnio)->year,
         ];
     }
 

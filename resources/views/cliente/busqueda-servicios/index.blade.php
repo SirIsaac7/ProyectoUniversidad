@@ -24,54 +24,76 @@
 
     <div class="row g-4">
         <div class="col-xl-8">
-            <div class="card busqueda-servicios-hero mb-4">
+            <div
+                id="busquedaSemanticaModulo"
+                class="busqueda-semantica-scope is-card-{{ $personalizacionBusqueda['diseno_tarjetas'] }} is-spacing-{{ $personalizacionBusqueda['espaciado'] }} is-distribution-{{ $personalizacionBusqueda['distribucion'] }} is-rating-{{ $personalizacionBusqueda['apariencia_calificacion'] }} is-explanation-{{ $personalizacionBusqueda['apariencia_explicacion'] }}"
+                style="{{ $personalizacionBusqueda['estilo'] }}"
+            >
+            <script type="application/json" id="busquedaSemanticaConfiguracion">@json($personalizacionBusqueda)</script>
+            <div class="card busqueda-servicios-hero busqueda-semantica-hero mb-4">
                 <div class="card-body">
-                    <form method="GET" action="{{ route('cliente.buscar-servicios.index') }}">
-                        <input type="hidden" name="rubro_id" value="{{ $filtros['rubro_id'] }}">
-                        <input type="hidden" name="tipo_servicio_id" value="{{ $filtros['tipo_servicio_id'] }}">
-                        <div class="row g-3 align-items-end">
-                            <div class="col-lg-7">
-                                <label class="form-label">Que necesitas?</label>
-                                <div class="position-relative">
-                                    <input
-                                        type="text"
-                                        name="q"
-                                        value="{{ $filtros['q'] }}"
-                                        class="form-control ps-4"
-                                        placeholder="Ej: Reparacion de laptops, instalacion de camaras, plomeria..."
-                                    >
-                                    <i class="ri-search-line busqueda-servicios-search-icon text-muted"></i>
-                                </div>
-                            </div>
-
-                            <div class="col-sm-7 col-lg-3">
-                                <div class="form-check form-switch busqueda-location-switch mb-0">
-                                    <input
-                                        class="form-check-input js-busqueda-location-switch"
-                                        type="checkbox"
-                                        role="switch"
-                                        id="usar_ubicacion_actual"
-                                        name="usar_ubicacion_actual"
-                                        value="1"
-                                        @checked($filtros['usar_ubicacion_actual'])
-                                    >
-                                    <label class="form-check-label" for="usar_ubicacion_actual">
-                                        Usar mi ubicacion actual
-                                    </label>
-                                </div>
-                                <input type="hidden" name="latitud" id="busquedaLatitud" value="{{ $filtros['latitud'] }}">
-                                <input type="hidden" name="longitud" id="busquedaLongitud" value="{{ $filtros['longitud'] }}">
-                            </div>
-
-                            <div class="col-sm-5 col-lg-2">
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="ri-search-line align-bottom me-1"></i>
-                                    Buscar
+                    <form
+                        id="busquedaSemanticaForm"
+                        data-url="{{ route('cliente.buscar-servicios.semantica') }}"
+                        data-estado-url="{{ route('cliente.buscar-servicios.semantica.estado', ['ejecucion' => '__EJECUCION__']) }}"
+                        data-resultados-url="{{ route('cliente.buscar-servicios.semantica.resultados', ['ejecucion' => '__EJECUCION__']) }}"
+                        novalidate
+                    >
+                        <div class="mb-3">
+                            <label for="consultaSemantica" class="form-label fw-semibold">Describe el problema de tu equipo tecnologico</label>
+                            <div class="busqueda-semantica-input-group">
+                                <i class="ri-search-line text-muted" aria-hidden="true"></i>
+                                <input
+                                    type="text"
+                                    id="consultaSemantica"
+                                    name="consulta"
+                                    class="form-control"
+                                    maxlength="1000"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="Ej: Mi laptop enciende, pero la pantalla permanece negra"
+                                >
+                                <button type="submit" class="btn btn-primary" id="btnBusquedaSemantica">
+                                    <i class="ri-user-search-line align-bottom me-1"></i>
+                                    Buscar tecnicos
                                 </button>
+                            </div>
+                            <div class="invalid-feedback" data-busqueda-semantica-error></div>
+                        </div>
+
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-5">
+                                <div class="form-check form-switch busqueda-semantica-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="soloDisponibles" name="disponible" value="1">
+                                    <label class="form-check-label" for="soloDisponibles">Solo disponibles</label>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <label for="tipoAtencionSemantica" class="form-label">Tipo de atencion</label>
+                                <select class="form-select" id="tipoAtencionSemantica" name="tipo_atencion">
+                                    <option value="">Cualquier modalidad</option>
+                                    <option value="domicilio">Atencion a domicilio</option>
+                                    <option value="local">Atencion en local</option>
+                                </select>
                             </div>
                         </div>
                     </form>
                 </div>
+            </div>
+
+            <div id="busquedaSemanticaResultado" class="mb-4" aria-live="polite">
+                <div class="card busqueda-semantica-empty">
+                    <div class="card-body text-center py-4">
+                        <span class="avatar-md mx-auto mb-3">
+                            <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
+                                <i class="ri-radar-line fs-24"></i>
+                            </span>
+                        </span>
+                        <h5 class="mb-1">Encuentra al tecnico adecuado</h5>
+                        <p class="text-muted mb-0">Describe el problema con tus propias palabras y compararemos tu necesidad con proveedores verificados.</p>
+                    </div>
+                </div>
+            </div>
             </div>
 
             <div class="card busqueda-ia-panel mb-4">
@@ -101,8 +123,23 @@
                             </div>
 
                             <div class="col-lg-7">
-                                <label for="descripcionProblemaIA" class="form-label">Descripcion del problema <span class="text-danger">*</span></label>
+                                <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                                    <label for="descripcionProblemaIA" class="form-label mb-0">Descripcion del problema <span class="text-danger">*</span></label>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-soft-primary busqueda-voz-button"
+                                        id="btnDictarProblemaIA"
+                                        data-url="{{ route('cliente.buscar-servicios.transcribir') }}"
+                                        aria-controls="descripcionProblemaIA"
+                                    >
+                                        <i class="ri-mic-line align-bottom me-1"></i>
+                                        Dictar
+                                    </button>
+                                </div>
                                 <textarea class="form-control" id="descripcionProblemaIA" name="texto_problema" rows="3" minlength="10" maxlength="1000" required placeholder="Ej: Mi laptop enciende, pero despues de unos minutos se apaga y hace ruido el ventilador."></textarea>
+                                <div id="estadoDictadoProblemaIA" class="form-text busqueda-voz-status" aria-live="polite">
+                                    Puedes escribir o usar el microfono para completar la descripcion.
+                                </div>
                             </div>
 
                             <div class="col-md-4">

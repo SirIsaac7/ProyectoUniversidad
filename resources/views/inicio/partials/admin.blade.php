@@ -13,6 +13,11 @@
         'series' => $data['rendimientoCitas']['series'],
     ];
 
+    $calidadSistemaChart = [
+        'labels' => $data['calidadSistema']['labels'],
+        'series' => $data['calidadSistema']['series'],
+    ];
+
     $solicitudesChart = [
         'labels' => $data['solicitudesPorEstado']['labels'],
         'series' => $data['solicitudesPorEstado']['series']->toArray(),
@@ -152,6 +157,49 @@
                                     <p>Canceladas o vencidas</p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header align-items-center d-flex flex-wrap gap-2">
+            <div class="flex-grow-1">
+                <h5 class="card-title mb-1">Calidad operativa del sistema</h5>
+                <p class="text-muted mb-0">Comparativo mensual entre resultados favorables e incidencias durante {{ $data['calidadSistema']['anio'] }}.</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row g-3 align-items-center">
+                <div class="col-xl-8">
+                    <div
+                        class="inicio-admin-line-chart"
+                        data-inicio-admin-calidad-chart
+                        data-chart='@json($calidadSistemaChart)'
+                    ></div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="inicio-admin-quality-metric is-good">
+                        <span class="inicio-admin-quality-icon">
+                            <i class="ri-arrow-up-line"></i>
+                        </span>
+                        <div>
+                            <small>Buenas</small>
+                            <h3>{{ $data['calidadSistema']['totales']['buenas'] }}</h3>
+                            <p class="mb-0">{{ $data['calidadSistema']['tendencias']['buenas'] === 'sube' ? 'Tendencia verde al alza' : 'Tendencia verde estable / a la baja' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="inicio-admin-quality-metric is-bad mt-3">
+                        <span class="inicio-admin-quality-icon">
+                            <i class="ri-arrow-down-line"></i>
+                        </span>
+                        <div>
+                            <small>Malas</small>
+                            <h3>{{ $data['calidadSistema']['totales']['malas'] }}</h3>
+                            <p class="mb-0">{{ $data['calidadSistema']['tendencias']['malas'] === 'sube' ? 'Tendencia roja en aumento' : 'Tendencia roja controlada' }}</p>
                         </div>
                     </div>
                 </div>

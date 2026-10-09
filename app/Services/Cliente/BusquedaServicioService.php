@@ -30,6 +30,107 @@ class BusquedaServicioService
         ];
     }
 
+    public function proveedoresSemanticos(array $resultados): array
+    {
+        $idsOrdenados = collect($this->idsProveedoresSemanticos($resultados));
+        $resultadosPorId = collect($resultados)
+            ->filter(fn ($resultado) => is_array($resultado))
+            ->mapWithKeys(function (array $resultado) {
+                $documentId = trim((string) ($resultado['document_id'] ?? ''));
+
+                return preg_match('/^proveedor:([1-9][0-9]*)$/', $documentId, $coincidencias)
+                    ? [(int) $coincidencias[1] => $resultado]
+                    : [];
+            });
+
+        if ($idsOrdenados->isEmpty()) {
+            return [];
+        }
+
+        $proveedores = PerfilProveedor::query()
+            ->with([
+                'user:id,name,email,avatar',
+                'ubicacion',
+                'horarios' => fn ($query) => $query->where('estado', true)->orderBy('dia_semana')->orderBy('hora_inicio'),
+                'portafolio' => fn ($query) => $query->where('estado', true)->latest()->take(6),
+                'portafolio.imagenes' => fn ($query) => $query->where('estado', true),
+                'documentos' => fn ($query) => $query->where('estado', true)->where('estado_revision', 'aprobado'),
+                'documentos.tipoDocumentoProveedor:id,nombre,descripcion,obligatorio',
+                'proveedorEspecialidades.especialidad.rubroTipoServicio.rubro',
+                'proveedorEspecialidades.especialidad.rubroTipoServicio.tipoServicio',
+                'solicitudes.cita.calificacion',
+            ])
+            ->whereIn('id', $idsOrdenados)
+            ->where('estado', true)
+            ->where('estado_verificacion', 'aprobado')
+            ->whereHas('user', fn ($query) => $query->where('estado', true))
+            ->whereHas('proveedorEspecialidades', function ($query) {
+                $query->where('estado', true)
+                    ->whereHas('especialidad', fn ($especialidadQuery) => $especialidadQuery->where('estado', true));
+            })
+            ->get()
+            ->keyBy('id');
+
+        return $idsOrdenados
+            ->map(function (int $id) use ($proveedores, $resultadosPorId) {
+                $perfilProveedor = $proveedores->get($id);
+
+                if (! $perfilProveedor) {
+                    return null;
+                }
+
+                $proveedor = $this->mapearProveedor($perfilProveedor);
+                $calificaciones = $perfilProveedor->solicitudes
+                    ->map(fn ($solicitud) => $solicitud->cita?->calificacion)
+                    ->filter(fn ($calificacion) => $calificacion?->estado === 'visible');
+                $modalidades = $perfilProveedor->horarios
+                    ->where('estado', true)
+                    ->pluck('tipo_atencion')
+                    ->flatMap(fn ($tipo) => $tipo === 'mixto' ? ['domicilio', 'local'] : [$tipo])
+                    ->filter(fn ($tipo) => in_array($tipo, ['domicilio', 'local', 'remoto'], true))
+                    ->unique()
+                    ->map(fn ($tipo) => $this->tiposAtencion()[$tipo] ?? ucfirst($tipo))
+                    ->values()
+                    ->all();
+                $resultadoMotor = $resultadosPorId->get($id, []);
+                $explicacion = collect($resultadoMotor['explicacion'] ?? [])
+                    ->filter(fn ($motivo) => is_string($motivo) && filled($motivo))
+                    ->map(fn ($motivo) => Str::limit(trim($motivo), 240))
+                    ->take(8)
+                    ->values()
+                    ->all();
+
+                return array_merge($proveedor, [
+                    'calificacion' => $calificaciones->isEmpty() ? null : round((float) $calificaciones->avg('puntuacion'), 1),
+                    'total_calificaciones' => $calificaciones->count(),
+                    'modalidades_atencion' => $modalidades,
+                    'servicios_completados' => is_numeric($resultadoMotor['ranking']['servicios_completados'] ?? null)
+                        ? (int) $resultadoMotor['ranking']['servicios_completados']
+                        : null,
+                    'explicacion' => $explicacion,
+                ]);
+            })
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    public function idsProveedoresSemanticos(array $resultados): array
+    {
+        return collect($resultados)
+            ->map(function ($resultado) {
+                $documentId = is_array($resultado) ? trim((string) ($resultado['document_id'] ?? '')) : '';
+
+                return preg_match('/^proveedor:([1-9][0-9]*)$/', $documentId, $coincidencias)
+                    ? (int) $coincidencias[1]
+                    : null;
+            })
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
     public function busquedaInteligente(array $data): array
     {
         $respuestaIa = $this->consultarApiBusquedaInteligente($data);
@@ -86,6 +187,62 @@ class BusquedaServicioService
             'proveedores' => $proveedores,
             'total' => $proveedores->count(),
         ];
+    }
+
+    public function transcribirAudio(array $data): string
+    {
+        $archivo = $data['audio'] ?? null;
+        $url = (string) config('services.whisper.url');
+
+        if (! $archivo instanceof UploadedFile) {
+            throw new \RuntimeException('No se recibio una grabacion de voz valida.');
+        }
+
+        if (blank($url)) {
+            throw new \RuntimeException('No se configuro la URL de Whisper.');
+        }
+
+        try {
+            $response = Http::timeout((int) config('services.whisper.timeout', 120))
+                ->acceptJson()
+                ->attach(
+                    'file',
+                    file_get_contents($archivo->getRealPath()),
+                    $archivo->getClientOriginalName()
+                )
+                ->post($url, [
+                    'response_format' => 'json',
+                ]);
+        } catch (ConnectionException $exception) {
+            Log::error('No se pudo contactar con Whisper.', [
+                'url' => $url,
+                'message' => $exception->getMessage(),
+            ]);
+
+            throw new \RuntimeException('No se pudo conectar con Whisper. Verifica que el contenedor este iniciado.');
+        }
+
+        if (! $response->successful()) {
+            Log::warning('Whisper respondio con error.', [
+                'url' => $url,
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+
+            throw new \RuntimeException('Whisper no pudo procesar la grabacion.');
+        }
+
+        $json = $response->json();
+        $texto = is_array($json)
+            ? ($json['text'] ?? $json['transcription'] ?? '')
+            : $response->body();
+        $texto = trim((string) $texto);
+
+        if ($texto === '') {
+            throw new \RuntimeException('Whisper no detecto palabras en la grabacion.');
+        }
+
+        return $texto;
     }
 
     public function normalizarFiltros(array $filtros): array
@@ -185,24 +342,24 @@ class BusquedaServicioService
                 $texto = $filtros['q'];
 
                 $query->where(function ($subQuery) use ($texto) {
-                    $subQuery->where('nombre_publico', 'like', '%' . $texto . '%')
-                        ->orWhere('descripcion', 'like', '%' . $texto . '%')
+                    $subQuery->where('nombre_publico', 'like', '%'.$texto.'%')
+                        ->orWhere('descripcion', 'like', '%'.$texto.'%')
                         ->orWhereHas('proveedorEspecialidades.especialidad', function ($especialidadQuery) use ($texto) {
-                            $especialidadQuery->where('nombre', 'like', '%' . $texto . '%')
-                                ->orWhere('descripcion', 'like', '%' . $texto . '%')
+                            $especialidadQuery->where('nombre', 'like', '%'.$texto.'%')
+                                ->orWhere('descripcion', 'like', '%'.$texto.'%')
                                 ->orWhereHas('rubroTipoServicio.rubro', function ($rubroQuery) use ($texto) {
-                                    $rubroQuery->where('nombre', 'like', '%' . $texto . '%');
+                                    $rubroQuery->where('nombre', 'like', '%'.$texto.'%');
                                 })
                                 ->orWhereHas('rubroTipoServicio.tipoServicio', function ($tipoQuery) use ($texto) {
-                                    $tipoQuery->where('nombre', 'like', '%' . $texto . '%');
+                                    $tipoQuery->where('nombre', 'like', '%'.$texto.'%');
                                 });
                         });
                 });
             })
             ->when($filtros['zona'] !== '', function ($query) use ($filtros) {
                 $query->whereHas('ubicacion', function ($ubicacionQuery) use ($filtros) {
-                    $ubicacionQuery->where('zona', 'like', '%' . $filtros['zona'] . '%')
-                        ->orWhere('direccion', 'like', '%' . $filtros['zona'] . '%');
+                    $ubicacionQuery->where('zona', 'like', '%'.$filtros['zona'].'%')
+                        ->orWhere('direccion', 'like', '%'.$filtros['zona'].'%');
                 });
             })
             ->when($this->tieneFiltroUbicacionActual($filtros), function ($query) use ($filtros) {
@@ -338,10 +495,10 @@ class BusquedaServicioService
         $score = min(55, $coincidencias->count() * 9);
         $razones = $coincidencias
             ->take(4)
-            ->map(fn ($termino) => 'Coincide con "' . $termino . '"')
+            ->map(fn ($termino) => 'Coincide con "'.$termino.'"')
             ->all();
 
-        $nombreNormalizado = $this->normalizarTexto($perfilProveedor->user?->name . ' ' . $perfilProveedor->nombre_publico);
+        $nombreNormalizado = $this->normalizarTexto($perfilProveedor->user?->name.' '.$perfilProveedor->nombre_publico);
 
         if ($nombresExternos->contains(fn ($nombre) => Str::contains($nombreNormalizado, $nombre) || Str::contains($nombre, $nombreNormalizado))) {
             $score += 25;
@@ -472,18 +629,37 @@ class BusquedaServicioService
             'horarios' => $horarios,
             'resumen_horario' => $this->resumenHorario($horarios),
             'portafolio' => $perfilProveedor->portafolio
-                ->map(fn ($trabajo) => [
-                    'titulo' => $trabajo->titulo,
-                    'descripcion' => $trabajo->descripcion,
-                    'imagen' => $trabajo->imagenes->first()?->imagen,
-                    'fecha_trabajo' => $trabajo->fecha_trabajo?->format('d/m/Y'),
-                ])
+                ->map(function ($trabajo) {
+                    $imagenes = $trabajo->imagenes
+                        ->where('estado', true)
+                        ->map(fn ($imagen) => [
+                            'url' => $this->archivoPublicoUrl($imagen->imagen),
+                            'titulo' => $imagen->titulo,
+                            'descripcion' => $imagen->descripcion,
+                        ])
+                        ->filter(fn ($imagen) => filled($imagen['url']))
+                        ->values();
+
+                    return [
+                        'titulo' => $trabajo->titulo,
+                        'descripcion' => $trabajo->descripcion,
+                        'imagen' => $imagenes->first()['url'] ?? null,
+                        'imagenes' => $imagenes->all(),
+                        'total_imagenes' => $imagenes->count(),
+                        'fecha_trabajo' => $trabajo->fecha_trabajo?->format('d/m/Y'),
+                    ];
+                })
                 ->values(),
             'documentos' => $perfilProveedor->documentos
                 ->map(fn ($documento) => [
                     'nombre' => $documento->tipoDocumentoProveedor?->nombre ?? 'Documento',
                     'descripcion' => $documento->tipoDocumentoProveedor?->descripcion,
                     'obligatorio' => (bool) $documento->tipoDocumentoProveedor?->obligatorio,
+                    'archivo' => $documento->archivo,
+                    'archivo_url' => $this->archivoPublicoUrl($documento->archivo),
+                    'observacion' => $documento->observacion,
+                    'extension' => Str::lower(pathinfo((string) $documento->archivo, PATHINFO_EXTENSION)),
+                    'es_imagen' => $this->esArchivoImagen($documento->archivo),
                     'fecha_revision' => $documento->fecha_revision?->format('d/m/Y'),
                 ])
                 ->values(),
@@ -508,7 +684,7 @@ class BusquedaServicioService
             ->where('dia_semana', $diaActual)
             ->first(fn ($horario) => $horaActual >= $horario['hora_inicio'] && $horaActual <= $horario['hora_fin']);
         $proximoHorario = $horariosDisponibles
-            ->sortBy(fn ($horario) => (($horario['dia_semana'] - $diaActual + 7) % 7) . $horario['hora_inicio'])
+            ->sortBy(fn ($horario) => (($horario['dia_semana'] - $diaActual + 7) % 7).$horario['hora_inicio'])
             ->first();
 
         return [
@@ -516,7 +692,7 @@ class BusquedaServicioService
             'estado_texto' => filled($horarioActual) ? 'Disponible ahora' : 'No disponible ahora',
             'estado_ayuda' => filled($horarioActual) ? 'Puede atender solicitudes' : 'Puedes enviar tu solicitud para revision',
             'proximo_dia' => $proximoHorario['dia'] ?? 'Por confirmar',
-            'proximo_horario' => $proximoHorario ? $proximoHorario['hora_inicio'] . ' - ' . $proximoHorario['hora_fin'] : 'Sin horario',
+            'proximo_horario' => $proximoHorario ? $proximoHorario['hora_inicio'].' - '.$proximoHorario['hora_fin'] : 'Sin horario',
             'total_disponibles' => $horariosDisponibles->count(),
             'total_horarios' => $horarios->count(),
         ];
@@ -543,5 +719,25 @@ class BusquedaServicioService
             6 => 'Sabado',
             7 => 'Domingo',
         ][$dia] ?? 'Dia no definido';
+    }
+
+    protected function archivoPublicoUrl(?string $ruta): ?string
+    {
+        if (blank($ruta)) {
+            return null;
+        }
+
+        if (Str::startsWith($ruta, ['http://', 'https://', '/'])) {
+            return $ruta;
+        }
+
+        return asset($ruta);
+    }
+
+    protected function esArchivoImagen(?string $ruta): bool
+    {
+        $extension = Str::lower(pathinfo((string) $ruta, PATHINFO_EXTENSION));
+
+        return in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg'], true);
     }
 }

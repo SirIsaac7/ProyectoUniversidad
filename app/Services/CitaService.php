@@ -181,13 +181,13 @@ class CitaService
         ]);
 
         if ($estadoAnterior !== $nuevoEstado) {
-            $this->sincronizarSolicitudPorEstadoCita(
+            $solicitudSincronizada = $this->sincronizarSolicitudPorEstadoCita(
                 $cita->solicitud,
                 $nuevoEstado,
                 $data['observaciones'] ?? null
             );
 
-            if (! in_array($nuevoEstado, ['en_atencion', 'completada'], true)) {
+            if (! $solicitudSincronizada) {
                 $this->registrarEventoSolicitud(
                     $cita->solicitud,
                     'Estado de cita actualizado a ' . str_replace('_', ' ', $nuevoEstado)
@@ -220,46 +220,33 @@ class CitaService
 
     public function cancelar(Cita $cita, ?string $observaciones = null): Cita
     {
-        $cita->update([
+        return $this->actualizarDesdeProveedor($cita, [
             'estado' => 'cancelada',
-            'observaciones' => $observaciones ?: $cita->observaciones,
+            'observaciones' => $observaciones ?: 'Cita cancelada',
         ]);
-
-        $this->historialSolicitudService->registrar(
-            $cita->solicitud,
-            $cita->solicitud->estado,
-            $cita->solicitud->estado,
-            $observaciones ?: 'Cita cancelada'
-        );
-
-        $cita->load('solicitud.cliente');
-
-        if ($cita->solicitud?->cliente) {
-            $this->notificacionService->citaActualizadaParaCliente(
-                cliente: $cita->solicitud->cliente,
-                estado: 'cancelada',
-                url: route('cliente.solicitudes.index', ['tab' => 'citas'])
-            );
-        }
-
-        return $cita;
     }
 
     protected function sincronizarSolicitudPorEstadoCita(
         Solicitud $solicitud,
         string $estadoCita,
         ?string $comentario = null
-    ): void {
+    ): bool {
         $nuevoEstadoSolicitud = match ($estadoCita) {
+            'programada' => 'aceptada',
+            'en_atencion' => 'en_proceso',
             'completada' => 'finalizada',
+            'cancelada' => 'rechazada',
+            'no_asistio', 'vencida' => 'cancelada',
             default => null,
         };
 
         if (! $nuevoEstadoSolicitud || $solicitud->estado === $nuevoEstadoSolicitud) {
-            return;
+            return false;
         }
 
         $this->actualizarEstadoSolicitud($solicitud, $nuevoEstadoSolicitud, $comentario);
+
+        return true;
     }
 
     protected function actualizarEstadoSolicitud(

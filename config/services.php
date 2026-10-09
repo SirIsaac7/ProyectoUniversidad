@@ -55,5 +55,17 @@ return [
     'timeout' => env('BUSQUEDA_INTELIGENTE_TIMEOUT', 30),
     ],
 
+    'whisper' => [
+    'url' => env('WHISPER_API_URL', 'http://127.0.0.1:8095/inference'),
+    'timeout' => env('WHISPER_API_TIMEOUT', 120),
+    ],
+
+    'motor_busqueda' => [
+    'url' => env('MOTOR_BUSQUEDA_URL', 'http://127.0.0.1:8010'),
+    'key' => env('MOTOR_BUSQUEDA_KEY'),
+    'connect_timeout' => env('MOTOR_BUSQUEDA_CONNECT_TIMEOUT', 5),
+    'timeout' => env('MOTOR_BUSQUEDA_TIMEOUT', 60),
+    ],
+
 
 ];
