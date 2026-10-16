@@ -5,7 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Exceptions\MotorBusquedaException;
 use App\Models\EjecucionIndexacionMotor;
 use App\Models\User;
-use App\Services\Admin\MotorAdministracionService;
+use App\Services\BusquedaInteligente\Administracion\MotorAdministracionService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Mockery;
 use Spatie\Permission\Models\Permission;

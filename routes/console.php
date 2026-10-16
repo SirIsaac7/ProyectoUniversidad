@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\ConfiguracionBackup;
-use App\Services\BackupService;
+use App\Services\Backups\BackupService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Process;

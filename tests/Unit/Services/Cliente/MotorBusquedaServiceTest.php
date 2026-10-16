@@ -3,7 +3,7 @@
 namespace Tests\Unit\Services\Cliente;
 
 use App\Exceptions\MotorBusquedaException;
-use App\Services\Cliente\MotorBusquedaService;
+use App\Services\BusquedaInteligente\MotorBusquedaService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\DataProvider;

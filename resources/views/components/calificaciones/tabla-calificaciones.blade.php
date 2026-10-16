@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Calificacion;
-use App\Services\CalificacionService;
+use App\Services\Calificaciones\CalificacionService;
 use Livewire\Component;
 use Livewire\WithPagination;
 

@@ -241,7 +241,7 @@
 
     @if (! empty($data['resumenCalificaciones']))
         <div class="inicio-calificaciones-graficas mt-3">
-            @include('proveedor.calificaciones.partials.graficas', [
+            @include('calificaciones.proveedor.partials.graficas', [
                 'resumenCalificaciones' => $data['resumenCalificaciones'],
             ])
         </div>

@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Solicitud;
-use App\Services\SolicitudService;
+use App\Services\Solicitudes\SolicitudService;
 use Livewire\Component;
 use Livewire\WithPagination;
 

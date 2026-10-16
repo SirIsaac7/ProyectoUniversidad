@@ -4,8 +4,8 @@ namespace Tests\Feature\Console;
 
 use App\Exceptions\MotorBusquedaException;
 use App\Models\EjecucionIndexacionMotor;
-use App\Services\Admin\ConfiguracionIndexacionMotorService;
-use App\Services\Admin\MotorIndexacionService;
+use App\Services\BusquedaInteligente\Administracion\ConfiguracionIndexacionMotorService;
+use App\Services\BusquedaInteligente\Administracion\MotorIndexacionService;
 use Mockery;
 use Tests\TestCase;
 

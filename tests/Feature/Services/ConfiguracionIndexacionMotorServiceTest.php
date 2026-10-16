@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Services;
 
-use App\Services\Admin\ConfiguracionIndexacionMotorService;
+use App\Services\BusquedaInteligente\Administracion\ConfiguracionIndexacionMotorService;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;

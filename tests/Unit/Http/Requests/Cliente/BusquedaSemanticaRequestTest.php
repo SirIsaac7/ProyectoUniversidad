@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Http\Requests\Cliente;
 
-use App\Http\Requests\Cliente\BusquedaSemanticaRequest;
+use App\Http\Requests\BusquedaInteligente\Publica\BusquedaSemanticaRequest;
 use Illuminate\Support\Facades\Validator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;

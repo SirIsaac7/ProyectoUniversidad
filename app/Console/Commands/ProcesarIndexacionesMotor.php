@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Exceptions\MotorBusquedaException;
-use App\Services\Admin\ConfiguracionIndexacionMotorService;
-use App\Services\Admin\MotorIndexacionService;
+use App\Services\BusquedaInteligente\Administracion\ConfiguracionIndexacionMotorService;
+use App\Services\BusquedaInteligente\Administracion\MotorIndexacionService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Throwable;

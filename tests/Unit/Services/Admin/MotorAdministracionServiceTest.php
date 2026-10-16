@@ -4,9 +4,9 @@ namespace Tests\Unit\Services\Admin;
 
 use App\Models\EjecucionIndexacionMotor;
 use App\Models\User;
-use App\Services\Admin\MotorAdministracionService;
-use App\Services\Admin\MotorIndexacionService;
-use App\Services\Cliente\MotorBusquedaService;
+use App\Services\BusquedaInteligente\Administracion\MotorAdministracionService;
+use App\Services\BusquedaInteligente\Administracion\MotorIndexacionService;
+use App\Services\BusquedaInteligente\MotorBusquedaService;
 use Mockery;
 use Tests\TestCase;
 

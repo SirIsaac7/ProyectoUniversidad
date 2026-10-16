@@ -1,6 +1,6 @@
 <?php
 
-use App\Services\Cliente\BusquedaServicioService;
+use App\Services\BusquedaInteligente\Publica\BusquedaServicioService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -195,7 +195,7 @@ new class extends Component
                     </div>
                 </div>
 
-                @include('cliente.busqueda-servicios.partials.modal-proveedor', ['proveedor' => $proveedor, 'tiposAtencion' => $tiposAtencion])
+                @include('busqueda-inteligente.publica.partials.modal-proveedor', ['proveedor' => $proveedor, 'tiposAtencion' => $tiposAtencion])
             @empty
                 <div class="card proveedores-resultados-empty">
                     <div class="card-body text-center py-5">

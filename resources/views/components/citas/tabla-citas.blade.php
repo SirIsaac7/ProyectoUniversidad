@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Cita;
-use App\Services\CitaService;
+use App\Services\Citas\CitaService;
 use Livewire\Component;
 use Livewire\WithPagination;
 

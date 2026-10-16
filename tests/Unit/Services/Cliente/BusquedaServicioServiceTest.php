@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Services\Cliente;
 
-use App\Services\Cliente\BusquedaServicioService;
+use App\Services\BusquedaInteligente\Publica\BusquedaServicioService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;

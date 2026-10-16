@@ -21,7 +21,7 @@ use App\Models\TipoDocumentoProveedor;
 use App\Models\TipoServicio;
 use App\Models\UbicacionProveedor;
 use App\Models\User;
-use App\Services\CalificacionService;
+use App\Services\Calificaciones\CalificacionService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;

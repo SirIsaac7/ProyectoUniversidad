@@ -3,8 +3,8 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\User;
-use App\Services\Admin\ConfiguracionBusquedaVisualService;
-use App\Services\Admin\MotorAdministracionService;
+use App\Services\BusquedaInteligente\Administracion\ConfiguracionBusquedaVisualService;
+use App\Services\BusquedaInteligente\Administracion\MotorAdministracionService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Mockery;
 use Spatie\Permission\Models\Permission;

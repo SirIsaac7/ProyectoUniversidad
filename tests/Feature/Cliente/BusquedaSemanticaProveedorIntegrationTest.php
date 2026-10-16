@@ -9,7 +9,7 @@ use App\Models\Rubro;
 use App\Models\RubroTipoServicio;
 use App\Models\TipoServicio;
 use App\Models\User;
-use App\Services\Cliente\BusquedaServicioService;
+use App\Services\BusquedaInteligente\Publica\BusquedaServicioService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Str;
 use Tests\TestCase;
