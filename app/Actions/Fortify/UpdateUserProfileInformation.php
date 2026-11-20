@@ -32,17 +32,13 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             ],
             'celular' => ['nullable', 'digits:8'],
             'fecha_nacimiento' => ['nullable', 'date', 'before_or_equal:' . now()->subYears(18)->format('Y-m-d')],
-            'recibe_notificaciones_whatsapp' => ['nullable', 'boolean'],
         ])->validateWithBag('updateProfileInformation');
 
         $celular = $input['celular'] ?? null;
-        $celularCambio = $celular !== $user->celular;
 
         $datosContacto = [
             'celular' => $celular,
-            'celular_verificado_at' => $celularCambio ? null : $user->celular_verificado_at,
             'fecha_nacimiento' => $input['fecha_nacimiento'] ?? null,
-            'recibe_notificaciones_whatsapp' => (bool) ($input['recibe_notificaciones_whatsapp'] ?? false),
         ];
 
         if ($input['email'] !== $user->email &&

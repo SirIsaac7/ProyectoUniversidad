@@ -3,13 +3,17 @@
         'color_primario' => 'Principal',
         'color_secundario' => 'Secundario',
         'color_boton' => 'Botones',
-        'color_fondo' => 'Fondo',
         'color_indicador' => 'Indicadores',
         'color_fase_completada' => 'Fases completadas',
         'color_fase_actual' => 'Fase actual',
         'color_informativo' => 'Mensajes informativos',
         'color_error' => 'Errores',
         'color_destacado' => 'Elementos destacados',
+    ];
+    $coloresPodio = [
+        'color_primer_lugar' => 'Primer lugar',
+        'color_segundo_lugar' => 'Segundo lugar',
+        'color_tercer_lugar' => 'Tercer lugar',
     ];
     $etiquetasFases = [
         'iniciando' => 'Iniciando',
@@ -60,6 +64,65 @@
                                     <div class="row g-3">
                                         @foreach ($coloresBusqueda as $campo => $etiqueta)
                                             <div class="col-sm-6">
+                                                <label class="form-label" for="{{ $campo }}">{{ $etiqueta }}</label>
+                                                <div class="motor-color-control">
+                                                    <input
+                                                        type="color"
+                                                        class="form-control form-control-color @error($campo) is-invalid @enderror"
+                                                        id="{{ $campo }}"
+                                                        name="{{ $campo }}"
+                                                        value="{{ old($campo, $personalizacionBusqueda->{$campo}) }}"
+                                                        data-personalizacion-field="{{ $campo }}"
+                                                    >
+                                                    <code data-color-value="{{ $campo }}">{{ old($campo, $personalizacionBusqueda->{$campo}) }}</code>
+                                                </div>
+                                                @error($campo)<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#personalizacionPodio">Podio de resultados</button>
+                            </h2>
+                            <div id="personalizacionPodio" class="accordion-collapse collapse" data-bs-parent="#personalizacionAccordion">
+                                <div class="accordion-body">
+                                    <div class="form-check form-switch mb-3">
+                                        <input type="hidden" name="destacar_podio" value="0">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            role="switch"
+                                            id="destacarPodio"
+                                            name="destacar_podio"
+                                            value="1"
+                                            data-personalizacion-field="destacar_podio"
+                                            @checked((bool) old('destacar_podio', $personalizacionBusqueda->destacar_podio))
+                                        >
+                                        <label class="form-check-label" for="destacarPodio">Distinguir visualmente los tres primeros resultados</label>
+                                    </div>
+
+                                    <div class="form-check form-switch mb-3">
+                                        <input type="hidden" name="animar_podio" value="0">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            role="switch"
+                                            id="animarPodio"
+                                            name="animar_podio"
+                                            value="1"
+                                            data-personalizacion-field="animar_podio"
+                                            @checked((bool) old('animar_podio', $personalizacionBusqueda->animar_podio))
+                                        >
+                                        <label class="form-check-label" for="animarPodio">Animar partículas de las tarjetas destacadas</label>
+                                    </div>
+
+                                    <div class="row g-3">
+                                        @foreach ($coloresPodio as $campo => $etiqueta)
+                                            <div class="col-md-4">
                                                 <label class="form-label" for="{{ $campo }}">{{ $etiqueta }}</label>
                                                 <div class="motor-color-control">
                                                     <input
@@ -232,7 +295,7 @@
                         </div>
                         <div
                             id="vistaPreviaBusqueda"
-                            class="motor-search-preview is-card-{{ $personalizacionCliente['diseno_tarjetas'] }} is-spacing-{{ $personalizacionCliente['espaciado'] }}"
+                                class="motor-search-preview is-card-{{ $personalizacionCliente['diseno_tarjetas'] }} is-spacing-{{ $personalizacionCliente['espaciado'] }} {{ $personalizacionCliente['destacar_podio'] ? 'is-podium-enabled' : '' }} {{ $personalizacionCliente['destacar_podio'] && $personalizacionCliente['animar_podio'] ? 'is-podium-animated' : '' }}"
                             style="{{ $personalizacionCliente['estilo'] }}"
                         >
                             <div class="motor-preview-search">
@@ -250,15 +313,22 @@
                                 <span class="is-complete"><i class="ri-check-line"></i>Consulta recibida</span>
                                 <span class="is-current"><i class="ri-loader-4-line"></i>Buscando proveedores</span>
                             </div>
-                            <article class="motor-preview-provider">
-                                <div class="motor-preview-avatar">TC</div>
-                                <div class="flex-grow-1">
-                                    <small>Proveedor de demostración</small>
-                                    <h5>TecnoConexión Demo</h5>
-                                    <div class="motor-preview-rating"><i class="ri-star-fill"></i> 4.8 (24)</div>
-                                    <p class="motor-preview-explanation">Recomendado porque su especialidad coincide con el problema descrito.</p>
-                                </div>
-                            </article>
+                            <div class="motor-preview-ranking">
+                                @foreach ([
+                                    1 => ['is-ranking-first', '1.er lugar', 'TC', 'TecnoConexión Demo', '4.9'],
+                                    2 => ['is-ranking-second', '2.º lugar', 'JS', 'JM Soluciones', '4.8'],
+                                    3 => ['is-ranking-third', '3.er lugar', 'TS', 'TecnoSoluciones', '4.7'],
+                                ] as [$clase, $puesto, $iniciales, $nombre, $calificacion])
+                                    <article class="motor-preview-provider {{ $clase }}">
+                                        <div class="motor-preview-avatar">{{ $iniciales }}</div>
+                                        <div class="flex-grow-1 min-w-0">
+                                            <small>{{ $puesto }}</small>
+                                            <h5 class="mb-1 text-truncate">{{ $nombre }}</h5>
+                                            <div class="motor-preview-rating"><i class="ri-star-fill"></i> {{ $calificacion }}</div>
+                                        </div>
+                                    </article>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>

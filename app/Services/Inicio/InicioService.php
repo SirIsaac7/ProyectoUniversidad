@@ -130,7 +130,6 @@ class InicioService
             'especialidadesTop' => $this->getEspecialidadesTopAdmin(),
             'proveedoresMapa' => $this->getProveedoresMapaAdmin(),
             'backup' => $this->getBackupAdmin(),
-            'evolutionApi' => $this->getEvolutionApiAdmin(),
             'busquedaInteligente' => $this->getBusquedaInteligenteAdmin(),
             'actividadReciente' => $this->getActividadRecienteAdmin(),
         ];
@@ -401,63 +400,6 @@ class InicioService
         ];
     }
 
-    private function getEvolutionApiAdmin(): array
-    {
-        $config = config('services.evolution_api');
-
-        if (! ($config['enabled'] ?? false)) {
-            return [
-                'estado' => 'inactivo',
-                'mensaje' => 'Evolution API esta desactivado en el sistema.',
-                'detalle' => 'EVOLUTION_API_ENABLED=false',
-                'clase' => 'secondary',
-            ];
-        }
-
-        if (blank($config['url'] ?? null) || blank($config['key'] ?? null) || blank($config['instance'] ?? null)) {
-            return [
-                'estado' => 'incompleto',
-                'mensaje' => 'Faltan variables de entorno para Evolution API.',
-                'detalle' => 'Revisa URL, API KEY e instancia.',
-                'clase' => 'warning',
-            ];
-        }
-
-        try {
-            $response = Http::timeout(3)
-                ->withHeaders([
-                    'apikey' => $config['key'],
-                ])
-                ->get(rtrim($config['url'], '/') . '/instance/connectionState/' . $config['instance']);
-
-            if (! $response->successful()) {
-                return [
-                    'estado' => 'error',
-                    'mensaje' => 'Evolution API responde, pero no confirma la instancia.',
-                    'detalle' => 'HTTP ' . $response->status(),
-                    'clase' => 'danger',
-                ];
-            }
-
-            $estado = strtolower((string) data_get($response->json(), 'instance.state', data_get($response->json(), 'state', 'desconocido')));
-            $conectado = in_array($estado, ['open', 'connected'], true);
-
-            return [
-                'estado' => $conectado ? 'conectado' : $estado,
-                'mensaje' => $conectado ? 'WhatsApp esta conectado y listo para enviar.' : 'La instancia existe, pero no esta conectada.',
-                'detalle' => 'Instancia: ' . $config['instance'],
-                'clase' => $conectado ? 'success' : 'warning',
-            ];
-        } catch (\Throwable $e) {
-            return [
-                'estado' => 'sin conexion',
-                'mensaje' => 'No se pudo contactar con Evolution API.',
-                'detalle' => $e->getMessage(),
-                'clase' => 'danger',
-            ];
-        }
-    }
-
     private function getBusquedaInteligenteAdmin(): array
     {
         $config = config('services.busqueda_inteligente');
@@ -466,7 +408,7 @@ class InicioService
         if (blank($url)) {
             return [
                 'estado' => 'incompleto',
-                'mensaje' => 'No se configuro la URL de la busqueda inteligente.',
+                'mensaje' => 'No se configuró la URL del reconocimiento de imágenes.',
                 'detalle' => 'Revisa BUSQUEDA_INTELIGENTE_URL.',
                 'clase' => 'warning',
             ];
@@ -480,7 +422,7 @@ class InicioService
             if (in_array($response->status(), [200, 405, 422], true)) {
                 return [
                     'estado' => 'activo',
-                    'mensaje' => 'La API de busqueda inteligente esta disponible.',
+                    'mensaje' => 'La red neuronal de reconocimiento de imágenes está disponible.',
                     'detalle' => 'Endpoint: ' . $url,
                     'clase' => 'success',
                 ];
@@ -488,14 +430,14 @@ class InicioService
 
             return [
                 'estado' => 'error',
-                'mensaje' => 'La API de busqueda inteligente respondio con error.',
+                'mensaje' => 'La API de reconocimiento de imágenes respondió con error.',
                 'detalle' => 'HTTP ' . $response->status(),
                 'clase' => 'danger',
             ];
         } catch (\Throwable $e) {
             return [
                 'estado' => 'sin conexion',
-                'mensaje' => 'No se pudo contactar con la busqueda inteligente.',
+                'mensaje' => 'No se pudo contactar con la red neuronal de reconocimiento de imágenes.',
                 'detalle' => $e->getMessage(),
                 'clase' => 'danger',
             ];

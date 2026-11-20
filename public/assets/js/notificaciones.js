@@ -34,6 +34,7 @@ function inicializarNotificacionesTiempoReal() {
         .notification(function (notificacion) {
             mostrarToastNotificacion(notificacion);
             cargarNotificaciones();
+            window.dispatchEvent(new CustomEvent('notificacion:recibida', { detail: notificacion }));
         });
 }
 

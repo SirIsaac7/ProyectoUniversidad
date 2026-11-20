@@ -42,14 +42,6 @@ return [
     'maps_api_key' => env('GOOGLE_MAPS_API_KEY'),
     ],
 
-    'evolution_api' => [
-    'enabled' => env('EVOLUTION_API_ENABLED', false),
-    'url' => env('EVOLUTION_API_URL', 'http://127.0.0.1:8080'),
-    'key' => env('EVOLUTION_API_KEY'),
-    'instance' => env('EVOLUTION_API_INSTANCE'),
-    'timeout' => env('EVOLUTION_API_TIMEOUT', 15),
-    ],
-
     'busqueda_inteligente' => [
     'url' => env('BUSQUEDA_INTELIGENTE_URL', 'http://127.0.0.1:8002/busqueda_inteligente'),
     'timeout' => env('BUSQUEDA_INTELIGENTE_TIMEOUT', 30),

@@ -1,7 +1,6 @@
 @php
     $resumen = $data['resumen'];
     $backup = $data['backup'];
-    $evolutionApi = $data['evolutionApi'];
 
     $modulosChart = [
         'labels' => $data['modulos']['labels'],
@@ -245,33 +244,13 @@
 
             <div class="card mt-3">
                 <div class="card-body">
-                    <div class="d-flex align-items-start gap-3">
-                        <span class="inicio-admin-backup-icon bg-{{ $evolutionApi['clase'] }}-subtle text-{{ $evolutionApi['clase'] }}">
-                            <i class="ri-whatsapp-line"></i>
-                        </span>
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
-                                <h5 class="mb-0">Evolution API</h5>
-                                <span class="badge bg-{{ $evolutionApi['clase'] }}-subtle text-{{ $evolutionApi['clase'] }} text-capitalize">
-                                    {{ $evolutionApi['estado'] }}
-                                </span>
-                            </div>
-                            <p class="text-muted mb-1">{{ $evolutionApi['mensaje'] }}</p>
-                            <small class="text-muted">{{ $evolutionApi['detalle'] }}</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mt-3">
-                <div class="card-body">
-                    <div class="d-flex align-items-start gap-3">
+                    <div class="d-flex align-items-start gap-3 inicio-admin-service-status">
                         <span class="inicio-admin-backup-icon bg-{{ $data['busquedaInteligente']['clase'] }}-subtle text-{{ $data['busquedaInteligente']['clase'] }}">
                             <i class="ri-brain-line"></i>
                         </span>
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
-                                <h5 class="mb-0">Busqueda Inteligente</h5>
+                        <div class="flex-grow-1 inicio-admin-service-content">
+                            <div class="d-flex align-items-center justify-content-between gap-2 mb-1 inicio-admin-service-heading">
+                                <h5 class="mb-0">Reconocimiento de imágenes para Motor de Búsqueda</h5>
                                 <span class="badge bg-{{ $data['busquedaInteligente']['clase'] }}-subtle text-{{ $data['busquedaInteligente']['clase'] }} text-capitalize">
                                     {{ $data['busquedaInteligente']['estado'] }}
                                 </span>

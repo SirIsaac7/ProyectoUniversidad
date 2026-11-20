@@ -29,3 +29,16 @@
     object-fit: cover;
     flex-shrink: 0;
 }
+
+@media (max-width: 575.98px) {
+    .rubro-image-current .card-body {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .rubro-image-current-preview {
+        width: 100%;
+        height: auto;
+        max-height: 220px;
+    }
+}

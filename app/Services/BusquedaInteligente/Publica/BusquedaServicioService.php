@@ -189,6 +189,24 @@ class BusquedaServicioService
         ];
     }
 
+    public function analizarImagenConGemini(UploadedFile $imagen): array
+    {
+        $respuesta = $this->consultarApiBusquedaInteligente([
+            'imagen' => $imagen,
+            'texto_problema' => 'Describe el equipo y los posibles problemas tecnicos visibles en la imagen.',
+            'modo_clasificacion' => 'gemini',
+            'usar_ubicacion' => false,
+        ]);
+
+        return [
+            'texto' => $this->descripcionBusquedaDesdeImagen($respuesta),
+            'tipo_dispositivo' => $respuesta['tipo_dispositivo'] ?? null,
+            'marca' => $respuesta['marca'] ?? null,
+            'confianza' => $respuesta['confianza'] ?? null,
+            'modo_usado' => $respuesta['modo_usado'] ?? 'gemini',
+        ];
+    }
+
     public function transcribirAudio(array $data): string
     {
         $archivo = $data['audio'] ?? null;
@@ -441,6 +459,46 @@ class BusquedaServicioService
         }
 
         return $json;
+    }
+
+    protected function descripcionBusquedaDesdeImagen(array $respuesta): string
+    {
+        $tipoDispositivo = trim((string) ($respuesta['tipo_dispositivo'] ?? ''));
+        $marca = trim((string) ($respuesta['marca'] ?? ''));
+        $palabrasClave = is_array($respuesta['palabras_clave'] ?? null)
+            ? $respuesta['palabras_clave']
+            : [];
+        $problemas = collect($palabrasClave['problemas'] ?? [])
+            ->filter(fn ($valor) => is_string($valor) && filled(trim($valor)))
+            ->map(fn ($valor) => trim($valor))
+            ->unique()
+            ->values();
+        $componentes = collect($palabrasClave['componentes'] ?? [])
+            ->filter(fn ($valor) => is_string($valor) && filled(trim($valor)))
+            ->map(fn ($valor) => trim($valor))
+            ->unique()
+            ->values();
+
+        if ($tipoDispositivo === '' && $marca === '' && $problemas->isEmpty() && $componentes->isEmpty()) {
+            throw new \RuntimeException('La red neuronal no pudo identificar informacion util en la imagen.');
+        }
+
+        $equipo = trim(implode(' ', array_filter([$tipoDispositivo, $marca])));
+        $partes = [
+            $equipo !== ''
+                ? 'Necesito servicio tecnico para '.$equipo.'.'
+                : 'Necesito diagnostico y servicio tecnico para el equipo de la imagen.',
+        ];
+
+        if ($problemas->isNotEmpty()) {
+            $partes[] = 'La imagen muestra posibles problemas relacionados con '.$problemas->implode(', ').'.';
+        }
+
+        if ($componentes->isNotEmpty()) {
+            $partes[] = 'Los componentes relacionados son '.$componentes->implode(', ').'.';
+        }
+
+        return implode(' ', $partes);
     }
 
     protected function terminosBusquedaInteligente(array $respuestaIa, string $textoProblema): array

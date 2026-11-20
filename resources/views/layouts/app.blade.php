@@ -67,6 +67,7 @@
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/responsive.bootstrap.min.js"></script>
     @auth
+        @can('ver mis notificaciones')
         <script>
             window.usuarioAutenticadoId = @json(auth()->id());
             window.notificacionesRutas = {
@@ -84,6 +85,7 @@
         <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
         <script src="{{ asset('assets/js/notificaciones.js') }}"></script>
+        @endcan
     @endauth
     @stack('scripts')
     @livewireScripts

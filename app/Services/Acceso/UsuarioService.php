@@ -24,7 +24,6 @@ class UsuarioService
             'email' => $data['email'],
             'celular' => $data['celular'] ?? null,
             'fecha_nacimiento' => $data['fecha_nacimiento'] ?? null,
-            'recibe_notificaciones_whatsapp' => (bool) ($data['recibe_notificaciones_whatsapp'] ?? false),
             'avatar' => $avatar,
             'password' => $data['password'],
             'estado' => $data['estado'],
@@ -33,16 +32,13 @@ class UsuarioService
 
     public function updateUsuario(User $usuario, array $data): User
     {
-        $celularCambio = ($data['celular'] ?? null) !== $usuario->celular;
         $avatar = $this->guardarAvatar($data['avatar'] ?? null, $usuario->avatar);
 
         $usuario->update([
             'name' => $data['name'],
             'email' => $data['email'],
             'celular' => $data['celular'] ?? null,
-            'celular_verificado_at' => $celularCambio ? null : $usuario->celular_verificado_at,
             'fecha_nacimiento' => $data['fecha_nacimiento'] ?? null,
-            'recibe_notificaciones_whatsapp' => (bool) ($data['recibe_notificaciones_whatsapp'] ?? false),
             'avatar' => $avatar ?? $usuario->avatar,
         ]);
 

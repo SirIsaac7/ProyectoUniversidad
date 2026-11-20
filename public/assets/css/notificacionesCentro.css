@@ -1,0 +1,193 @@
+.min-w-0 {
+    min-width: 0;
+}
+
+.notification-summary-card,
+.notification-center-card {
+    border: 1px solid var(--vz-border-color);
+}
+
+.notification-center-layout {
+    display: grid;
+    grid-template-columns: minmax(210px, 250px) minmax(0, 1fr);
+    min-height: 520px;
+}
+
+.notification-filter-panel {
+    background: var(--vz-secondary-bg);
+}
+
+.notification-filter-nav .nav-link {
+    color: var(--vz-body-color);
+    border-radius: .45rem;
+    padding: .65rem .75rem;
+}
+
+.notification-filter-nav .nav-link:hover {
+    background: rgba(var(--vz-primary-rgb), .08);
+}
+
+.notification-filter-nav .nav-link.active {
+    color: var(--vz-primary);
+    background: rgba(var(--vz-primary-rgb), .14);
+    font-weight: 600;
+}
+
+.notification-filter-nav .badge {
+    color: inherit;
+    background: rgba(var(--vz-secondary-rgb), .12);
+}
+
+.notification-list-panel {
+    overflow: hidden;
+}
+
+.notification-bulk-select {
+    width: min(100%, 210px);
+}
+
+.notification-table-wrap {
+    overflow-x: auto;
+}
+
+.notification-table {
+    min-width: 820px;
+}
+
+.notification-table thead th {
+    white-space: nowrap;
+    background: var(--vz-secondary-bg);
+}
+
+.notification-table > tbody > tr.notification-unread > td {
+    background: rgba(var(--vz-primary-rgb), .055);
+}
+
+.notification-table > tbody > tr:hover > td {
+    background: rgba(var(--vz-primary-rgb), .075);
+}
+
+.notification-check-column {
+    width: 44px;
+    text-align: center;
+}
+
+.notification-message-cell {
+    min-width: 270px;
+    max-width: 520px;
+}
+
+.notification-message {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.notification-actions form {
+    margin: 0;
+}
+
+@media (max-width: 991.98px) {
+    .notification-center-layout {
+        display: block;
+    }
+
+    .notification-filter-panel {
+        display: none;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .notification-search-form .btn {
+        min-height: 38px;
+    }
+
+    .notification-table-wrap {
+        overflow: visible;
+        padding: .75rem;
+    }
+
+    .notification-table,
+    .notification-table tbody,
+    .notification-table tr,
+    .notification-table td {
+        display: block;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .notification-table thead {
+        display: none;
+    }
+
+    .notification-table tbody {
+        display: grid;
+        gap: .75rem;
+    }
+
+    .notification-table > tbody > tr {
+        position: relative;
+        padding: 1rem;
+        border: 1px solid var(--vz-border-color);
+        border-radius: .65rem;
+        background: var(--vz-card-bg);
+    }
+
+    .notification-table > tbody > tr > td {
+        padding: .4rem 0;
+        border: 0;
+        background: transparent !important;
+        text-align: left !important;
+    }
+
+    .notification-table > tbody > tr > td[data-label]:not(.notification-check-column)::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: .2rem;
+        color: var(--vz-secondary-color);
+        font-size: .7rem;
+        font-weight: 600;
+        letter-spacing: .035em;
+        text-transform: uppercase;
+    }
+
+    .notification-table .notification-check-column {
+        position: absolute;
+        top: .75rem;
+        right: .75rem;
+        width: auto;
+        padding: 0;
+        z-index: 1;
+    }
+
+    .notification-message-cell {
+        min-width: 0;
+        max-width: none;
+        padding-right: 1.5rem;
+    }
+
+    .notification-actions .d-inline-flex {
+        display: flex !important;
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 420px) {
+    .notification-summary-card .card-body {
+        padding: .8rem;
+        gap: .5rem !important;
+    }
+
+    .notification-summary-card .avatar-sm {
+        display: none;
+    }
+
+    .notification-bulk-bar {
+        align-items: stretch !important;
+    }
+
+    .notification-bulk-bar > * {
+        width: 100% !important;
+    }
+}

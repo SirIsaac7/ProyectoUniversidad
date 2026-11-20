@@ -151,7 +151,6 @@ new class extends Component
                     <th>Nombre</th>
                     <th>Correo</th>
                     <th>Celular</th>
-                    <th>WhatsApp</th>
                     <th>Acceso</th>
                     <th>Verificado</th>
                     <th>Estado</th>
@@ -189,18 +188,6 @@ new class extends Component
                         <td><span class="fw-semibold">{{ $usuario->name }}</span></td>
                         <td>{{ $usuario->email }}</td>
                         <td>{{ $usuario->celular ?: 'Sin celular' }}</td>
-                        <td>
-                            @if ($usuario->recibe_notificaciones_whatsapp && $usuario->celular && $usuario->celular_verificado_at)
-                                <span class="badge bg-success-subtle text-success">Activo</span>
-                            @elseif ($usuario->recibe_notificaciones_whatsapp)
-                                <span class="badge bg-warning-subtle text-warning">
-                                    {{ $usuario->celular ? 'Sin verificar' : 'Sin celular' }}
-                                </span>
-                            @else
-                                <span class="badge bg-secondary-subtle text-secondary">No</span>
-                            @endif
-                        </td>
-
                         <td>
                             @if ($usuario->google_id)
                                 <span class="badge bg-danger-subtle text-danger">Google</span>

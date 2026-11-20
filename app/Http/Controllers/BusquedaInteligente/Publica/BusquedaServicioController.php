@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BusquedaInteligente\Publica;
 
 use App\Exceptions\MotorBusquedaException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BusquedaInteligente\Publica\AnalizarImagenRequest;
 use App\Http\Requests\BusquedaInteligente\Publica\BusquedaInteligenteRequest;
 use App\Http\Requests\BusquedaInteligente\Publica\BusquedaSemanticaRequest;
 use App\Http\Requests\BusquedaInteligente\Publica\TranscribirAudioRequest;
@@ -132,6 +133,25 @@ class BusquedaServicioController extends Controller
             return response()->json([
                 'ok' => false,
                 'mensaje' => $exception->getMessage() ?: 'No se pudo completar la busqueda inteligente.',
+            ], 422);
+        }
+    }
+
+    public function analizarImagen(AnalizarImagenRequest $request)
+    {
+        try {
+            return response()->json([
+                'ok' => true,
+                'data' => $this->busquedaServicioService->analizarImagenConGemini(
+                    $request->file('imagen')
+                ),
+            ]);
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'ok' => false,
+                'mensaje' => $exception->getMessage() ?: 'No se pudo analizar la imagen.',
             ], 422);
         }
     }

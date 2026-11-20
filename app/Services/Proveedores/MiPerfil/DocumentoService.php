@@ -5,15 +5,16 @@ namespace App\Services\Proveedores\MiPerfil;
 use App\Models\DocumentoProveedor;
 use App\Models\PerfilProveedor;
 use App\Models\TipoDocumentoProveedor;
+use App\Services\Notificaciones\NotificacionService;
 use App\Services\Proveedores\DocumentoProveedorService;
 use Illuminate\Database\Eloquent\Collection;
 
 class DocumentoService
 {
     public function __construct(
-        protected DocumentoProveedorService $documentoProveedorService
-    ) {
-    }
+        protected DocumentoProveedorService $documentoProveedorService,
+        protected NotificacionService $notificacionService
+    ) {}
 
     public function getPerfilActual(): PerfilProveedor
     {
@@ -58,19 +59,27 @@ class DocumentoService
 
     public function subirActual(array $data): DocumentoProveedor
     {
-        return $this->documentoProveedorService->createForPerfil(
+        $documento = $this->documentoProveedorService->createForPerfil(
             $this->getPerfilActual()->id,
             $data
         );
+
+        $this->notificarAdministradores($documento);
+
+        return $documento;
     }
 
     public function actualizarActual(DocumentoProveedor $documentoProveedor, array $data): DocumentoProveedor
     {
-        return $this->documentoProveedorService->updateForPerfil(
+        $documento = $this->documentoProveedorService->updateForPerfil(
             $documentoProveedor,
             $this->getPerfilActual()->id,
             $data
         );
+
+        $this->notificarAdministradores($documento, true);
+
+        return $documento;
     }
 
     public function eliminarActual(DocumentoProveedor $documentoProveedor): void
@@ -100,5 +109,19 @@ class DocumentoService
                 ];
             })
             ->all();
+    }
+
+    private function notificarAdministradores(DocumentoProveedor $documento, bool $actualizado = false): void
+    {
+        $documento->loadMissing('perfilProveedor.user', 'tipoDocumentoProveedor');
+
+        $this->notificacionService->documentoPendienteParaAdministradores(
+            proveedor: $documento->perfilProveedor?->nombre_publico
+                ?? $documento->perfilProveedor?->user?->name
+                ?? 'Un proveedor',
+            tipoDocumento: $documento->tipoDocumentoProveedor?->nombre ?? 'sin tipo',
+            actualizado: $actualizado,
+            url: route('documentos-proveedor.index')
+        );
     }
 }

@@ -5,9 +5,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    const puedeConsultar = panel.dataset.puedeConsultar.trim() === '1';
-    const puedeIndexar = panel.dataset.puedeIndexar.trim() === '1';
-    let identificadorActivo = panel.dataset.identificadorActivo.trim();
+    const puedeConsultar = (panel.dataset.puedeConsultar || '').trim() === '1';
+    const puedeIndexar = (panel.dataset.puedeIndexar || '').trim() === '1';
+    let identificadorActivo = (panel.dataset.identificadorActivo || '').trim();
     let pollingTimer = null;
     let consultandoProgreso = false;
 
@@ -36,13 +36,15 @@ document.addEventListener('DOMContentLoaded', function () {
             color_primario: '--busqueda-primary',
             color_secundario: '--busqueda-secondary',
             color_boton: '--busqueda-button',
-            color_fondo: '--busqueda-background',
             color_indicador: '--busqueda-indicator',
             color_fase_completada: '--busqueda-phase-complete',
             color_fase_actual: '--busqueda-phase-current',
             color_informativo: '--busqueda-info',
             color_error: '--busqueda-error',
-            color_destacado: '--busqueda-highlight'
+            color_destacado: '--busqueda-highlight',
+            color_primer_lugar: '--busqueda-rank-first',
+            color_segundo_lugar: '--busqueda-rank-second',
+            color_tercer_lugar: '--busqueda-rank-third'
         };
 
         form.querySelectorAll('[data-personalizacion-field]').forEach(function (field) {
@@ -54,9 +56,31 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         document.querySelector('[data-restaurar-personalizacion]')?.addEventListener('submit', function (event) {
-            if (!window.confirm('¿Restaurar todos los valores visuales predeterminados?')) {
-                event.preventDefault();
+            event.preventDefault();
+
+            const form = event.currentTarget;
+
+            if (typeof Swal === 'undefined') {
+                form.submit();
+                return;
             }
+
+            Swal.fire({
+                title: '¿Restaurar valores?',
+                text: 'Se reemplazará la personalización actual por los valores predeterminados.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, restaurar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#f06548',
+                cancelButtonColor: '#6c757d',
+                reverseButtons: true,
+                focusCancel: true
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
 
         actualizarVistaPrevia();
@@ -79,6 +103,11 @@ document.addEventListener('DOMContentLoaded', function () {
             preview.style.setProperty('--busqueda-radius', limitarNumero(form.elements.radio_bordes?.value, 0, 24, 12) + 'px');
             preview.className = 'motor-search-preview is-card-' + form.elements.diseno_tarjetas.value
                 + ' is-spacing-' + form.elements.espaciado.value;
+            preview.classList.toggle('is-podium-enabled', Boolean(form.elements.destacar_podio?.checked));
+            preview.classList.toggle(
+                'is-podium-animated',
+                Boolean(form.elements.destacar_podio?.checked && form.elements.animar_podio?.checked)
+            );
 
             const animation = preview.querySelector('[data-preview-animation]');
             animation.className = 'busqueda-animation is-' + form.elements.animacion.value;
@@ -95,11 +124,11 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('actualizarEstadoMotor')?.addEventListener('click', consultarEstadoServicios);
     document.getElementById('iniciarIndexacionMotor')?.addEventListener('click', confirmarIndexacion);
 
-    if (puedeConsultar) {
+    if (puedeConsultar && panel.dataset.estadoUrl) {
         consultarEstadoServicios();
     }
 
-    if (identificadorActivo && puedeConsultar) {
+    if (identificadorActivo && puedeConsultar && panel.dataset.seguimientoUrl) {
         activarSeguimiento(identificadorActivo);
     } else if (identificadorActivo) {
         actualizarBotonIndexacion(true);
@@ -118,6 +147,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function consultarEstadoServicios() {
+        if (!panel.dataset.estadoUrl) {
+            return;
+        }
+
         const button = document.getElementById('actualizarEstadoMotor');
         setServiciosCargando(true);
         setButtonLoading(button, true, 'Actualizando');
@@ -164,6 +197,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function iniciarIndexacion() {
+        if (!panel.dataset.indexacionUrl) {
+            return;
+        }
+
         const button = document.getElementById('iniciarIndexacionMotor');
         setButtonLoading(button, true, 'Solicitando');
 
@@ -207,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function consultarProgreso() {
-        if (!identificadorActivo || consultandoProgreso || !puedeConsultar) {
+        if (!identificadorActivo || consultandoProgreso || !puedeConsultar || !panel.dataset.seguimientoUrl) {
             return;
         }
 

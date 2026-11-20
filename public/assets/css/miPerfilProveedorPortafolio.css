@@ -454,6 +454,38 @@
 @media (max-width: 767.98px) {
     .mi-portafolio-add-btn,
     .mi-portafolio-search {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .mi-portafolio-grid {
+        padding-right: 0;
+        overflow-x: visible;
+    }
+
+    .mi-portafolio-card-body {
+        padding: 12px;
+    }
+
+    .mi-portafolio-card-body h5,
+    .mi-portafolio-card-body p {
+        display: block;
+        min-height: 0;
+        overflow: visible;
+        line-clamp: unset;
+        -webkit-line-clamp: unset;
+        overflow-wrap: anywhere;
+    }
+
+    .mi-portafolio-card-body > .d-flex:last-child {
+        align-items: flex-start !important;
+        flex-direction: column;
+    }
+
+    .mi-portafolio-actions {
+        flex-wrap: wrap;
         width: 100%;
     }
 }

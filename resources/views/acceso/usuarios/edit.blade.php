@@ -144,26 +144,6 @@
                         </div>
                     </div>
 
-                    <div class="form-check form-switch mb-4">
-                        <input
-                            class="form-check-input @error('recibe_notificaciones_whatsapp') is-invalid @enderror"
-                            type="checkbox"
-                            role="switch"
-                            id="recibe_notificaciones_whatsapp"
-                            name="recibe_notificaciones_whatsapp"
-                            value="1"
-                            @checked(old('recibe_notificaciones_whatsapp', $usuario->recibe_notificaciones_whatsapp))
-                        >
-                        <label class="form-check-label" for="recibe_notificaciones_whatsapp">
-                            Recibir notificaciones por WhatsApp
-                        </label>
-                        @error('recibe_notificaciones_whatsapp')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @else
-                            <div class="form-text">Solo se enviaran mensajes si el usuario tiene celular registrado.</div>
-                        @enderror
-                    </div>
-
                     <div class="d-flex justify-content-end gap-2">
                         <a href="{{ route('usuarios.index') }}" class="btn btn-light">Cancelar</a>
                         <button type="submit" class="btn btn-primary">

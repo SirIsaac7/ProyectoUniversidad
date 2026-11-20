@@ -6,8 +6,7 @@
         var(--vz-card-bg);
 }
 
-.motor-overview-icon,
-.motor-service-icon {
+.motor-overview-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -23,10 +22,18 @@
     font-size: 30px;
 }
 
-.motor-service-icon {
+.motor-service-image {
+    display: block;
     width: 48px;
     height: 48px;
-    font-size: 23px;
+    flex: 0 0 48px;
+}
+
+.motor-service-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .motor-service-card {
@@ -316,15 +323,19 @@
 .motor-preview-sticky {
     position: sticky;
     top: 84px;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .motor-search-preview {
     display: grid;
+    min-width: 0;
+    max-width: 100%;
     gap: 16px;
     padding: 20px;
     border: 1px solid color-mix(in srgb, var(--busqueda-primary) 28%, transparent);
     border-radius: var(--busqueda-radius);
-    background: var(--busqueda-background);
+    background: var(--vz-card-bg);
     color: var(--vz-body-color);
     font-family: var(--busqueda-font);
 }
@@ -366,6 +377,26 @@
     background: var(--vz-card-bg);
 }
 
+.motor-preview-processing > div:last-child,
+.motor-preview-provider > div:last-child,
+.motor-preview-ranking {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.motor-preview-processing > div:last-child,
+.motor-preview-provider > div:last-child {
+    flex: 1 1 0;
+    width: 0;
+}
+
+.motor-preview-processing strong,
+.motor-preview-processing p,
+.motor-preview-provider h5 {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
 .motor-preview-processing strong,
 .motor-preview-provider h5 {
     font-size: var(--busqueda-title-size);
@@ -399,7 +430,103 @@
 }
 
 .motor-preview-provider {
-    border: 1px solid color-mix(in srgb, var(--busqueda-highlight) 30%, transparent);
+    border: 1px solid color-mix(in srgb, var(--vz-border-color) 68%, rgba(255, 255, 255, .5));
+    background: color-mix(in srgb, var(--vz-card-bg) 74%, transparent);
+    -webkit-backdrop-filter: blur(16px) saturate(135%);
+    backdrop-filter: blur(16px) saturate(135%);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, .09), inset 0 1px 0 rgba(255, 255, 255, .36);
+}
+
+.motor-preview-ranking {
+    display: grid;
+    gap: 10px;
+}
+
+.motor-search-preview.is-podium-enabled .motor-preview-provider:is(.is-ranking-first, .is-ranking-second, .is-ranking-third) {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 2px solid var(--podium-card-color);
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--podium-card-color) 17%, rgba(255, 255, 255, .72)), rgba(255, 255, 255, .52) 48%, color-mix(in srgb, var(--podium-card-color) 13%, rgba(255, 255, 255, .5)));
+    -webkit-backdrop-filter: blur(18px) saturate(145%);
+    backdrop-filter: blur(18px) saturate(145%);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, .11), inset 0 1px 0 rgba(255, 255, 255, .68);
+}
+
+.motor-search-preview.is-podium-enabled .motor-preview-provider:is(.is-ranking-first, .is-ranking-second, .is-ranking-third)::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(112deg, rgba(255, 255, 255, .26), transparent 30%, transparent 70%, color-mix(in srgb, var(--podium-card-color) 10%, transparent));
+    pointer-events: none;
+}
+
+.motor-search-preview.is-podium-enabled .motor-preview-provider:is(.is-ranking-first, .is-ranking-second, .is-ranking-third) > * {
+    position: relative;
+    z-index: 1;
+}
+
+.motor-search-preview.is-podium-enabled.is-podium-animated .motor-preview-provider:is(.is-ranking-first, .is-ranking-second, .is-ranking-third)::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    inset: -18%;
+    border-radius: inherit;
+    background:
+        radial-gradient(circle at 12% 82%, color-mix(in srgb, var(--podium-card-color) 72%, transparent) 0 2px, transparent 3px),
+        radial-gradient(circle at 27% 34%, color-mix(in srgb, var(--podium-card-color) 55%, transparent) 0 3px, transparent 4px),
+        radial-gradient(circle at 44% 73%, rgba(255, 255, 255, .52) 0 2px, transparent 3px),
+        radial-gradient(circle at 61% 25%, color-mix(in srgb, var(--podium-card-color) 65%, transparent) 0 2px, transparent 3px),
+        radial-gradient(circle at 77% 64%, rgba(255, 255, 255, .42) 0 3px, transparent 4px),
+        radial-gradient(circle at 91% 38%, color-mix(in srgb, var(--podium-card-color) 60%, transparent) 0 2px, transparent 3px);
+    opacity: .72;
+    pointer-events: none;
+    animation: podiumPreviewGlassParticles 6.5s ease-in-out infinite alternate;
+}
+
+.motor-search-preview.is-podium-enabled .motor-preview-provider.is-ranking-first {
+    --podium-card-color: var(--busqueda-rank-first);
+}
+
+.motor-search-preview.is-podium-enabled .motor-preview-provider.is-ranking-second {
+    --podium-card-color: var(--busqueda-rank-second);
+}
+
+.motor-search-preview.is-podium-enabled .motor-preview-provider.is-ranking-third {
+    --podium-card-color: var(--busqueda-rank-third);
+}
+
+.motor-search-preview.is-podium-enabled .motor-preview-provider.is-ranking-second::before {
+    animation-delay: -2.1s;
+}
+
+.motor-search-preview.is-podium-enabled .motor-preview-provider.is-ranking-third::before {
+    animation-delay: -4.2s;
+}
+
+@keyframes podiumPreviewGlassParticles {
+    from {
+        transform: translate3d(-1%, 5%, 0) scale(.98);
+    }
+
+    to {
+        transform: translate3d(2%, -6%, 0) scale(1.03);
+    }
+}
+
+[data-bs-theme="dark"] .motor-search-preview.is-podium-enabled .motor-preview-provider:is(.is-ranking-first, .is-ranking-second, .is-ranking-third) {
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--podium-card-color) 18%, rgba(5, 20, 34, .74)), rgba(5, 20, 34, .56) 48%, color-mix(in srgb, var(--podium-card-color) 12%, rgba(5, 20, 34, .62)));
+    box-shadow: 0 16px 34px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255, 255, 255, .13);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .motor-search-preview.is-podium-animated .motor-preview-provider::before {
+        animation: none;
+    }
 }
 
 .motor-preview-avatar {
@@ -511,7 +638,21 @@
 }
 
 @media (max-width: 575.98px) {
+    .motor-search-preview {
+        padding: 16px;
+    }
+
     .motor-preview-search {
         flex-direction: column;
+    }
+
+    .motor-preview-search button {
+        width: 100%;
+    }
+
+    .motor-preview-processing,
+    .motor-preview-provider {
+        padding: 12px;
+        gap: 10px;
     }
 }

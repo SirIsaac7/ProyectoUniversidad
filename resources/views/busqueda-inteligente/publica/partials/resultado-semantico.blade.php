@@ -15,8 +15,19 @@
             @php
                 $modalKey = $proveedor['id'] . 'Semantica';
                 $disponible = $proveedor['resumen_horario']['disponible_ahora'] ?? false;
+                $claseRanking = ($personalizacionBusqueda['destacar_podio'] ?? false)
+                    ? match ($loop->iteration) {
+                        1 => 'is-ranking-first',
+                        2 => 'is-ranking-second',
+                        3 => 'is-ranking-third',
+                        default => '',
+                    }
+                    : '';
+                $claseAnimacionPodio = $claseRanking !== '' && ($personalizacionBusqueda['animar_podio'] ?? false)
+                    ? 'is-ranking-animated'
+                    : '';
             @endphp
-            <article class="card proveedor-search-card proveedor-search-card-horizontal proveedor-search-card--reveal" style="--card-delay: {{ $loop->index * 70 }}ms;">
+            <article class="card proveedor-search-card proveedor-search-card-horizontal proveedor-search-card--reveal {{ $claseRanking }} {{ $claseAnimacionPodio }}" style="--card-delay: {{ $loop->index * 70 }}ms;">
                 <div class="proveedor-search-personal-photo">
                     @if ($proveedor['foto_personal'])
                         <img src="{{ $proveedor['foto_personal'] }}" alt="{{ $proveedor['nombre_persona'] }}">

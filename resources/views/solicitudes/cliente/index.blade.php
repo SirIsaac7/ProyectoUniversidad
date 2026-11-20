@@ -32,16 +32,16 @@
         <div class="d-none" id="solicitudes-success-message" data-message="{{ session('success') }}"></div>
     @endif
 
-    <div class="row g-3 mb-3">
+    <div class="row g-3 mb-3 solicitudes-cliente-stats">
         @foreach ($estadisticas as $estadistica)
-            <div class="col-sm-6 col-xl-3">
+            <div class="col-sm-6 col-xl-3 solicitudes-cliente-stat-col">
                 <div class="card solicitud-stat-card h-100">
                     <div class="card-body">
-                        <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center solicitud-stat-content">
                             <span class="solicitud-stat-icon bg-{{ $estadistica['color'] }}-subtle text-{{ $estadistica['color'] }}">
                                 <i class="{{ $estadistica['icono'] }}"></i>
                             </span>
-                            <div>
+                            <div class="solicitud-stat-copy min-w-0">
                                 <h3 class="mb-1">{{ $estadistica['valor'] }}</h3>
                                 <div class="fw-semibold text-body">{{ $estadistica['titulo'] }}</div>
                                 <small class="text-muted">{{ $estadistica['texto'] }}</small>

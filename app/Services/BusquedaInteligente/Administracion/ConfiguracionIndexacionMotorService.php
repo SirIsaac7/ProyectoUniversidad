@@ -13,15 +13,13 @@ class ConfiguracionIndexacionMotorService
 
     public function configuracion(): ConfiguracionIndexacionMotor
     {
-        return ConfiguracionIndexacionMotor::firstOrCreate(
-            ['id' => 1],
-            [
+        return ConfiguracionIndexacionMotor::query()->oldest('id')->first()
+            ?? ConfiguracionIndexacionMotor::create([
                 'activo' => false,
                 'frecuencia' => 'diario',
                 'hora_ejecucion' => '02:00:00',
                 'zona_horaria' => 'America/La_Paz',
-            ],
-        );
+            ]);
     }
 
     public function actualizar(array $data): ConfiguracionIndexacionMotor

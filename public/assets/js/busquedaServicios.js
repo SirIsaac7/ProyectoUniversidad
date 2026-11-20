@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function () {
     initProveedorDetailSelectors();
     initBusquedaScrollButtons();
     initBusquedaSemantica();
+    initAnalisisImagenGemini();
+    initDictadoProblemaIA();
     initBusquedaInteligente();
     cargarZonasSolicitudLaPaz();
 
@@ -195,12 +197,15 @@ function initBusquedaSemantica() {
         renderProcesamientoBusquedaSemantica({ fase: 'iniciando', historial_fases: [] }, configuracion);
 
         try {
+            const formData = new FormData(form);
+            formData.delete('imagen_analisis');
+
             const data = await solicitarBusquedaSemantica(form.dataset.url, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
                 },
-                body: new FormData(form)
+                body: formData
             });
 
             if (ciclo !== cicloActivo) return;
@@ -440,6 +445,108 @@ function renderEstadoBusquedaSemantica(tipo, titulo, mensaje) {
     container.replaceChildren(card);
 }
 
+function initAnalisisImagenGemini() {
+    const container = document.querySelector('[data-analisis-imagen]');
+
+    if (!container || container.dataset.inicializado === 'true') {
+        return;
+    }
+
+    container.dataset.inicializado = 'true';
+
+    const input = container.querySelector('[data-analisis-imagen-input]');
+    const preview = container.querySelector('[data-analisis-imagen-preview]');
+    const thumbnail = container.querySelector('[data-analisis-imagen-thumb]');
+    const fileName = container.querySelector('[data-analisis-imagen-nombre]');
+    const status = container.querySelector('[data-analisis-imagen-estado]');
+    const spinner = container.querySelector('[data-analisis-imagen-spinner]');
+    const consulta = document.getElementById('consultaSemantica');
+    let previewUrl = null;
+    let requestId = 0;
+
+    input?.addEventListener('change', async function () {
+        const image = this.files?.[0];
+
+        if (!image) {
+            return;
+        }
+
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(image.type)) {
+            this.value = '';
+            mostrarAlertaBusquedaInteligente('Formato no permitido', 'Selecciona una imagen JPG, PNG o WEBP.', 'error');
+            return;
+        }
+
+        if (image.size > 8 * 1024 * 1024) {
+            this.value = '';
+            mostrarAlertaBusquedaInteligente('Imagen demasiado grande', 'La imagen no debe superar los 8MB.', 'error');
+            return;
+        }
+
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
+
+        previewUrl = URL.createObjectURL(image);
+        thumbnail.src = previewUrl;
+        fileName.textContent = image.name;
+        status.textContent = 'Analizando la imagen...';
+        status.className = 'small text-muted';
+        preview.classList.remove('d-none');
+        spinner.classList.remove('d-none');
+        input.disabled = true;
+
+        const currentRequest = ++requestId;
+        const formData = new FormData();
+        formData.append('imagen', image);
+
+        try {
+            const response = await fetch(container.dataset.url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+            const data = await response.json().catch(function () {
+                return {};
+            });
+
+            if (!response.ok || !data.ok) {
+                const validationMessage = Object.values(data.errors || {}).flat()[0];
+                throw new Error(validationMessage || data.mensaje || 'No se pudo analizar la imagen.');
+            }
+
+            if (currentRequest !== requestId) {
+                return;
+            }
+
+            consulta.value = data.data?.texto || '';
+            consulta.dispatchEvent(new Event('input', { bubbles: true }));
+            consulta.dispatchEvent(new Event('change', { bubbles: true }));
+            consulta.classList.remove('is-invalid');
+
+            status.textContent = 'El reconocimiento completó la descripción. Puedes editarla antes de buscar.';
+            status.className = 'small text-success';
+            consulta.focus();
+        } catch (error) {
+            if (currentRequest !== requestId) {
+                return;
+            }
+
+            status.textContent = error.message || 'No se pudo analizar la imagen.';
+            status.className = 'small text-danger';
+            mostrarAlertaBusquedaInteligente('No se pudo analizar la foto', status.textContent, 'error');
+        } finally {
+            if (currentRequest === requestId) {
+                spinner.classList.add('d-none');
+                input.disabled = false;
+            }
+        }
+    });
+}
+
 function initBusquedaInteligente() {
     const form = document.getElementById('busquedaInteligenteForm');
 
@@ -495,10 +602,10 @@ function initBusquedaInteligente() {
 
 function initDictadoProblemaIA() {
     const button = document.getElementById('btnDictarProblemaIA');
-    const textarea = document.getElementById('descripcionProblemaIA');
+    const input = document.getElementById('consultaSemantica');
     const status = document.getElementById('estadoDictadoProblemaIA');
 
-    if (!button || !textarea || button.dataset.inicializado === 'true') {
+    if (!button || !input || !status || button.dataset.inicializado === 'true') {
         return;
     }
 
@@ -548,7 +655,7 @@ function initDictadoProblemaIA() {
                     return;
                 }
 
-                await transcribirAudioWhisper(textarea, button, status, audio);
+                await transcribirAudioWhisper(input, button, status, audio);
             }, { once: true });
 
             recorder.addEventListener('error', function () {
@@ -591,7 +698,7 @@ function liberarMicrofono(stream) {
     });
 }
 
-async function transcribirAudioWhisper(textarea, button, status, audio) {
+async function transcribirAudioWhisper(input, button, status, audio) {
     const formData = new FormData();
     const token = document.querySelector('meta[name="csrf-token"]')?.content;
     const extension = audio.type.includes('ogg') ? 'ogg' : (audio.type.includes('mp4') ? 'mp4' : 'webm');
@@ -620,13 +727,13 @@ async function transcribirAudioWhisper(textarea, button, status, audio) {
             throw new Error(validationMessage || data.mensaje || 'No se pudo transcribir el audio.');
         }
 
-        const textoActual = textarea.value.trim();
+        const textoActual = input.value.trim();
         const textoTranscrito = String(data.texto || '').trim();
         const textoCompleto = [textoActual, textoTranscrito].filter(Boolean).join(' ').slice(0, 1000);
 
-        textarea.value = textoCompleto;
-        textarea.dispatchEvent(new Event('input', { bubbles: true }));
-        textarea.focus();
+        input.value = textoCompleto;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.focus();
         setEstadoDictado(button, status, 'idle', 'Transcripcion completada. Puedes editar el texto antes de buscar.');
     } catch (error) {
         setEstadoDictado(button, status, 'idle', error.message);

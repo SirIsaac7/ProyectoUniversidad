@@ -3,10 +3,15 @@
 namespace App\Services\Proveedores;
 
 use App\Models\DocumentoProveedor;
+use App\Services\Notificaciones\NotificacionService;
 use Illuminate\Http\UploadedFile;
 
 class DocumentoProveedorService
 {
+    public function __construct(
+        protected NotificacionService $notificacionService
+    ) {}
+
     public function create(array $data): DocumentoProveedor
     {
         $documentoProveedor = DocumentoProveedor::where('perfil_proveedor_id', $data['perfil_proveedor_id'])
@@ -44,6 +49,7 @@ class DocumentoProveedorService
     public function update(DocumentoProveedor $documentoProveedor, array $data): DocumentoProveedor
     {
         $archivo = $documentoProveedor->archivo;
+        $estadoRevisionAnterior = $documentoProveedor->estado_revision;
 
         if (! empty($data['archivo'])) {
             $this->deleteFile($documentoProveedor->archivo);
@@ -60,7 +66,22 @@ class DocumentoProveedorService
             'estado' => $data['estado'] ?? $documentoProveedor->estado,
         ]);
 
-        return $documentoProveedor->load('perfilProveedor.user', 'tipoDocumentoProveedor');
+        $documentoProveedor->load('perfilProveedor.user', 'tipoDocumentoProveedor');
+
+        if (
+            $estadoRevisionAnterior !== $documentoProveedor->estado_revision
+            && in_array($documentoProveedor->estado_revision, ['aprobado', 'rechazado'], true)
+            && $documentoProveedor->perfilProveedor?->user
+        ) {
+            $this->notificacionService->documentoRevisadoParaProveedor(
+                proveedor: $documentoProveedor->perfilProveedor->user,
+                tipoDocumento: $documentoProveedor->tipoDocumentoProveedor?->nombre ?? 'sin tipo',
+                estado: $documentoProveedor->estado_revision,
+                url: route('mi-perfil-proveedor.documentos.index')
+            );
+        }
+
+        return $documentoProveedor;
     }
 
     public function updateForPerfil(DocumentoProveedor $documentoProveedor, int $perfilProveedorId, array $data): DocumentoProveedor
@@ -124,11 +145,11 @@ class DocumentoProveedorService
             mkdir($directorio, 0777, true);
         }
 
-        $nombreArchivo = now()->format('Ymd_His_u') . '_' . str()->slug($nombre) . '.' . $file->getClientOriginalExtension();
+        $nombreArchivo = now()->format('Ymd_His_u').'_'.str()->slug($nombre).'.'.$file->getClientOriginalExtension();
 
         $file->move($directorio, $nombreArchivo);
 
-        return 'uploads/documentos-proveedor/' . $nombreArchivo;
+        return 'uploads/documentos-proveedor/'.$nombreArchivo;
     }
 
     protected function deleteFile(?string $ruta): void

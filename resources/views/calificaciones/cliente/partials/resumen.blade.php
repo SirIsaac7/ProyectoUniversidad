@@ -1,10 +1,10 @@
 <div class="card calificacion-summary-card mb-3">
     <div class="card-body">
-        <div class="row g-0 align-items-center text-center">
+        <div class="row g-0 align-items-md-center text-center cliente-calificaciones-summary-row">
             <div class="col-md-2 calificacion-summary-block">
                 <p class="text-muted mb-1">Calificación promedio</p>
                 <h2 class="mb-1">{{ number_format($resumenCalificaciones['promedio'], 1) }}</h2>
-                <div class="calificacion-stars fs-18">★★★★★</div>
+                <div class="calificacion-stars calificacion-summary-stars">★★★★★</div>
                 <small class="text-muted">({{ $resumenCalificaciones['total'] }} calificaciones)</small>
             </div>
 

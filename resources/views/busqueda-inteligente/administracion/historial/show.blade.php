@@ -33,7 +33,7 @@
                 <h4 class="mb-1">Detalle de indexación #{{ $ejecucion->id }}</h4>
                 <p class="text-muted mb-0">Información permanente registrada por Laravel.</p>
             </div>
-            <a href="{{ route('motor-busqueda.index') }}" class="btn btn-light">
+            <a href="{{ route('motor-busqueda.historial.index') }}" class="btn btn-light">
                 <i class="ri-arrow-left-line align-bottom me-1"></i>Volver al panel
             </a>
         </div>

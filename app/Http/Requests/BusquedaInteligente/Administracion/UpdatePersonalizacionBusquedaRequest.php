@@ -19,13 +19,15 @@ class UpdatePersonalizacionBusquedaRequest extends FormRequest
             'color_primario',
             'color_secundario',
             'color_boton',
-            'color_fondo',
             'color_indicador',
             'color_fase_completada',
             'color_fase_actual',
             'color_informativo',
             'color_error',
             'color_destacado',
+            'color_primer_lugar',
+            'color_segundo_lugar',
+            'color_tercer_lugar',
         ];
         $reglas = [];
 
@@ -34,6 +36,8 @@ class UpdatePersonalizacionBusquedaRequest extends FormRequest
         }
 
         $reglas += [
+            'destacar_podio' => ['required', 'boolean'],
+            'animar_podio' => ['required', 'boolean'],
             'familia_tipografica' => ['required', Rule::in(['system', 'inter', 'poppins', 'roboto', 'arial'])],
             'tamano_titulos' => ['required', 'integer', 'between:18,36'],
             'tamano_mensajes' => ['required', 'integer', 'between:12,20'],

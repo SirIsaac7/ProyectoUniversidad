@@ -26,7 +26,22 @@
         <div class="container-fluid">
             <div id="two-column-menu"></div>
             <ul class="navbar-nav" id="navbar-nav">
-                <li class="menu-title"><span>Menu</span></li>
+                @php
+                    $usuarioActual = auth()->user();
+                    $puedeVerMiPerfilProveedor = $usuarioActual->can('visualizar perfil proveedor');
+                    $puedeVerAdministracionProveedores = ! $usuarioActual->hasRole('PROVEEDOR') && (
+                        $usuarioActual->can('ver proveedores') ||
+                        $usuarioActual->can('ver especialidades proveedor') ||
+                        $usuarioActual->can('ver horarios proveedor') ||
+                        $usuarioActual->can('ver ubicaciones proveedor') ||
+                        $usuarioActual->can('ver portafolio proveedor') ||
+                        $usuarioActual->can('ver tipos documento proveedor') ||
+                        $usuarioActual->can('ver documentos proveedor')
+                    );
+                    $puedeVerMenuMiPerfilProveedor = $puedeVerMiPerfilProveedor && ! $puedeVerAdministracionProveedores;
+                @endphp
+
+                <li class="menu-title"><span>Principal</span></li>
 
                 <li class="nav-item">
                     <a class="nav-link menu-link {{ request()->routeIs('inicio') ? 'active' : '' }}" href="{{ route('inicio') }}">
@@ -34,6 +49,32 @@
                         <span>Inicio</span>
                     </a>
                 </li>
+
+                @can('ver mis notificaciones')
+                    @php
+                        $totalNotificacionesNoLeidas = auth()->user()->unreadNotifications()->count();
+                    @endphp
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('notificaciones.*') ? 'active' : '' }}" href="{{ route('notificaciones.index') }}">
+                            <i class="ri-notification-3-line"></i>
+                            <span>Notificaciones</span>
+                            @if ($totalNotificacionesNoLeidas > 0)
+                                <span class="badge bg-danger-subtle text-danger ms-auto">{{ $totalNotificacionesNoLeidas }}</span>
+                            @endif
+                        </a>
+                    </li>
+                @endcan
+
+                @if (
+                    $usuarioActual->can('ver usuarios') ||
+                    $usuarioActual->can('ver roles') ||
+                    $usuarioActual->can('ver permisos') ||
+                    $usuarioActual->can('ver activity logs') ||
+                    $usuarioActual->can('ver backups') ||
+                    $usuarioActual->can('ver configuracion correos')
+                )
+                    <li class="menu-title"><span>Administración del sistema</span></li>
+                @endif
 
                 @can('ver usuarios')
                     <li class="nav-item">
@@ -44,20 +85,20 @@
                     </li>
                 @endcan
 
-                @can('ver permisos')
-                    <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('permisos.*') ? 'active' : '' }}" href="{{ route('permisos.index') }}">
-                            <i class="ri-shield-keyhole-line"></i>
-                            <span>Permisos</span>
-                        </a>
-                    </li>
-                @endcan
-
                 @can('ver roles')
                     <li class="nav-item">
                         <a class="nav-link menu-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" href="{{ route('roles.index') }}">
                             <i class="ri-admin-line"></i>
                             <span>Roles</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('ver permisos')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('permisos.*') ? 'active' : '' }}" href="{{ route('permisos.index') }}">
+                            <i class="ri-shield-keyhole-line"></i>
+                            <span>Permisos</span>
                         </a>
                     </li>
                 @endcan
@@ -80,23 +121,27 @@
                     </li>
                 @endcan
 
-                @can('ver panel motor busqueda')
+                @can('ver configuracion correos')
                     <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('motor-busqueda.*') ? 'active' : '' }}" href="{{ route('motor-busqueda.index') }}">
-                            <i class="ri-cpu-line"></i>
-                            <span>Motor inteligente</span>
+                        <a class="nav-link menu-link {{ request()->routeIs('configuracion-correos.*') ? 'active' : '' }}" href="{{ route('configuracion-correos.edit') }}">
+                            <i class="ri-mail-settings-line"></i>
+                            <span>Correos</span>
                         </a>
                     </li>
                 @endcan
 
-                @can('ver reportes')
-                    <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('reportes.*') ? 'active' : '' }}" href="{{ route('reportes.index') }}">
-                            <i class="ri-file-chart-line"></i>
-                            <span>Reportes</span>
-                        </a>
-                    </li>
-                @endcan
+                @if (
+                    $usuarioActual->can('ver rubros') ||
+                    $usuarioActual->can('ver tipos servicio') ||
+                    $usuarioActual->can('ver especialidades') ||
+                    $puedeVerAdministracionProveedores ||
+                    $usuarioActual->can('ver solicitudes') ||
+                    $usuarioActual->can('ver citas') ||
+                    $usuarioActual->can('ver calificaciones') ||
+                    $usuarioActual->can('ver aspectos calificacion')
+                )
+                    <li class="menu-title"><span>Gestión operativa</span></li>
+                @endif
 
                 @if (
                     auth()->user()->can('ver rubros') ||
@@ -152,22 +197,36 @@
                 </li>
                 @endif
 
-                @php
-                    $usuarioActual = auth()->user();
-                    $puedeVerMiPerfilProveedor = $usuarioActual->can('visualizar perfil proveedor');
-                    $puedeVerAdministracionProveedores = ! $usuarioActual->hasRole('PROVEEDOR') && (
-                        $usuarioActual->can('ver proveedores') ||
-                        $usuarioActual->can('ver especialidades proveedor') ||
-                        $usuarioActual->can('ver horarios proveedor') ||
-                        $usuarioActual->can('ver ubicaciones proveedor') ||
-                        $usuarioActual->can('ver portafolio proveedor') ||
-                        $usuarioActual->can('ver tipos documento proveedor') ||
-                        $usuarioActual->can('ver documentos proveedor')
-                    );
-                    $puedeVerMenuMiPerfilProveedor = $puedeVerMiPerfilProveedor && ! $puedeVerAdministracionProveedores;
-                @endphp
+                @if (
+                    $usuarioActual->hasRole('PROVEEDOR') && (
+                        $usuarioActual->can('ver mis solicitudes proveedor') ||
+                        $usuarioActual->can('ver mis calificaciones proveedor')
+                    )
+                )
+                    <li class="menu-title"><span>Gestión del servicio</span></li>
+                @endif
+
+                @if ($usuarioActual->hasRole('PROVEEDOR') && $usuarioActual->can('ver mis solicitudes proveedor'))
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('proveedor.solicitudes.*') || request()->routeIs('proveedor.citas.*') || request()->routeIs('proveedor.historial-solicitudes.*') ? 'active' : '' }}" href="{{ route('proveedor.solicitudes.index') }}">
+                            <i class="ri-inbox-archive-line"></i>
+                            <span>Mis solicitudes</span>
+                        </a>
+                    </li>
+                @endif
+
+                @if ($usuarioActual->hasRole('PROVEEDOR') && $usuarioActual->can('ver mis calificaciones proveedor'))
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('proveedor.calificaciones.*') ? 'active' : '' }}" href="{{ route('proveedor.calificaciones.index') }}">
+                            <i class="ri-star-smile-line"></i>
+                            <span>Mis calificaciones</span>
+                        </a>
+                    </li>
+                @endif
 
                 @if ($puedeVerMenuMiPerfilProveedor)
+                    <li class="menu-title"><span>Perfil profesional</span></li>
+
                     <li class="nav-item">
                         <a href="{{ route('mi-perfil-proveedor.index') }}" class="nav-link menu-link {{ request()->routeIs('mi-perfil-proveedor.index') ? 'active' : '' }}">
                             <i class="ri-user-heart-line"></i>
@@ -401,6 +460,90 @@
                     </li>
                 @endif
 
+                @if ($usuarioActual->can('ver panel motor busqueda') || $usuarioActual->can('ver reportes'))
+                    <li class="menu-title"><span>Análisis y automatización</span></li>
+                @endif
+
+                @can('ver panel motor busqueda')
+                    <li class="nav-item">
+                        <a
+                            class="nav-link menu-link {{ request()->routeIs('motor-busqueda.*') ? 'active' : 'collapsed' }}"
+                            href="#sidebarMotorBusqueda"
+                            data-bs-toggle="collapse"
+                            role="button"
+                            aria-expanded="{{ request()->routeIs('motor-busqueda.*') ? 'true' : 'false' }}"
+                            aria-controls="sidebarMotorBusqueda"
+                        >
+                            <i class="ri-cpu-line"></i>
+                            <span>Motor inteligente</span>
+                        </a>
+
+                        <div
+                            class="collapse menu-dropdown {{ request()->routeIs('motor-busqueda.*') ? 'show' : '' }}"
+                            id="sidebarMotorBusqueda"
+                        >
+                            <ul class="nav nav-sm flex-column">
+                                <li class="nav-item">
+                                    <a href="{{ route('motor-busqueda.index') }}" class="nav-link {{ request()->routeIs('motor-busqueda.index') || request()->routeIs('motor-busqueda.estado') ? 'active' : '' }}">
+                                        <i class="ri-dashboard-line me-1"></i>Resumen y servicios
+                                    </a>
+                                </li>
+
+                                @if (auth()->user()->can('ejecutar indexacion motor busqueda') || auth()->user()->can('consultar estado motor busqueda'))
+                                    <li class="nav-item">
+                                        <a href="{{ route('motor-busqueda.indexacion.index') }}" class="nav-link {{ request()->routeIs('motor-busqueda.indexacion.*') ? 'active' : '' }}">
+                                            <i class="ri-refresh-line me-1"></i>Indexación manual
+                                        </a>
+                                    </li>
+                                @endif
+
+                                @can('configurar programacion indexaciones motor')
+                                    <li class="nav-item">
+                                        <a href="{{ route('motor-busqueda.programacion.edit') }}" class="nav-link {{ request()->routeIs('motor-busqueda.programacion.*') ? 'active' : '' }}">
+                                            <i class="ri-calendar-schedule-line me-1"></i>Programación
+                                        </a>
+                                    </li>
+                                @endcan
+
+                                @can('ver historial indexaciones motor')
+                                    <li class="nav-item">
+                                        <a href="{{ route('motor-busqueda.historial.index') }}" class="nav-link {{ request()->routeIs('motor-busqueda.historial.*') ? 'active' : '' }}">
+                                            <i class="ri-history-line me-1"></i>Historial
+                                        </a>
+                                    </li>
+                                @endcan
+
+                                @can('ver personalizacion busqueda')
+                                    <li class="nav-item">
+                                        <a href="{{ route('motor-busqueda.personalizacion.edit') }}" class="nav-link {{ request()->routeIs('motor-busqueda.personalizacion.*') ? 'active' : '' }}">
+                                            <i class="ri-palette-line me-1"></i>Personalización
+                                        </a>
+                                    </li>
+                                @endcan
+                            </ul>
+                        </div>
+                    </li>
+                @endcan
+
+                @can('ver reportes')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ request()->routeIs('reportes.*') ? 'active' : '' }}" href="{{ route('reportes.index') }}">
+                            <i class="ri-file-chart-line"></i>
+                            <span>Reportes</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @if (
+                    $usuarioActual->hasRole('CLIENTE') && (
+                        $usuarioActual->can('buscar servicios') ||
+                        $usuarioActual->can('ver mis solicitudes') ||
+                        $usuarioActual->can('ver mis calificaciones')
+                    )
+                )
+                    <li class="menu-title"><span>Servicios</span></li>
+                @endif
+
                 @if ($usuarioActual->hasRole('CLIENTE') && $usuarioActual->can('buscar servicios'))
                     <li class="nav-item">
                         <a class="nav-link menu-link {{ request()->routeIs('cliente.buscar-servicios.*') ? 'active' : '' }}" href="{{ route('cliente.buscar-servicios.index') }}">
@@ -429,6 +572,8 @@
                 @endif
 
                 @if ($usuarioActual->hasRole('CLIENTE'))
+                    <li class="menu-title"><span>Otros</span></li>
+
                     <li class="nav-item">
                         <a
                             class="nav-link menu-link collapsed"
@@ -467,13 +612,6 @@
                                 </li>
                                 <li class="nav-item">
                                     <a href="javascript:void(0);" class="nav-link">
-                                        <i class="ri-notification-3-line me-1"></i>
-                                        Notificaciones
-                                        <span class="badge bg-secondary-subtle text-secondary ms-auto">Pronto</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="javascript:void(0);" class="nav-link">
                                         <i class="ri-customer-service-2-line me-1"></i>
                                         Centro de ayuda
                                         <span class="badge bg-secondary-subtle text-secondary ms-auto">Pronto</span>
@@ -481,24 +619,6 @@
                                 </li>
                             </ul>
                         </div>
-                    </li>
-                @endif
-
-                @if ($usuarioActual->hasRole('PROVEEDOR') && $usuarioActual->can('ver mis solicitudes proveedor'))
-                    <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('proveedor.solicitudes.*') || request()->routeIs('proveedor.citas.*') || request()->routeIs('proveedor.historial-solicitudes.*') ? 'active' : '' }}" href="{{ route('proveedor.solicitudes.index') }}">
-                            <i class="ri-inbox-archive-line"></i>
-                            <span>Mis solicitudes</span>
-                        </a>
-                    </li>
-                @endif
-
-                @if ($usuarioActual->hasRole('PROVEEDOR') && $usuarioActual->can('ver mis calificaciones proveedor'))
-                    <li class="nav-item">
-                        <a class="nav-link menu-link {{ request()->routeIs('proveedor.calificaciones.*') ? 'active' : '' }}" href="{{ route('proveedor.calificaciones.index') }}">
-                            <i class="ri-star-smile-line"></i>
-                            <span>Mis calificaciones</span>
-                        </a>
                     </li>
                 @endif
 

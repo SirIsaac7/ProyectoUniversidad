@@ -141,6 +141,14 @@
     border-right: 1px dashed var(--vz-border-color);
 }
 
+.inicio-citas-metrica > div {
+    min-width: 0;
+}
+
+.inicio-citas-metrica p {
+    overflow-wrap: anywhere;
+}
+
 .inicio-citas-metricas > div:last-child .inicio-citas-metrica {
     border-right: 0;
 }
@@ -445,6 +453,28 @@
     border-bottom: 0;
 }
 
+.inicio-admin-service-content {
+    min-width: 0;
+}
+
+.inicio-admin-service-content p,
+.inicio-admin-service-content small {
+    display: block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.inicio-admin-service-heading {
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.inicio-admin-service-heading h5 {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
 .inicio-admin-list {
     max-height: 390px;
     overflow-y: auto;
@@ -493,7 +523,15 @@
     .inicio-citas-metrica {
         border-right: 0;
         border-bottom: 1px dashed var(--vz-border-color);
-        padding: 18px;
+        gap: 10px;
+        padding: 16px 10px;
+    }
+
+    .inicio-citas-metrica-icon {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+        font-size: 22px;
     }
 
     .inicio-citas-chart {
@@ -506,6 +544,36 @@
 
     .inicio-proveedor-rating-chart {
         display: none;
+    }
+
+    .inicio-admin-service-status {
+        gap: 12px !important;
+    }
+
+    .inicio-admin-service-status .inicio-admin-backup-icon {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 400px) {
+    .inicio-activity-item {
+        flex-wrap: wrap;
+        gap: 10px 12px;
+    }
+
+    .inicio-activity-item > .flex-grow-1 {
+        flex: 1 1 calc(100% - 50px);
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .inicio-activity-item > small:last-child {
+        flex: 0 0 calc(100% - 50px);
+        margin-left: 50px;
+        white-space: normal !important;
     }
 }
 

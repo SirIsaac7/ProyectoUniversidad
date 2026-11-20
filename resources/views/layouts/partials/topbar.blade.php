@@ -40,12 +40,13 @@
                     </button>
                 </div>
 
-                <div class="ms-1 header-item d-none d-sm-flex">
+                <div class="ms-1 header-item d-flex topbar-theme-toggle">
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle light-dark-mode">
                         <i class='bx bx-moon fs-22'></i>
                     </button>
                 </div>
 
+                @can('ver mis notificaciones')
                 <div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                         <i class='bx bx-bell fs-22'></i>
@@ -79,14 +80,20 @@
                             </div>
                         </div>
                         <div class="p-2 border-top border-top-dashed">
-                            <div class="d-grid">
-                                <button type="button" class="btn btn-soft-success btn-sm js-notificaciones-leer-todas">
-                                    Marcar todas como leidas
-                                </button>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('notificaciones.index') }}" class="btn btn-soft-primary btn-sm flex-grow-1">
+                                    Ver todas
+                                </a>
+                                @can('gestionar mis notificaciones')
+                                    <button type="button" class="btn btn-soft-success btn-sm flex-grow-1 js-notificaciones-leer-todas">
+                                        Marcar leidas
+                                    </button>
+                                @endcan
                             </div>
                         </div>
                     </div>
                 </div>
+                @endcan
 
                 <div class="dropdown ms-sm-3 header-item topbar-user">
                     <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -109,7 +116,7 @@
                                     {{ auth()->user()?->inicial ?? 'U' }}
                                 </span>
                             @endif
-                            <span class="text-start ms-2 lh-sm">
+                            <span class="topbar-user-copy text-start ms-2 lh-sm d-none d-sm-block">
                                 <span class="d-block fw-semibold user-name-text">{{ auth()->user()->name ?? 'Usuario' }}</span>
                                 <span class="d-block fs-12 user-name-sub-text">Cuenta activa</span>
                             </span>

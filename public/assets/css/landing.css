@@ -1122,6 +1122,102 @@ body.landing-loading {
     }
 }
 
+@media (max-width: 400px) {
+    [data-aos] {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .landing-splash {
+        padding: 16px;
+    }
+
+    .landing-splash h1,
+    .landing-splash p,
+    .landing-navbar .navbar-brand,
+    .hero-copy h1,
+    .hero-copy p,
+    .section-title h2,
+    .section-title p,
+    .platform-section h2,
+    .platform-section p,
+    .cta-panel h2,
+    .cta-panel p {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    .landing-splash h1 {
+        font-size: clamp(26px, 11vw, 36px);
+    }
+
+    .landing-splash p {
+        font-size: 15px;
+        text-align: center;
+    }
+
+    .landing-navbar .navbar-brand {
+        font-size: 18px;
+    }
+
+    .brand-logo {
+        width: 42px;
+        height: 42px;
+    }
+
+    .hero-section {
+        padding-top: 112px;
+    }
+
+    .hero-orbit {
+        display: none;
+    }
+
+    .image-frame::before {
+        display: none;
+    }
+
+    main .row,
+    .landing-footer .row {
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    main .row > [class*="col"],
+    .landing-footer .row > [class*="col"] {
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    .hero-copy h1,
+    .section-title h2,
+    .platform-section h2,
+    .cta-panel h2 {
+        font-size: clamp(28px, 12vw, 42px);
+        line-height: 1.05;
+    }
+
+    .hero-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+        white-space: normal;
+    }
+
+    .feature-card,
+    .service-card {
+        padding: 18px;
+    }
+
+    .cta-panel {
+        padding-inline: 18px;
+    }
+}
+
 @media (hover: none) {
     .cursor-glow {
         display: none;

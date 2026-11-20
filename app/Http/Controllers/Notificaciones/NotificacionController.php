@@ -3,18 +3,43 @@
 namespace App\Http\Controllers\Notificaciones;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Notificaciones\IndexNotificacionRequest;
+use App\Http\Requests\Notificaciones\UpdateNotificacionesRequest;
+use App\Services\Notificaciones\NotificacionService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class NotificacionController extends Controller
 {
+    public function __construct(
+        protected NotificacionService $notificacionService
+    ) {
+        $this->middleware('permission:ver mis notificaciones')->only(['index', 'recientes']);
+        $this->middleware('permission:gestionar mis notificaciones')->only([
+            'marcarLeida',
+            'marcarNoLeida',
+            'marcarTodasLeidas',
+            'accionMasiva',
+        ]);
+        $this->middleware('permission:eliminar mis notificaciones')->only('destroy');
+    }
+
+    public function index(IndexNotificacionRequest $request): View
+    {
+        $filtros = $request->validated();
+
+        return view('notificaciones.index', [
+            ...$this->notificacionService->centro($request->user(), $filtros),
+            'filtros' => $filtros,
+        ]);
+    }
+
     public function recientes(Request $request): JsonResponse
     {
-        $notificaciones = $request->user()
-            ->notifications()
-            ->latest()
-            ->take(10)
-            ->get()
+        $notificaciones = $this->notificacionService
+            ->propiasRecientes($request->user())
             ->map(fn ($notificacion) => [
                 'id' => $notificacion->id,
                 'titulo' => $notificacion->data['titulo'] ?? 'Notificacion',
@@ -31,28 +56,68 @@ class NotificacionController extends Controller
         ]);
     }
 
-    public function marcarLeida(Request $request, string $id): JsonResponse
+    public function marcarLeida(Request $request, string $id): JsonResponse|RedirectResponse
     {
-        $notificacion = $request->user()
-            ->notifications()
-            ->whereKey($id)
-            ->firstOrFail();
+        $this->notificacionService->marcarLeida($request->user(), $id);
 
-        $notificacion->markAsRead();
-
-        return response()->json([
-            'mensaje' => 'Notificacion marcada como leida.',
-            'total_no_leidas' => $request->user()->unreadNotifications()->count(),
-        ]);
+        return $this->respuestaOperacion(
+            $request,
+            'Notificacion marcada como leida.',
+            $request->user()->unreadNotifications()->count()
+        );
     }
 
-    public function marcarTodasLeidas(Request $request): JsonResponse
+    public function marcarNoLeida(Request $request, string $id): RedirectResponse
     {
-        $request->user()->unreadNotifications->markAsRead();
+        $this->notificacionService->marcarNoLeida($request->user(), $id);
 
-        return response()->json([
-            'mensaje' => 'Todas las notificaciones fueron marcadas como leidas.',
-            'total_no_leidas' => 0,
-        ]);
+        return back()->with('success', 'Notificacion marcada como no leida.');
+    }
+
+    public function marcarTodasLeidas(Request $request): JsonResponse|RedirectResponse
+    {
+        $this->notificacionService->marcarTodasLeidas($request->user());
+
+        return $this->respuestaOperacion($request, 'Todas las notificaciones fueron marcadas como leidas.', 0);
+    }
+
+    public function accionMasiva(UpdateNotificacionesRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+        $afectadas = $this->notificacionService->ejecutarAccionMasiva(
+            $request->user(),
+            $data['notificaciones'],
+            $data['accion']
+        );
+
+        $accion = match ($data['accion']) {
+            'leer' => 'marcadas como leidas',
+            'no_leer' => 'marcadas como no leidas',
+            'eliminar' => 'eliminadas',
+        };
+
+        return back()->with('success', "{$afectadas} notificaciones fueron {$accion}.");
+    }
+
+    public function destroy(Request $request, string $id): RedirectResponse
+    {
+        $this->notificacionService->eliminar($request->user(), $id);
+
+        return back()->with('success', 'Notificacion eliminada correctamente.');
+    }
+
+    private function respuestaOperacion(
+        Request $request,
+        string $mensaje,
+        int $totalNoLeidas
+    ): JsonResponse|RedirectResponse {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'mensaje' => $mensaje,
+                'total_no_leidas' => $totalNoLeidas,
+            ]);
+        }
+
+        return back()->with('success', $mensaje);
     }
 }

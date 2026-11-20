@@ -3,11 +3,16 @@
 namespace App\Services\Proveedores;
 
 use App\Models\PerfilProveedor;
+use App\Services\Notificaciones\NotificacionService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 
 class PerfilProveedorService
 {
+    public function __construct(
+        protected NotificacionService $notificacionService
+    ) {}
+
     public function getAll(): Collection
     {
         return PerfilProveedor::with('user')
@@ -32,6 +37,7 @@ class PerfilProveedorService
     public function update(PerfilProveedor $perfilProveedor, array $data): PerfilProveedor
     {
         $fotoPortada = $perfilProveedor->foto_portada;
+        $estadoVerificacionAnterior = $perfilProveedor->estado_verificacion;
 
         if (! empty($data['foto_portada'])) {
             $this->deleteImage($perfilProveedor->foto_portada);
@@ -48,7 +54,20 @@ class PerfilProveedorService
             'motivo_rechazo' => $data['motivo_rechazo'] ?? null,
         ]);
 
-        return $perfilProveedor->load('user');
+        $perfilProveedor->load('user');
+
+        if (
+            $estadoVerificacionAnterior !== $perfilProveedor->estado_verificacion
+            && $perfilProveedor->user
+        ) {
+            $this->notificacionService->perfilVerificadoParaProveedor(
+                proveedor: $perfilProveedor->user,
+                estado: $perfilProveedor->estado_verificacion,
+                url: route('mi-perfil-proveedor.index')
+            );
+        }
+
+        return $perfilProveedor;
     }
 
     public function updateDatosBasicos(PerfilProveedor $perfilProveedor, array $data): PerfilProveedor
@@ -92,11 +111,11 @@ class PerfilProveedorService
         }
 
         $nombreLimpio = str()->slug($nombre);
-        $nombreArchivo = now()->format('Ymd_His') . '_' . $nombreLimpio . '.' . $image->getClientOriginalExtension();
+        $nombreArchivo = now()->format('Ymd_His').'_'.$nombreLimpio.'.'.$image->getClientOriginalExtension();
 
         $image->move($directorio, $nombreArchivo);
 
-        return 'uploads/perfiles-proveedores/' . $nombreArchivo;
+        return 'uploads/perfiles-proveedores/'.$nombreArchivo;
     }
 
     protected function deleteImage(?string $ruta): void

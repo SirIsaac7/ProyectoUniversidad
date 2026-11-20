@@ -2,15 +2,13 @@
 
 namespace App\Services\BusquedaInteligente\Administracion;
 
-use App\Models\User;
 use App\Services\BusquedaInteligente\MotorBusquedaService;
 use Illuminate\Support\Str;
 
-class MotorAdministracionService
+class EstadoMotorService
 {
     public function __construct(
         protected MotorBusquedaService $motorBusquedaService,
-        protected MotorIndexacionService $motorIndexacionService,
     ) {}
 
     public function estadoServicios(): array
@@ -38,29 +36,6 @@ class MotorAdministracionService
             'consultado_en' => now()->toIso8601String(),
             'respuesta' => $respuesta,
         ];
-    }
-
-    public function iniciarIndexacion(User $usuario): array
-    {
-        $ejecucion = $this->motorIndexacionService->iniciarManual($usuario);
-
-        return [
-            'ejecucion_id' => $ejecucion->id,
-            'identificador' => $ejecucion->fastapi_identificador,
-            'mensaje' => $ejecucion->respuesta_inicio['mensaje'] ?? 'La indexacion fue aceptada por el motor.',
-        ];
-    }
-
-    public function consultarIndexacion(string $identificador): array
-    {
-        $ejecucion = $this->motorIndexacionService->actualizarPorIdentificador($identificador);
-
-        return $this->motorIndexacionService->paraPanel($ejecucion);
-    }
-
-    public function identificadorActivo(): ?string
-    {
-        return $this->motorIndexacionService->ejecucionActiva()?->fastapi_identificador;
     }
 
     private function buscarValorServicio(array $contenedor, string $clave): mixed

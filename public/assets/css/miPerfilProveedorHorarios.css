@@ -321,6 +321,27 @@
     }
 }
 
+@media (max-width: 400px) {
+    #miHorariosCalendar .fc-toolbar-chunk,
+    #miHorariosCalendar .fc-button-group {
+        width: 100%;
+        min-width: 0;
+    }
+
+    #miHorariosCalendar .fc-button-group {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4px;
+    }
+
+    #miHorariosCalendar .fc-button-group > .fc-button {
+        min-width: 0;
+        margin: 0;
+        border-radius: 4px;
+        white-space: normal;
+    }
+}
+
 .mi-horario-create-widget {
     position: relative;
 }

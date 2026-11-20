@@ -53,12 +53,62 @@
                                     autocomplete="off"
                                     placeholder="Ej: Mi laptop enciende, pero la pantalla permanece negra"
                                 >
+                                <button
+                                    type="button"
+                                    class="btn btn-soft-primary busqueda-voz-button"
+                                    id="btnDictarProblemaIA"
+                                    data-url="{{ route('cliente.buscar-servicios.transcribir') }}"
+                                    aria-controls="consultaSemantica"
+                                >
+                                    <i class="ri-mic-line align-bottom me-1"></i>
+                                    Dictar
+                                </button>
                                 <button type="submit" class="btn btn-primary" id="btnBusquedaSemantica">
                                     <i class="ri-user-search-line align-bottom me-1"></i>
                                     Buscar tecnicos
                                 </button>
                             </div>
                             <div class="invalid-feedback" data-busqueda-semantica-error></div>
+                            <div id="estadoDictadoProblemaIA" class="form-text busqueda-voz-status" aria-live="polite">
+                                Puedes escribir o usar el microfono para completar la descripcion.
+                            </div>
+                        </div>
+
+                        <div
+                            class="busqueda-imagen-gemini mb-3"
+                            data-analisis-imagen
+                            data-url="{{ route('cliente.buscar-servicios.analizar-imagen') }}"
+                        >
+                            <div class="busqueda-imagen-gemini-control">
+                                <div>
+                                    <label for="imagenProblemaGemini" class="form-label fw-semibold mb-1">
+                                        ¿No sabes cómo describir el problema?
+                                    </label>
+                                    <p class="text-muted small mb-0">
+                                        Selecciona una foto y el reconocimiento de imágenes completará la descripción.
+                                    </p>
+                                </div>
+                                <label class="btn btn-soft-primary mb-0" for="imagenProblemaGemini">
+                                    <i class="ri-image-add-line align-bottom me-1"></i>
+                                    Elegir foto
+                                </label>
+                                <input
+                                    type="file"
+                                    id="imagenProblemaGemini"
+                                    class="visually-hidden"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    data-analisis-imagen-input
+                                >
+                            </div>
+
+                            <div class="busqueda-imagen-gemini-preview d-none" data-analisis-imagen-preview>
+                                <img src="" alt="Vista previa de la imagen seleccionada" data-analisis-imagen-thumb>
+                                <div class="flex-grow-1 min-w-0">
+                                    <strong class="d-block text-truncate" data-analisis-imagen-nombre></strong>
+                                    <span class="small text-muted" data-analisis-imagen-estado aria-live="polite"></span>
+                                </div>
+                                <span class="spinner-border spinner-border-sm text-primary d-none" role="status" data-analisis-imagen-spinner></span>
+                            </div>
                         </div>
 
                         <div class="row g-3 align-items-end">
@@ -84,94 +134,23 @@
             <div id="busquedaSemanticaResultado" class="mb-4" aria-live="polite">
                 <div class="card busqueda-semantica-empty">
                     <div class="card-body text-center py-4">
-                        <span class="avatar-md mx-auto mb-3">
-                            <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
+                        @if (is_file(public_path('assets/images/widget-service.png')))
+                            <img
+                                src="{{ asset('assets/images/widget-service.png') }}"
+                                class="busqueda-empty-illustration mx-auto mb-3"
+                                alt="Ilustración de búsqueda de técnicos"
+                            >
+                        @else
+                            <span class="busqueda-empty-illustration-fallback mx-auto mb-3" aria-hidden="true">
                                 <i class="ri-radar-line fs-24"></i>
                             </span>
-                        </span>
+                        @endif
                         <h5 class="mb-1">Encuentra al tecnico adecuado</h5>
                         <p class="text-muted mb-0">Describe el problema con tus propias palabras y compararemos tu necesidad con proveedores verificados.</p>
                     </div>
                 </div>
             </div>
             </div>
-
-            <div class="card busqueda-ia-panel mb-4">
-                <div class="card-body">
-                    <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-3">
-                        <div>
-                            <span class="badge bg-primary-subtle text-primary mb-2">
-                                <i class="ri-sparkling-2-line align-bottom me-1"></i>
-                                Modo IA
-                            </span>
-                            <h5 class="mb-1">Busqueda inteligente por imagen y descripcion</h5>
-                            <p class="text-muted mb-0">Sube una foto del equipo o problema y explica que sucede. La IA sugerira proveedores compatibles.</p>
-                        </div>
-                        <span class="avatar-md">
-                            <span class="avatar-title rounded bg-primary-subtle text-primary">
-                                <i class="ri-brain-line fs-24"></i>
-                            </span>
-                        </span>
-                    </div>
-
-                    <form id="busquedaInteligenteForm" data-url="{{ route('cliente.buscar-servicios.inteligente') }}" enctype="multipart/form-data">
-                        <div class="row g-3">
-                            <div class="col-lg-5">
-                                <label for="imagenIA" class="form-label">Imagen del problema <span class="text-danger">*</span></label>
-                                <input type="file" class="form-control" id="imagenIA" name="imagen" accept=".jpg,.jpeg,.png,.webp" required>
-                                <div class="form-text">Formatos permitidos: JPG, PNG o WEBP. Maximo 8MB.</div>
-                            </div>
-
-                            <div class="col-lg-7">
-                                <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
-                                    <label for="descripcionProblemaIA" class="form-label mb-0">Descripcion del problema <span class="text-danger">*</span></label>
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-soft-primary busqueda-voz-button"
-                                        id="btnDictarProblemaIA"
-                                        data-url="{{ route('cliente.buscar-servicios.transcribir') }}"
-                                        aria-controls="descripcionProblemaIA"
-                                    >
-                                        <i class="ri-mic-line align-bottom me-1"></i>
-                                        Dictar
-                                    </button>
-                                </div>
-                                <textarea class="form-control" id="descripcionProblemaIA" name="texto_problema" rows="3" minlength="10" maxlength="1000" required placeholder="Ej: Mi laptop enciende, pero despues de unos minutos se apaga y hace ruido el ventilador."></textarea>
-                                <div id="estadoDictadoProblemaIA" class="form-text busqueda-voz-status" aria-live="polite">
-                                    Puedes escribir o usar el microfono para completar la descripcion.
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="modoClasificacionIA" class="form-label">Modo de clasificacion</label>
-                                <select class="form-select" id="modoClasificacionIA" name="modo_clasificacion">
-                                    <option value="cnn">CNN</option>
-                                    <option value="gemini">PRO</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label d-block">Ubicacion</label>
-                                <div class="form-check form-switch busqueda-location-switch mb-0">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="usarUbicacionIA" name="usar_ubicacion" value="1">
-                                    <label class="form-check-label" for="usarUbicacionIA">Usar mi ubicacion actual</label>
-                                </div>
-                                <input type="hidden" id="latClienteIA" name="lat_cliente">
-                                <input type="hidden" id="lonClienteIA" name="lon_cliente">
-                            </div>
-
-                            <div class="col-md-4 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary w-100" id="btnBusquedaInteligente">
-                                    <i class="ri-search-eye-line align-bottom me-1"></i>
-                                    Buscar con IA
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div id="busquedaInteligenteResultado" class="mb-4"></div>
 
             <livewire:cliente.busqueda-servicios.bloque-busqueda :filtros="$filtros" />
         </div>

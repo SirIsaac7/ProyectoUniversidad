@@ -191,6 +191,14 @@ class BusquedaSemanticaControllerTest extends TestCase
             ->get(route('cliente.buscar-servicios.index'))
             ->assertOk()
             ->assertSee('--busqueda-primary:#123456', false)
+            ->assertSee('--busqueda-rank-first:#D4AF37', false)
+            ->assertSee('--busqueda-rank-second:#94A3B8', false)
+            ->assertSee('--busqueda-rank-third:#CD7F32', false)
+            ->assertDontSee('--busqueda-background', false)
+            ->assertSee('id="btnDictarProblemaIA"', false)
+            ->assertSee('aria-controls="consultaSemantica"', false)
+            ->assertDontSee('id="busquedaInteligenteForm"', false)
+            ->assertDontSee('Modo IA')
             ->assertSee('data-estado-url=', false)
             ->assertDontSee('secreto-que-no-debe-aparecer');
     }

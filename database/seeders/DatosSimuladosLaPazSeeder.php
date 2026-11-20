@@ -83,8 +83,6 @@ class DatosSimuladosLaPazSeeder extends Seeder
             [
                 'name' => 'Administracion TecnoConexion',
                 'celular' => '60112001',
-                'celular_verificado_at' => $this->ahora,
-                'recibe_notificaciones_whatsapp' => true,
                 'fecha_nacimiento' => '1992-03-14',
                 'email_verified_at' => $this->ahora,
                 'password' => Hash::make('Password123!'),
@@ -119,8 +117,6 @@ class DatosSimuladosLaPazSeeder extends Seeder
                 [
                     'name' => $nombre,
                     'celular' => '67' . str_pad((string) (200000 + $index * 137), 6, '0', STR_PAD_LEFT),
-                    'celular_verificado_at' => $this->ahora->copy()->subDays($index % 9),
-                    'recibe_notificaciones_whatsapp' => $index % 3 !== 0,
                     'fecha_nacimiento' => Carbon::create(1984 + ($index % 18), (($index % 12) + 1), (($index % 24) + 1))->toDateString(),
                     'email_verified_at' => $this->ahora,
                     'password' => Hash::make('Password123!'),
@@ -161,8 +157,6 @@ class DatosSimuladosLaPazSeeder extends Seeder
                 [
                     'name' => $dato['user'],
                     'celular' => '70' . str_pad((string) (310000 + $index * 149), 6, '0', STR_PAD_LEFT),
-                    'celular_verificado_at' => $this->ahora->copy()->subDays($index % 7),
-                    'recibe_notificaciones_whatsapp' => true,
                     'fecha_nacimiento' => Carbon::create(1978 + ($index % 16), (($index % 12) + 1), (($index % 20) + 2))->toDateString(),
                     'email_verified_at' => $this->ahora,
                     'password' => Hash::make('Password123!'),

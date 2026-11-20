@@ -3,13 +3,17 @@
 namespace App\Services\Backups;
 
 use App\Models\ConfiguracionBackup;
-use Illuminate\Support\Facades\Artisan;
+use App\Services\Correos\ConfiguracionCorreoService;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 class BackupService
 {
+    public function __construct(
+        protected ConfiguracionCorreoService $configuracionCorreoService
+    ) {}
+
     public function configuracion(): ConfiguracionBackup
     {
         return ConfiguracionBackup::firstOrCreate(
@@ -29,11 +33,11 @@ class BackupService
         try {
             $directorioTemporal = config('backup.backup.temporary_directory');
 
-            File::deleteDirectory($directorioTemporal . DIRECTORY_SEPARATOR . 'temp');
+            File::deleteDirectory($directorioTemporal.DIRECTORY_SEPARATOR.'temp');
             File::deleteDirectory($directorioTemporal);
-            $phpBinary = '"' . PHP_BINARY . '"';
-            $artisan = '"' . base_path('artisan') . '"';
-            $comando = $phpBinary . ' ' . $artisan . ' backup:run --disable-notifications 2>&1';
+            $phpBinary = '"'.PHP_BINARY.'"';
+            $artisan = '"'.base_path('artisan').'"';
+            $comando = $phpBinary.' '.$artisan.' backup:run --disable-notifications 2>&1';
 
             $salida = [];
             $codigoSalida = 1;
@@ -49,6 +53,8 @@ class BackupService
                     'ultimo_mensaje' => $mensaje,
                 ]);
 
+                $this->configuracionCorreoService->notificarResultadoBackup(false, $mensaje);
+
                 return ['ok' => false, 'mensaje' => $mensaje];
             }
 
@@ -58,6 +64,12 @@ class BackupService
                 'ultimo_mensaje' => $mensaje,
             ]);
 
+            $this->configuracionCorreoService->notificarResultadoBackup(
+                true,
+                $mensaje,
+                $this->rutaBackupMasReciente()
+            );
+
             return ['ok' => true, 'mensaje' => $mensaje];
         } catch (Throwable $e) {
             $configuracion->update([
@@ -65,6 +77,8 @@ class BackupService
                 'ultimo_estado' => 'error',
                 'ultimo_mensaje' => $e->getMessage(),
             ]);
+
+            $this->configuracionCorreoService->notificarResultadoBackup(false, $e->getMessage());
 
             return ['ok' => false, 'mensaje' => $e->getMessage()];
         }
@@ -83,5 +97,16 @@ class BackupService
             ->sortByDesc('fecha')
             ->values()
             ->all();
+    }
+
+    private function rutaBackupMasReciente(): ?string
+    {
+        $disco = Storage::disk('backups');
+        $archivo = collect($disco->allFiles())
+            ->filter(fn ($ruta) => str_ends_with($ruta, '.zip'))
+            ->sortByDesc(fn ($ruta) => $disco->lastModified($ruta))
+            ->first();
+
+        return $archivo ? $disco->path($archivo) : null;
     }
 }

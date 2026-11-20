@@ -4,9 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\User;
 use App\Services\BusquedaInteligente\Administracion\ConfiguracionBusquedaVisualService;
-use App\Services\BusquedaInteligente\Administracion\MotorAdministracionService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Mockery;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
@@ -24,14 +22,11 @@ class PersonalizacionBusquedaTest extends TestCase
     public function test_el_panel_muestra_la_personalizacion_solo_con_permiso(): void
     {
         $usuario = $this->usuarioConPermisos(['ver panel motor busqueda', 'ver personalizacion busqueda']);
-        $administracion = Mockery::mock(MotorAdministracionService::class);
-        $administracion->shouldReceive('identificadorActivo')->once()->andReturnNull();
-        $this->app->instance(MotorAdministracionService::class, $administracion);
-
         $this->actingAs($usuario)
-            ->get(route('motor-busqueda.index'))
+            ->get(route('motor-busqueda.personalizacion.edit'))
             ->assertOk()
             ->assertSee('Personalización de búsqueda')
+            ->assertSee('Podio de resultados')
             ->assertSee('Vista previa interactiva')
             ->assertSee('Datos de demostración');
     }
@@ -45,17 +40,25 @@ class PersonalizacionBusquedaTest extends TestCase
         $servicio = app(ConfiguracionBusquedaVisualService::class);
         $datos = $servicio->valoresPredeterminados();
         $datos['color_primario'] = '#112233';
+        $datos['color_primer_lugar'] = '#AABBCC';
+        $datos['color_segundo_lugar'] = '#BBCCDD';
+        $datos['color_tercer_lugar'] = '#CCDDEE';
         $datos['animacion'] = 'puntos';
         $datos['presentacion_fases'] = 'linea';
         $datos['mensajes_fases']['reranking'] = 'Comparando técnicos de forma segura...';
 
         $this->actingAs($usuario)
             ->put(route('motor-busqueda.personalizacion.update'), $datos)
-            ->assertRedirect(route('motor-busqueda.index'));
+            ->assertRedirect(route('motor-busqueda.personalizacion.edit'));
 
         $this->assertDatabaseHas('configuraciones_busqueda_visual', [
             'id' => 1,
             'color_primario' => '#112233',
+            'destacar_podio' => true,
+            'animar_podio' => true,
+            'color_primer_lugar' => '#AABBCC',
+            'color_segundo_lugar' => '#BBCCDD',
+            'color_tercer_lugar' => '#CCDDEE',
             'animacion' => 'puntos',
             'presentacion_fases' => 'linea',
         ]);
@@ -63,10 +66,13 @@ class PersonalizacionBusquedaTest extends TestCase
 
         $this->actingAs($usuario)
             ->delete(route('motor-busqueda.personalizacion.reset'))
-            ->assertRedirect(route('motor-busqueda.index'));
+            ->assertRedirect(route('motor-busqueda.personalizacion.edit'));
 
         $restaurada = $servicio->configuracion()->refresh();
         $this->assertSame('#405189', $restaurada->color_primario);
+        $this->assertTrue($restaurada->destacar_podio);
+        $this->assertTrue($restaurada->animar_podio);
+        $this->assertSame('#D4AF37', $restaurada->color_primer_lugar);
         $this->assertSame('spinner', $restaurada->animacion);
     }
 
@@ -78,9 +84,9 @@ class PersonalizacionBusquedaTest extends TestCase
         $datos['mensajes_fases']['iniciando'] = '<script>alert(1)</script>';
 
         $this->actingAs($usuario)
-            ->from(route('motor-busqueda.index'))
+            ->from(route('motor-busqueda.personalizacion.edit'))
             ->put(route('motor-busqueda.personalizacion.update'), $datos)
-            ->assertRedirect(route('motor-busqueda.index'))
+            ->assertRedirect(route('motor-busqueda.personalizacion.edit'))
             ->assertSessionHasErrors(['color_boton', 'mensajes_fases.iniciando']);
     }
 
